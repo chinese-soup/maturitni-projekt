@@ -1,7 +1,8 @@
 body
 {
 	font-family: sans-serif;		
-	background: #34353b;
+	background: #1B7DBF;
+	color: #fafafa;
 }
 #main_container
 {
@@ -11,7 +12,6 @@ body
 
 header,footer
 {
-	float: left;
 	/*width: 100vw;*/ /*html5 meme*/
 	box-sizing: border-box;
 	min-width: 100%;
@@ -27,15 +27,27 @@ header
 }
 footer
 {
-	background-color: green;
+	clear: both;
 }
 
 #login_container
 {
-	
+	height: 500px;
+	max-width: 70%;
 }
 
 input
 {
 	background-color: #D0EDF7;
+	-webkit-border-radius: 7px;
+	-moz-border-radius: 7px;
+	border-radius: 7px;
+	height: 18px;
+	width: 70%;
+	padding: 5px;
+}
+
+label
+{
+	float: left;
 }
