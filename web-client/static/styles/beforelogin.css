@@ -29,16 +29,23 @@ body
 }
 .navbar-inverse
 {
-  width: 100% !important;
+	width: 100% !important;
+	opacity: 1.0;
 }
 
 .jumbotron
 {
-	background-size: 100% 100%;
-	background-repeat: no-repeat;
-	background-position: center; 
-	background-image: url('http://www.riwakawebsitedesigns.com/external/images/stars/img-stars-2.jpg');
-	height: 620px;
+	position: relative;
+	background: #000 url("http://a.waifu.eu/OEkq.png") center center;
 	width: 100%;
-	margin-bottom: 60px;
+	height: 100%;
+	background-size: cover;
+	overflow: hidden;
+	color: #E6E6E6;
+	border-bottom: 3px solid gray;
+}
+
+.margin-right
+{
+	margin-right: 7px;
 }

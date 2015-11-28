@@ -5,13 +5,38 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>CChatApp</title>
+		<title>CloudChatApp</title>
 
-		<!-- Bootstrap -->
+		<!-- Bootstrap libs -->
 		<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+		
+		<!--  -->
 		<link rel="stylesheet" href="./styles/normalize.css">
 		<link rel="stylesheet" href="./styles/beforelogin.css">
 
+		<!-- FAVICONS GENERATED -->
+		<link rel="apple-touch-icon" sizes="57x57" href="./icons/favicon/apple-touch-icon-57x57.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="./icons/favicon/apple-touch-icon-60x60.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="./icons/favicon/apple-touch-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="76x76" href="./icons/favicon/apple-touch-icon-76x76.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="./icons/favicon/apple-touch-icon-114x114.png">
+		<link rel="apple-touch-icon" sizes="120x120" href="./icons/favicon/apple-touch-icon-120x120.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="./icons/favicon/apple-touch-icon-144x144.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="./icons/favicon/apple-touch-icon-152x152.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="./icons/favicon/apple-touch-icon-180x180.png">
+		<link rel="icon" type="image/png" href="./icons/favicon/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="./icons/favicon/android-chrome-192x192.png" sizes="192x192">
+		<link rel="icon" type="image/png" href="./icons/favicon/favicon-96x96.png" sizes="96x96">
+		<link rel="icon" type="image/png" href="./icons/favicon/favicon-16x16.png" sizes="16x16">
+		<link rel="manifest" href="./icons/favicon/manifest.json">
+		<link rel="mask-icon" href="./icons/favicon/safari-pinned-tab.svg" color="#5bbad5">
+		<link rel="shortcut icon" href="./icons/favicon/favicon.ico">
+		<meta name="msapplication-TileColor" content="#da532c">
+		<meta name="msapplication-TileImage" content="./icons/favicon/mstile-144x144.png">
+		<meta name="msapplication-config" content="./icons/favicon/browserconfig.xml">
+		<meta name="theme-color" content="#d2d2d2">
+		
+		<!-- External js -->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 		<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
@@ -39,7 +64,7 @@
 				</div>
 				
 				<div class="modal-body">
-					<form role="form" name="login-form" id="login-form" action="#login" method="post">
+					<form role="form" name="signup-form" id="signup-form" action="#register" method="post">
 						<div class="form-group">
 							<label for="email">Email address:</label>
 							<input type="email" class="form-control" id="email">
@@ -50,8 +75,8 @@
 						</div>
 						<div class="checkbox">
 							<label><input type="checkbox"> Remember me</label>
-					 </div>
-					 <button type="submit" class="btn btn-default">Submit</button>
+						</div>
+						<button type="submit" class="btn btn-default">Sign up</button>
 					</form>
 				</div>
 				
@@ -76,7 +101,7 @@
 						<span class="icon-bar"></span>                        
 					</button>
 
-					<a class="navbar-brand" href="#">CChatApp</a>
+					<a class="navbar-brand" href="index.html">&#128172; CloudChat</a>
 				</div>
 				<div class="collapse navbar-collapse" id="myNavbar">
 					<ul class="nav navbar-nav">
@@ -89,7 +114,7 @@
 					</ul>
 					<ul class="nav navbar-nav navbar-right top-margin">
 						<li>
-							<button class="btn btn-primary margin-right" style="margin-right: 10px" href="#">Sign up</a>
+							<button class="btn btn-primary margin-right" href="#">Sign up</a>
 						</li>
 						<li>
 							<button class="btn btn-primary" href="#" onclick="modalState('#loginModal', 'show');"><span class="glyphicon glyphicon-log-in"></span> Login</a>
@@ -99,9 +124,36 @@
 			</div>
 		</nav>			
 		
-		<div class="jumbotron text-center">
+		<div class="jumbotron">
 			<div class="container">
-				<h1>CChatApp</h1>             
+				<div class="row">
+					<div class="col-sm-6 text-center">
+						<h1>&#128172; CloudChat</h1> 
+						<p>
+							CloudChat is an open-source implementation of a web-presented chat application that allows you to stay in touch even when you are not around.
+						</p>
+					</div>
+
+					<div class="col-sm-6">
+						<h2>Sign up:</h2> 
+						<form role="form" name="signup-form" id="signup-form" action="#register" method="post">
+							<div class="form-group">
+								<label for="email">Email address:</label>
+								<input type="email" class="form-control" id="email">
+							</div>
+							<div class="form-group">
+								<label for="pwd">Password:</label>
+								<input type="password" class="form-control" id="pwd">
+							</div>
+							<div class="checkbox">
+								<label><input type="checkbox"> Remember me</label>
+							</div>
+							<button type="submit" class="btn btn-default">Sign up</button>
+							Already have an account? 
+						</form>
+					</div>
+				</div>
+
 			</div>
 		</div>
 
@@ -111,15 +163,11 @@
 			<div class="row">
 				<div class="col-sm-6">
 					<img src="https://placeholdit.imgix.net/~text?txtsize=128&txt=IMAGE&w=520&h=340&txttrack=0" class="img-responsive" style="width:100%" alt="Image">
-					<p>ぴょホ 諯禌滥 拣ぞ趣ゝ䥞 レ゜㣌ト涧駺, ゆ椥訣軩びゃ ゼ埨骣覎大 ホ滯誣功椦 禤騥し 簯栨 り </p>
-					<p>ょ餩諯禌滥 䥪栩きゅれ砥 よ訧ぷ あへ 窯姟ゆ ば䰦 廦び驨嶣楃 ホ滯誣功椦, よ訧 鎌ぐ樊䋨じゃ ゆ椥訣軩びゃ が祌ね ニャ廤 誣功椦 䧨㠨嫣ヂョ夺 ば䰦觚樃脩, りゃ禞こゐ団 㶣鄩㤣ま愦 のぎ饜稣婩 た䛨䰩 ごリ</p>
+				
 				</div>
 				<div class="col-sm-6">
 					<img src="https://placeholdit.imgix.net/~text?txtsize=128&txt=IMAGE&w=520&h=340&txttrack=0" class="img-responsive" style="width:100%" alt="Image">
-					<p>捦でろ 嶣楃 ヅ䋯骦オトゥ レ゜㣌ト涧駺 䰩誧祟ウァちゅ, もふ蛣ノ椩 ヅ䋯骦オトゥ っぎゅとざ獧 馦ず 拥ウィぱ 焧婧 栨じゅグ 鎌ぐ樊䋨じゃ りょ餩諯禌滥 諧竨ら饺イ, プ䨺妤窯姟 諧竨ら饺イ 䥪栩きゅ 簯栨 椥訣 え捯馦ず䪩 栨じゅグた䛨 榊槣簯, ウィぱ ブ䰯む䛤觩 りゃ禞こゐ団 窯姟ゆ, 㶣鄩㤣ま愦 拣ぞ趣ゝ䥞 っぎゅとざ獧 ヅ䋯 㠯駤ん ホ滯誣功椦 驦䧞ゑニ䩨 ゞ	て襟 䰯む, じゃ䤥 え捯馦ず䪩 㶣鄩㤣ま愦 	て襟ぴゅ堥びゅ 䰦觚樃 䰩誧 盤礨馤 䧟ぼピェぢゅ杩 っぎゅとざ獧 䰩誧祟ウァちゅ, た䛨 盤礨馤 䥪栩きゅれ砥 かニャ廤ぎゃ獣, 䛤觩 廦び驨嶣楃 勤奟骥槞滦 ぴ盤礨馤ゔ 涥ぺ榣 せ䣊堦毚びょ ば䰦觚樃脩 ぴ盤礨馤ゔ 鄩㤣ま ぺ榣</p>
-					<p>
-						 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur malesuada iaculis ex vitae facilisis. Donec at eleifend risus, in sollicitudin nibh. Nullam a elit lectus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Vivamus vel urna eget est tempus euismod sed eget augue. Aliquam sagittis eleifend felis, sed vestibulum mauris malesuada vitae. Fusce id tincidunt nibh, ac vehicula diam.
-					</p>
+
 				</div>
 			</div>
 
