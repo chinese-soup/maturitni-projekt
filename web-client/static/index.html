@@ -45,26 +45,26 @@
 			<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 		<![endif]-->
 
-		<script type="text/javascript">
-			function modalState(modalid, state)
-			{
-				console.log("#loginModal.modal();");
-				$(modalid).modal(state);
-			}
-		</script>
 	</head>
 	<body>		
-		<div class="modal fade" id="loginModal">
+		<!-- reset pasword modal window -->
+		<div class="modal fade" id="modalResetPasswd" tabindex="-1">
 		 <div class="modal-dialog">
 			<div class="modal-content">
 				
-				<div class="modal-header">
+				<div class="modal-header" id="modalResetPasswdHeader">
 					<button type="button" class="close" data-dismiss="modal">&times;</button>  
-					<h1>Login</h1>
+					<h1>Password reset</h1>
 				</div>
 				
 				<div class="modal-body">
-					
+					<form class="form" role="form" name="resetpasswd-form" id="resetpasswd-form" action="password_reset.html" method="post">
+						<div class="form-group">
+							<label class="label" for="email_resetpasswd">Email address:</label> 
+							<input type="email" class="form-control" id="email_resetpasswd" placeholder="username@example.com">
+						</div>
+						<button type="submit" class="btn btn-primary btn-block">Reset password</button>
+					</form>
 				</div>
 				
 					<div class="modal-footer">
@@ -75,14 +75,16 @@
 			</div>
 		</div>
 
+		<!-- noscript alert -->
 		<noscript>
 			<span class="noscript-span">For full functionality of this site it is necessary to enable JavaScript.<br>Here are the <a href="http://www.enable-javascript.com/" target="_blank">  instructions how to enable JavaScript in your web browser</a>.</span>
 		</noscript>
 
+		<!-- topnav bar -->
 		<nav class="navbar-inverse navbar-default" role="navigation">
 			<div class="container-fluid">
 				<div class="navbar-header">
-					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbarTop">
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>                        
@@ -90,7 +92,7 @@
 
 					<a class="navbar-brand" href="index.html">&#128172; CloudChat</a>
 				</div>
-				<div class="collapse navbar-collapse" id="myNavbar">
+				<div class="collapse navbar-collapse" id="navbarTop">
 					<ul class="nav navbar-nav">
 						<li class="active">
 							<a href="#">Home</a>
@@ -111,24 +113,27 @@
 						<!-- LOGIN FORM ON THE TOP -->
 						<li><p class="navbar-text">Already have an account?</p></li>
 						<li class="dropdown">
-							<a href="#login-dropdown" class="dropdown-toggle" data-toggle="login-dropdown">Login <span class="caret"></span></a>
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown">Login <span class="caret"></span></a>
 							<ul id="login-dropdown" class="dropdown-menu">
 								<li>
 									<div class="row">
 										<div class="col-md-12">
 											<form class="form" role="form" name="login-form" id="login-form" action="#login" method="post">
 												<div class="form-group">
-													<label class="label label-inverse sr-only" for="email_login">Email address:</label>
+													<label class="label sr-only" for="email_login">Email address:</label>
 													<input type="email" class="form-control" id="email_login" placeholder="user@example.com">		
 												</div>
 												<div class="form-group">				
-													<label class="label label-inverse sr-only" for="password_login">Password:</label>
+													<label class="label sr-only" for="password_login">Password:</label>
 													<input type="password" class="form-control" id="password_login" placeholder="●●●●●●●●">
 												</div>
 												<div class="checkbox">
-													<label class=" label-inverse"><input type="checkbox">Remember on this computer</label>
+													<label class=" label-inverse"><input type="checkbox">Remember me on this computer</label>
 												</div>
-												<button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-log-in"></span> Login</button>
+												<button type="submit" class="btn btn-primary btn-block"><span class="glyphicon glyphicon-log-in"></span> Login</button>
+												<p>
+													Forgot your password? <a href="#" data-toggle="modal" data-target="#modalResetPasswd" style="font-weight: bold;">Reset it!</a>
+												</p>
 											</form>
 										</div>
 									</div>
