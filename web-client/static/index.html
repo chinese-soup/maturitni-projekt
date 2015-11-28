@@ -1,146 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <!-- TODO: FIX INDENTATION -->
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>CChatApp</title>
+	<head>
+		<!-- TODO: FIX INDENTATION -->
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>CChatApp</title>
 
-    <!-- Bootstrap -->
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+		<!-- Bootstrap -->
+		<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+		<link rel="stylesheet" href="./styles/normalize.css">
+		<link rel="stylesheet" href="./styles/beforelogin.css">
 
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-    <style type="text/css">
-      .padding
-      {
-        padding: 80px 120px;
-      }
-      .top-margin
-      {
-        margin-top: 7px;
-      }
-      .margin-right:
-      {
-        padding-right: 50px;
-      }
-      .noscript-span
-      {
-        display: block;
-        width: 70%;
-        height: 50%;
-        font-size: 48px;
-        text-align: center;
-      }
-      .row p
-      {
-        padding: 5px 5px 0 0;
-      }
-    </style>
-    
-    <script type="text/javascript">
-      function modalState(modalid, state)
-      {
-        console.log("#loginModal.modal();");
-        $(modalid).modal(state);
-      }
-    </script>
-  </head>
-  <body>
-          
-    <div class="modal fade" id="loginModal">
-     <div class="modal-dialog">
-      <div class="modal-content">
-        
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>  
-          <h1>Login</h1>
-        </div>
-        
-        <div class="modal-body">
-        
-          <form role="form">
-            <div class="form-group">
-              <label for="email">Email address:</label>
-              <input type="email" class="form-control" id="email">
-            </div>
-            <div class="form-group">
-              <label for="pwd">Password:</label>
-              <input type="password" class="form-control" id="pwd">
-            </div>
-            <div class="checkbox">
-              <label><input type="checkbox"> Remember me</label>
-           </div>
-           <button type="submit" class="btn btn-default">Submit</button>
-          </form>
-        </div>
-        
-          <div class="modal-footer">
-            <p>Forgot your password? <a href="#register" style="font-weight: bold;">Reset it</a>!</p>
-            <p>Don't have an account? <a href="#register" style="font-weight: bold;">Sign up</a> for one!</p>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="container">
-      <noscript><span class="noscript-span">We are sorry, this site requires javascript.</span></noscript>
-     
-      <nav class="navbar navbar-default top-margin">
-        <div class="container-fluid">
-          <div class="navbar-header" style="background-color: #fafafa;">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>                        
-            </button>
-            <a class="navbar-brand" href="#">CChatApp</a>
-          </div>
-          <div class="collapse navbar-collapse" id="myNavbar">
-            <ul class="nav navbar-nav">
-              <li class="active">
-                <a href="#">Home</a>
-              </li>
-              <li>
-                <a href="#">About</a>
-              </li>                      
-            </ul>
-            <ul class="nav navbar-nav navbar-right top-margin">
-              <li>
-                <button class="btn btn-primary margin-right" style="margin-right: 10px" href="#">Sign up</a>
-              </li>
-              <li>
-                <button class="btn btn-primary" href="#" onclick="modalState('#loginModal', 'show');"><span class="glyphicon glyphicon-log-in"></span> Login</a>
-              </li>
-           </ul>
-          </div>
-        </div>
-      </nav>
-      
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
-      
-      <div class="jumbotron text-center">
-        <h1>CChatApp</h1>             
-      </div>
-      
-      <div class="row">
-        <div class="col-sm-6">
-          <img src="https://placeholdit.imgix.net/~text?txtsize=128&txt=IMAGE&w=520&h=340&txttrack=0" class="img-responsive" style="width:100%" alt="Image">
-          <p>ぴょホ 諯禌滥 拣ぞ趣ゝ䥞 レ゜㣌ト涧駺, ゆ椥訣軩びゃ ゼ埨骣覎大 ホ滯誣功椦 禤騥し 簯栨 り </p>
-          <p>ょ餩諯禌滥 䥪栩きゅれ砥 よ訧ぷ あへ 窯姟ゆ ば䰦 廦び驨嶣楃 ホ滯誣功椦, よ訧 鎌ぐ樊䋨じゃ ゆ椥訣軩びゃ が祌ね ニャ廤 誣功椦 䧨㠨嫣ヂョ夺 ば䰦觚樃脩, りゃ禞こゐ団 㶣鄩㤣ま愦 のぎ饜稣婩 た䛨䰩 ごリ</p>
-        </div>
-        <div class="col-sm-6">
-          <img src="https://placeholdit.imgix.net/~text?txtsize=128&txt=IMAGE&w=520&h=340&txttrack=0" class="img-responsive" style="width:100%" alt="Image">
-          <p>捦でろ 嶣楃 ヅ䋯骦オトゥ レ゜㣌ト涧駺 䰩誧祟ウァちゅ, もふ蛣ノ椩 ヅ䋯骦オトゥ っぎゅとざ獧 馦ず 拥ウィぱ 焧婧 栨じゅグ 鎌ぐ樊䋨じゃ りょ餩諯禌滥 諧竨ら饺イ, プ䨺妤窯姟 諧竨ら饺イ 䥪栩きゅ 簯栨 椥訣 え捯馦ず䪩 栨じゅグた䛨 榊槣簯, ウィぱ ブ䰯む䛤觩 りゃ禞こゐ団 窯姟ゆ, 㶣鄩㤣ま愦 拣ぞ趣ゝ䥞 っぎゅとざ獧 ヅ䋯 㠯駤ん ホ滯誣功椦 驦䧞ゑニ䩨 ゞ	て襟 䰯む, じゃ䤥 え捯馦ず䪩 㶣鄩㤣ま愦 	て襟ぴゅ堥びゅ 䰦觚樃 䰩誧 盤礨馤 䧟ぼピェぢゅ杩 っぎゅとざ獧 䰩誧祟ウァちゅ, た䛨 盤礨馤 䥪栩きゅれ砥 かニャ廤ぎゃ獣, 䛤觩 廦び驨嶣楃 勤奟骥槞滦 ぴ盤礨馤ゔ 涥ぺ榣 せ䣊堦毚びょ ば䰦觚樃脩 ぴ盤礨馤ゔ 鄩㤣ま ぺ榣</p>
-        </div>
-      </div>
+		<!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+			<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+		<![endif]-->
 
-    </div>
+		<script type="text/javascript">
+			function modalState(modalid, state)
+			{
+				console.log("#loginModal.modal();");
+				$(modalid).modal(state);
+			}
+		</script>
+	</head>
+	<body>		
+		<div class="modal fade" id="loginModal">
+		 <div class="modal-dialog">
+			<div class="modal-content">
+				
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>  
+					<h1>Login</h1>
+				</div>
+				
+				<div class="modal-body">
+					<form role="form" name="login-form" id="login-form" action="#login" method="post">
+						<div class="form-group">
+							<label for="email">Email address:</label>
+							<input type="email" class="form-control" id="email">
+						</div>
+						<div class="form-group">
+							<label for="pwd">Password:</label>
+							<input type="password" class="form-control" id="pwd">
+						</div>
+						<div class="checkbox">
+							<label><input type="checkbox"> Remember me</label>
+					 </div>
+					 <button type="submit" class="btn btn-default">Submit</button>
+					</form>
+				</div>
+				
+					<div class="modal-footer">
+						<p>Forgot your password? <a href="#reset" style="font-weight: bold;">Reset it</a>!</p>
+						<p>Don't have an account? <a href="#register" style="font-weight: bold;">Sign up</a> for one!</p>
+					</div>
+				</div>
+			</div>
+		</div>
 
-  </body>       
+		<noscript>
+			<span class="noscript-span">For full functionality of this site it is necessary to enable JavaScript.<br>Here are the <a href="http://www.enable-javascript.com/" target="_blank">  instructions how to enable JavaScript in your web browser</a>.</span>
+		</noscript>
+
+		<nav class="navbar-inverse navbar-default" role="navigation">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>                        
+					</button>
+
+					<a class="navbar-brand" href="#">CChatApp</a>
+				</div>
+				<div class="collapse navbar-collapse" id="myNavbar">
+					<ul class="nav navbar-nav">
+						<li class="active">
+							<a href="#">Home</a>
+						</li>
+						<li>
+							<a href="#">About</a>
+						</li>                      
+					</ul>
+					<ul class="nav navbar-nav navbar-right top-margin">
+						<li>
+							<button class="btn btn-primary margin-right" style="margin-right: 10px" href="#">Sign up</a>
+						</li>
+						<li>
+							<button class="btn btn-primary" href="#" onclick="modalState('#loginModal', 'show');"><span class="glyphicon glyphicon-log-in"></span> Login</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>			
+		
+		<div class="jumbotron text-center">
+			<div class="container">
+				<h1>CChatApp</h1>             
+			</div>
+		</div>
+
+		<div class="container">
+
+			
+			<div class="row">
+				<div class="col-sm-6">
+					<img src="https://placeholdit.imgix.net/~text?txtsize=128&txt=IMAGE&w=520&h=340&txttrack=0" class="img-responsive" style="width:100%" alt="Image">
+					<p>ぴょホ 諯禌滥 拣ぞ趣ゝ䥞 レ゜㣌ト涧駺, ゆ椥訣軩びゃ ゼ埨骣覎大 ホ滯誣功椦 禤騥し 簯栨 り </p>
+					<p>ょ餩諯禌滥 䥪栩きゅれ砥 よ訧ぷ あへ 窯姟ゆ ば䰦 廦び驨嶣楃 ホ滯誣功椦, よ訧 鎌ぐ樊䋨じゃ ゆ椥訣軩びゃ が祌ね ニャ廤 誣功椦 䧨㠨嫣ヂョ夺 ば䰦觚樃脩, りゃ禞こゐ団 㶣鄩㤣ま愦 のぎ饜稣婩 た䛨䰩 ごリ</p>
+				</div>
+				<div class="col-sm-6">
+					<img src="https://placeholdit.imgix.net/~text?txtsize=128&txt=IMAGE&w=520&h=340&txttrack=0" class="img-responsive" style="width:100%" alt="Image">
+					<p>捦でろ 嶣楃 ヅ䋯骦オトゥ レ゜㣌ト涧駺 䰩誧祟ウァちゅ, もふ蛣ノ椩 ヅ䋯骦オトゥ っぎゅとざ獧 馦ず 拥ウィぱ 焧婧 栨じゅグ 鎌ぐ樊䋨じゃ りょ餩諯禌滥 諧竨ら饺イ, プ䨺妤窯姟 諧竨ら饺イ 䥪栩きゅ 簯栨 椥訣 え捯馦ず䪩 栨じゅグた䛨 榊槣簯, ウィぱ ブ䰯む䛤觩 りゃ禞こゐ団 窯姟ゆ, 㶣鄩㤣ま愦 拣ぞ趣ゝ䥞 っぎゅとざ獧 ヅ䋯 㠯駤ん ホ滯誣功椦 驦䧞ゑニ䩨 ゞ	て襟 䰯む, じゃ䤥 え捯馦ず䪩 㶣鄩㤣ま愦 	て襟ぴゅ堥びゅ 䰦觚樃 䰩誧 盤礨馤 䧟ぼピェぢゅ杩 っぎゅとざ獧 䰩誧祟ウァちゅ, た䛨 盤礨馤 䥪栩きゅれ砥 かニャ廤ぎゃ獣, 䛤觩 廦び驨嶣楃 勤奟骥槞滦 ぴ盤礨馤ゔ 涥ぺ榣 せ䣊堦毚びょ ば䰦觚樃脩 ぴ盤礨馤ゔ 鄩㤣ま ぺ榣</p>
+					<p>
+						 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur malesuada iaculis ex vitae facilisis. Donec at eleifend risus, in sollicitudin nibh. Nullam a elit lectus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Vivamus vel urna eget est tempus euismod sed eget augue. Aliquam sagittis eleifend felis, sed vestibulum mauris malesuada vitae. Fusce id tincidunt nibh, ac vehicula diam.
+					</p>
+				</div>
+			</div>
+
+		</div>
+
+	</body>       
 </html>

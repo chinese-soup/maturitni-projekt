@@ -1,0 +1,44 @@
+body
+{	
+	
+}
+.padding
+{
+	padding: 80px 120px;
+}
+.top-margin
+{
+	margin-top: 7px;
+}
+.margin-right:
+{
+	padding-right: 50px;
+}
+.noscript-span
+{
+	display: block;
+	font-size: 18pt;
+	padding: 50px 50px 50px 50px;
+	margin: 0px 0px 10px 0px;
+	background-color: #CDCACA;
+	text-align: center;
+}
+.row p
+{
+	padding: 5px 5px 0 0;
+}
+.navbar-inverse
+{
+  width: 100% !important;
+}
+
+.jumbotron
+{
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
+	background-position: center; 
+	background-image: url('http://www.riwakawebsitedesigns.com/external/images/stars/img-stars-2.jpg');
+	height: 620px;
+	width: 100%;
+	margin-bottom: 60px;
+}
