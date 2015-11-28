@@ -64,20 +64,7 @@
 				</div>
 				
 				<div class="modal-body">
-					<form role="form" name="signup-form" id="signup-form" action="#register" method="post">
-						<div class="form-group">
-							<label for="email">Email address:</label>
-							<input type="email" class="form-control" id="email">
-						</div>
-						<div class="form-group">
-							<label for="pwd">Password:</label>
-							<input type="password" class="form-control" id="pwd">
-						</div>
-						<div class="checkbox">
-							<label><input type="checkbox"> Remember me</label>
-						</div>
-						<button type="submit" class="btn btn-default">Sign up</button>
-					</form>
+					
 				</div>
 				
 					<div class="modal-footer">
@@ -112,13 +99,43 @@
 							<a href="#">About</a>
 						</li>                      
 					</ul>
-					<ul class="nav navbar-nav navbar-right top-margin">
-						<li>
+					<ul class="nav navbar-nav navbar-right">
+						
+						<!--<li>
 							<button class="btn btn-primary margin-right" href="#">Sign up</a>
 						</li>
 						<li>
 							<button class="btn btn-primary" href="#" onclick="modalState('#loginModal', 'show');"><span class="glyphicon glyphicon-log-in"></span> Login</a>
+						</li>-->
+
+						<!-- LOGIN FORM ON THE TOP -->
+						<li><p class="navbar-text">Already have an account?</p></li>
+						<li class="dropdown">
+							<a href="#login-dropdown" class="dropdown-toggle" data-toggle="login-dropdown">Login <span class="caret"></span></a>
+							<ul id="login-dropdown" class="dropdown-menu">
+								<li>
+									<div class="row">
+										<div class="col-md-12">
+											<form class="form" role="form" name="login-form" id="login-form" action="#login" method="post">
+												<div class="form-group">
+													<label class="label label-inverse sr-only" for="email_login">Email address:</label>
+													<input type="email" class="form-control" id="email_login" placeholder="user@example.com">		
+												</div>
+												<div class="form-group">				
+													<label class="label label-inverse sr-only" for="password_login">Password:</label>
+													<input type="password" class="form-control" id="password_login" placeholder="●●●●●●●●">
+												</div>
+												<div class="checkbox">
+													<label class=" label-inverse"><input type="checkbox">Remember on this computer</label>
+												</div>
+												<button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-log-in"></span> Login</button>
+											</form>
+										</div>
+									</div>
+								</li>
+							</ul>
 						</li>
+
 					</ul>
 				</div>
 			</div>
@@ -139,18 +156,21 @@
 						<form role="form" name="signup-form" id="signup-form" action="#register" method="post">
 							<div class="form-group">
 								<label for="email">Email address:</label>
-								<input type="email" class="form-control" id="email">
+								<input type="email" class="form-control" id="email" placeholder="user@example.com">
 							</div>
 							<div class="form-group">
 								<label for="pwd">Password:</label>
-								<input type="password" class="form-control" id="pwd">
+								<input type="password" class="form-control" id="pwd" placeholder="●●●●●●●●">
 							</div>
 							<div class="checkbox">
-								<label><input type="checkbox"> Remember me</label>
+								<label><input type="checkbox"> I agree with the <a href="tos.html">Terms of Service</a></label>
 							</div>
-							<button type="submit" class="btn btn-default">Sign up</button>
-							Already have an account? 
+							<button type="submit" class="btn btn-primary btn-block">Sign up</button>
+
 						</form>
+						<p>
+							Already have an account? <a href="#" onclick="javascript:alert('login placeholder');">Click here to login.</a>
+						</p>
 					</div>
 				</div>
 
@@ -158,12 +178,13 @@
 		</div>
 
 		<div class="container">
-
-			
 			<div class="row">
 				<div class="col-sm-6">
 					<img src="https://placeholdit.imgix.net/~text?txtsize=128&txt=IMAGE&w=520&h=340&txttrack=0" class="img-responsive" style="width:100%" alt="Image">
-				
+					<h1>Under the hood</h1>
+					<p>
+						Phasellus est lectus, tincidunt nec malesuada sit amet, iaculis vitae justo. Etiam ante ex, fermentum at ex in, fringilla porttitor nulla. Curabitur porta, sapien sed suscipit interdum, massa odio sodales augue, at auctor augue tortor eget mi. Donec euismod ut libero quis condimentum. Maecenas enim risus, pretium et risus feugiat, suscipit convallis nulla. Etiam sodales purus quis tortor tincidunt, id feugiat lacus tincidunt. Pellentesque feugiat commodo ipsum auctor bibendum. Integer eget mollis massa. Nunc congue justo eget lobortis commodo. Aenean vel convallis diam, elementum facilisis ante. Cras sit amet lectus turpis. Ut ut mattis magna. Etiam aliquam velit nec laoreet malesuada. Quisque condimentum egestas convallis. 
+					</p>
 				</div>
 				<div class="col-sm-6">
 					<img src="https://placeholdit.imgix.net/~text?txtsize=128&txt=IMAGE&w=520&h=340&txttrack=0" class="img-responsive" style="width:100%" alt="Image">

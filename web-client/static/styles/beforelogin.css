@@ -2,6 +2,7 @@ body
 {	
 	
 }
+
 .padding
 {
 	padding: 80px 120px;
@@ -29,23 +30,45 @@ body
 }
 .navbar-inverse
 {
-	width: 100% !important;
-	opacity: 1.0;
+	width: 100%;
 }
+
 
 .jumbotron
 {
 	position: relative;
-	background: #000 url("http://a.waifu.eu/OEkq.png") center center;
+	/* position behind the navbar */
+	/* top: -50px;
+	z-index: -1;  */
+
+	background: url("../images/photo.jpg"), #000000;
+	background-position: center right, center center;
 	width: 100%;
 	height: 100%;
 	background-size: cover;
 	overflow: hidden;
-	color: #E6E6E6;
-	border-bottom: 3px solid gray;
+	color: #F6F6F6;
+	border-bottom: 2px solid gray;
 }
 
 .margin-right
 {
 	margin-right: 7px;
+}
+
+.eu-cookies
+{
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+	color: white;
+	background-color: black;
+	z-index: 1000;
+}
+
+.eu-cookies button
+{
+	background: green;
+	color: white;
 }
