@@ -60,7 +60,7 @@
 				<div class="modal-body">
 					<form class="form" role="form" name="resetpasswd-form" id="resetpasswd-form" action="password_reset.html" method="post">
 						<div class="form-group">
-							<label class="label" for="email_resetpasswd">Email address:</label> 
+							<label for="email_resetpasswd">The email address you registered with:</label> 
 							<input type="email" class="form-control" id="email_resetpasswd" placeholder="username@example.com">
 						</div>
 						<button type="submit" class="btn btn-primary btn-block">Reset password</button>
@@ -68,8 +68,6 @@
 				</div>
 				
 					<div class="modal-footer">
-						<p>Forgot your password? <a href="#reset" style="font-weight: bold;">Reset it</a>!</p>
-						<p>Don't have an account? <a href="#register" style="font-weight: bold;">Sign up</a> for one!</p>
 					</div>
 				</div>
 			</div>
@@ -140,14 +138,13 @@
 								</li>
 							</ul>
 						</li>
-
 					</ul>
 				</div>
 			</div>
 		</nav>			
 		
 		<div class="jumbotron">
-			<div class="container">
+			<div class="container first-header">
 				<div class="row">
 					<div class="col-sm-6 text-center">
 						<h1>&#128172; CloudChat</h1> 
@@ -174,7 +171,7 @@
 
 						</form>
 						<p>
-							Already have an account? <a href="#" onclick="javascript:alert('login placeholder');">Click here to login.</a>
+							Already have an account? <a href="#" onclick="function(){$('.dropdown-toggle').dropdown();}();" data-target="#login-dropdown">Click here to login.</a>
 						</p>
 					</div>
 				</div>
