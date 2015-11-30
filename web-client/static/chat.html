@@ -12,7 +12,6 @@
 		
 		<!--  -->
 		<link rel="stylesheet" href="./styles/normalize.css">
-		<link rel="stylesheet" href="./styles/beforelogin.css">
 
 		<!-- FAVICONS GENERATED -->
 		<link rel="apple-touch-icon" sizes="57x57" href="./icons/favicon/apple-touch-icon-57x57.png">
@@ -45,5 +44,120 @@
 			<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 		<![endif]-->
 
+		<style>
+			*
+			{
+				box-sizing: border-box;
+			}
+			html, body
+			{
+				margin: 0;
+				padding: 0;
+				height: 100%;
+				background-color: #DADADA;
+			}
+
+			.noscript-span
+			{
+				display: block;
+				font-size: 18pt;
+				padding: 50px 50px 50px 50px;
+				margin: 0px 0px 10px 0px;
+				background-color: #CDCACA;
+				text-align: center;
+			}
+
+
+			.container-fluid
+			{
+				width: 100%;
+				height: 100hu
+			}
+
+
+			.row-fluid .col-0 
+			{
+				width: 0%;
+				float: left;
+			}
+
+			/* TODO: these are only for testing:; */
+			#column_toplevel_left, #column_toplevel_center
+			{
+				background-color: #A6BFBA;
+				height: 100%;				
+				overflow: auto;
+				height: auto;
+				padding: .5rem;
+				-webkit-overflow-scrolling: touch;
+				-ms-overflow-style: none;
+			}
+
+			#column_toplevel_left
+			{
+				width: 12.5rem;
+    			background-color: indigo;
+			}
+
+			.big-container
+			{
+				display: flex;
+				width: 100%;
+			}
+			.textik
+			{
+				height: 100vh;
+			}
+			#text1 
+			{
+				
+			}
+
+		</style>
+
+
 	</head>
-	<body>	
+	<body>
+		<!-- noscript alert -->
+		<noscript>
+			<span class="noscript-span">For full functionality of this site it is necessary to enable JavaScript.<br>Here are the <a href="http://www.enable-javascript.com/" target="_blank">  instructions how to enable JavaScript in your web browser</a>.</span>
+		</noscript>
+		<!-- topnav bar -->
+		<div class="big-container">
+				
+			<div id="column_toplevel_left" class="col-xs-3">
+				column_toplevel_left
+			</div>
+			<div id="column_toplevel_center" class="col-xs-9">
+				column_toplevel_center
+				<div class="textik">
+					<div class="container">
+						<div class="row">
+							<div class="col-xs-6 col-sm-6">
+								<div id="text1">
+									<div class="input-group">
+										<input type="text" class="form-control">
+										<span class="input-group-btn">
+											<button class="btn btn-primary" type="button">Send</button>
+										</span>
+									</div>
+								</div>
+								<div id="text2">
+									<div class="input-group">
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+		
+			</div>
+
+		</div>
+		</div>
+		
+	</body>
+
+</html>
