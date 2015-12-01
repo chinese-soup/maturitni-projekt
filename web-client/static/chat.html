@@ -12,6 +12,7 @@
 		
 		<!--  -->
 		<link rel="stylesheet" href="./styles/normalize.css">
+		<link rel="stylesheet" href="./styles/noscript.css">
 
 		<!-- FAVICONS GENERATED -->
 		<link rel="apple-touch-icon" sizes="57x57" href="./icons/favicon/apple-touch-icon-57x57.png">
@@ -50,68 +51,72 @@
 				box-sizing: border-box;
 			}
 			html, body
-			{
+			{	
 				margin: 0;
 				padding: 0;
 				height: 100%;
-				background-color: #DADADA;
-			}
-
-			.noscript-span
-			{
-				display: block;
-				font-size: 18pt;
-				padding: 50px 50px 50px 50px;
-				margin: 0px 0px 10px 0px;
-				background-color: #CDCACA;
-				text-align: center;
-			}
-
-
-			.container-fluid
-			{
 				width: 100%;
-				height: 100hu
-			}
-
-
-			.row-fluid .col-0 
-			{
-				width: 0%;
-				float: left;
-			}
-
-			/* TODO: these are only for testing:; */
-			#column_toplevel_left, #column_toplevel_center
-			{
-				background-color: #A6BFBA;
-				height: 100%;				
-				overflow: auto;
-				height: auto;
-				padding: .5rem;
-				-webkit-overflow-scrolling: touch;
-				-ms-overflow-style: none;
-			}
-
-			#column_toplevel_left
-			{
-				width: 12.5rem;
-    			background-color: indigo;
+				overflow-x: hidden;
+				background-color: #DADADA;
 			}
 
 			.big-container
 			{
+				background-color: blue;
 				display: flex;
-				width: 100%;
-			}
-			.textik
-			{
+				overflow: auto;
 				height: 100vh;
+				margin-top: -100px;
+				padding-top: 100px;
+				position: relative;
+			
 			}
-			#text1 
+			
+			
+
+			/* TODO: these are only for testing:; */
+			#column_toplevel_left, #column_toplevel_center
 			{
+				background-color: #A6BFBA;		
+
 				
 			}
+
+			#column_toplevel_left
+			{
+    			background-color: purple;
+			}
+
+			#column_toplevel_center
+			{
+				flex: 1;
+			}
+
+
+			#text1 
+			{
+
+			}
+		
+			.message-container
+			{
+				background-color: red;
+				height: 90%;
+				width: 90%;
+				margin: 10px;
+			}
+			.top-container
+			{
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				background-color: darkgreen;
+				font-size: 3rem;
+				position: relative;
+				z-index: 10;
+				height: 100px;
+			}
+
 
 		</style>
 
@@ -122,9 +127,11 @@
 		<noscript>
 			<span class="noscript-span">For full functionality of this site it is necessary to enable JavaScript.<br>Here are the <a href="http://www.enable-javascript.com/" target="_blank">  instructions how to enable JavaScript in your web browser</a>.</span>
 		</noscript>
-		<!-- topnav bar -->
+
+		<!-- main container class -->
+		<nav class="navbar navbar-default">Top Content</nav>
+
 		<div class="big-container">
-				
 			<div id="column_toplevel_left" class="col-xs-3">
 				column_toplevel_left
 			</div>
@@ -133,8 +140,22 @@
 				<div class="textik">
 					<div class="container">
 						<div class="row">
-							<div class="col-xs-6 col-sm-6">
 								<div id="text1">
+									<div class="message-container">
+										
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed semper velit vitae quam ultrices, a luctus massa suscipit. Morbi dapibus interdum massa ac placerat. Morbi felis urna, ullamcorper dapibus varius at, commodo sit amet purus. Donec purus metus, fermentum rhoncus laoreet ac, aliquet sit amet est. Suspendisse convallis rutrum lorem sed mollis. Nunc ultricies ante arcu, eu tempor lorem elementum sed. Aenean tristique ut augue ac sollicitudin. Mauris odio velit, dignissim in erat eget, finibus vestibulum mi. Vivamus est orci, efficitur ut turpis vel, porttitor lacinia tortor. Cras purus enim, vehicula molestie mi quis, fringilla aliquam elit.
+
+Ut ultrices eros vitae semper tincidunt. Vivamus sagittis lorem sapien, et eleifend massa eleifend vitae. Interdum et malesuada fames ac ante ipsum primis in faucibus. Sed porta tempus volutpat. Etiam efficitur dui nec purus porta aliquam. Quisque a molestie arcu, sed lobortis felis. Donec a metus tempor, euismod elit eget, luctus elit. Donec euismod, nisi eu auctor commodo, enim tortor ullamcorper augue, in varius eros dui sed felis. Suspendisse placerat, erat eu suscipit aliquam, felis felis semper sem, vitae rhoncus nunc neque non augue. Nunc non dolor libero.
+
+Suspendisse ornare enim ligula, vitae efficitur lacus ultrices non. Vestibulum ac consectetur lorem. Duis ac magna dictum ex vehicula tempor. Suspendisse nibh velit, imperdiet vitae porttitor at, posuere sed ipsum. Vivamus nunc tortor, vestibulum in dui id, pretium euismod tellus. Suspendisse luctus cursus venenatis. Morbi faucibus enim vitae nulla consectetur pulvinar. Nullam cursus lacus suscipit nisi porta gravida. Sed id tempor ex. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Cras metus risus, pharetra a pretium et, suscipit at erat. Nullam euismod neque sed sapien lacinia, vel hendrerit enim porttitor. Sed elementum vitae neque in pretium. Donec sit amet lorem tristique, volutpat tellus quis, molestie eros. Mauris commodo facilisis odio, nec dictum sem faucibus non. Phasellus pretium lorem scelerisque purus rutrum, ut tincidunt est tempus.
+
+In nec dictum metus. Fusce sit amet fringilla ante, vitae ultrices mauris. Cras pulvinar mattis aliquet. Donec justo nulla, tempus sit amet sollicitudin nec, consequat ut metus. Mauris pretium iaculis arcu non porttitor. Phasellus ac convallis neque. Duis tempus felis sit amet sapien laoreet volutpat. Integer sagittis rutrum turpis, in fermentum erat porta in. Cras tempor sodales lacus, et accumsan eros sollicitudin a. Ut tristique accumsan laoreet. Pellentesque tortor libero, pretium ullamcorper pulvinar eget, ornare nec lacus.
+
+Vivamus velit ipsum, consequat sed velit eget, tempor vulputate elit. Morbi eget est arcu. Duis vel est a mi luctus tincidunt et ac urna. Praesent non viverra mauris. Nullam rutrum ligula sed congue aliquet. Donec suscipit semper massa, a iaculis mi aliquet vitae. Aliquam viverra metus nec turpis semper lacinia. Fusce vehicula, massa at consectetur sollicitudin, massa orci iaculis dolor, rhoncus ullamcorper sem libero sit amet justo. Sed a nulla quis enim euismod mattis a sit amet arcu. Nullam fringilla diam non justo convallis varius. Etiam ullamcorper ipsum a pretium ultricies. Phasellus sit amet diam nec dolor cursus imperdiet. Phasellus ac sapien euismod, sollicitudin felis nec, dapibus leo. Nam feugiat, est vitae blandit efficitur, elit libero rutrum justo, nec finibus lorem eros et odio. Phasellus sodales, magna et convallis gravida, ligula sem laoreet nisl, in vestibulum ligula urna malesuada tellus. 
+									</div>
+								</div>
+								<div id="text2">
 									<div class="input-group">
 										<input type="text" class="form-control">
 										<span class="input-group-btn">
@@ -142,18 +163,14 @@
 										</span>
 									</div>
 								</div>
-								<div id="text2">
-									<div class="input-group">
-									</div>
-								</div>
-							</div>
 						</div>
 					</div>
 					
 				</div>
-			</div>
+			</div><!--/textik-->
+
 		
-			</div>
+		</div><!--/big-container-->
 
 		</div>
 		</div>

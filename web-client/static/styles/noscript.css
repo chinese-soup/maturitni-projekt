@@ -1,0 +1,9 @@
+.noscript-span
+{
+	display: block;
+	font-size: 18pt;
+	padding: 50px 50px 50px 50px;
+	margin: 0px 0px 10px 0px;
+	background-color: #CDCACA;
+	text-align: center;
+}

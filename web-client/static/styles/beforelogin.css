@@ -15,15 +15,6 @@ body
 {
 	padding-right: 50px;
 }
-.noscript-span
-{
-	display: block;
-	font-size: 18pt;
-	padding: 50px 50px 50px 50px;
-	margin: 0 0 10 0;
-	background-color: #CDCACA;
-	text-align: center;
-}
 
 #email_resetpasswd_label
 {
