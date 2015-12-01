@@ -51,6 +51,9 @@
 				margin: 0;
 				padding: 0;
 				background-color: #DADADA;
+				height: 100vh;
+				width: 100vw;
+				/* overflow: hidden; */
 			}
 
 			.big-container
@@ -64,22 +67,32 @@
 			
 			}
 
-			/* TODO: these are only for testing:; */
-			#column_toplevel_left, #column_toplevel_center
+			/* affects both of our main columns (column_toplevel_left, column_toplevel_center) */
+			.main-column
 			{
 				background-color: #A6BFBA;		
+				max-height: 100%;
 			}
 
 			#column_toplevel_left
 			{
     			background-color: purple;
+				min-width: 200px; /* CONSIDER HIDING IT !!! */
 			}
 
 			#column_toplevel_center
 			{
 				flex: 1;
 			}
-
+			.cont
+			{
+				display: flex;
+				width: 100%;
+				height: 90%;
+				background-color: red;
+				margin-right: 20px;
+				box-sizing: content-box;
+			}
 
 
 		</style>
@@ -95,25 +108,26 @@
 		<!-- main container class -->
 		
 		<div class="big-container">
-			<div id="column_toplevel_left" class="col-xs-3">
+			<div id="column_toplevel_left" class="col-xs-3 main-column">
 				column_toplevel_left
 			</div>
-			<div id="column_toplevel_center" class="col-xs-9">
+			<div id="column_toplevel_center" class="col-xs-9 main-column">
 				column_toplevel_center
-				<div class="container">
-					<!-- TODO: zjistit jak napozicovat ten textbox pod ten messagecontainer -->
-					<!-- TODO zajistit natvrdo sirku a vysku messagecontaineru -->
-					<!-- TODO: vyresit zpravy v ramci message containeru -->
-					<!-- TODO: vyresit prekryvani nastaveni/etc./ -->
-					<!-- TODO: vyresit zmensovani leveho panelu -->
-					<!-- TODO: vyresit togglovani leveho panelu -->
-
-					<div class="input-group">
-						<input type="text" class="form-control">
-						<span class="input-group-btn">
-							<button class="btn btn-primary" type="button">Send</button>
-						</span>
-					</div>
+				
+				<!-- TODO: zjistit jak napozicovat ten textbox pod ten messagecontainer -->
+				<!-- TODO zajistit natvrdo sirku a vysku messagecontaineru -->
+				<!-- TODO: vyresit zpravy v ramci message containeru -->
+				<!-- TODO: vyresit prekryvani nastaveni/etc./ -->
+				<!-- TODO: vyresit zmensovani leveho panelu -->
+				<!-- TODO: vyresit togglovani leveho panelu -->
+				<div class="cont">
+					asdf
+				</div>
+				<div class="input-group">
+					<input type="text" class="form-control">
+					<span class="input-group-btn">
+						<button class="btn btn-primary" type="button">Send</button>
+					</span>
 				</div>
 			</div><!--/textik-->
 
