@@ -211,7 +211,6 @@ html, body
 
 .channel_item 
 {
-	height: 50px;
 	color: #dfdfdf;
 	width: 90%;
 }
@@ -239,9 +238,8 @@ html, body
 	position: absolute;
 	height: 100%;
 	content: " ";
-	border-left: 5px solid #738BD7;
+	border-left: 5px solid #738AAC;
 	opacity: 1 !important;
-	filter: none;
 }
 
 .channel_item_focused
@@ -265,15 +263,18 @@ html, body
 
 .server_item
 {
-	height: 60px;
-	line-height: 40px;
+	height: 40px;
+	line-height: 30px;
 	font-size: 24px;
 	display: flex;
 	flex-direction: row;
+	box-shadow: 0px 1px 0px #262626;
 }
 
 .server_item a
 {
+	flex: 2 0 0;
+	display: inline-block;
 	color: #fafafa;
 	white-space: nowrap;
 	overflow: hidden;
@@ -282,13 +283,27 @@ html, body
 
 .server_item button
 {
-	flex: 1 0 0;
+	height: 35px;
+	display: none;
+	background-color: transparent;
 }
+
+.server_item button:hover
+{
+	display: flex;
+}
+
 
 .server_item a:hover
 {
 	color: #909090;	
 }
+
+.server_item a:hover ~ button
+{
+	display: flex;
+}
+
 
 .server_item_disconnected 
 {;
@@ -298,6 +313,7 @@ html, body
 .channel_list /* ul */
 {
 	list-style: outside none none;
+	padding: 0;
 }
 
 .header_shadows
