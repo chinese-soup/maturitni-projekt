@@ -68,23 +68,42 @@
 			
 			<div id="column_toplevel_left" class="col-xs-3 main-column"> <!-- hidden-xs-->
 				<div class="left_content_container">
-					<div class="left_header left_content_item">
-						<div class="container-fluid">
-							<div class="col-xs-10">
-								&#128172; CloudChat
-							</div>
-							<div class="col-xs-2">
+					<div class="left_header left_content_item" style="display: flex; flex-direction: row;">
+						<span class="header_text">
+							&#128172; CloudChat
+						</span>
+						<span class="header_btn">
+							<button style="height: 40px; " class="btn btn-primary" type="button">
 								<span class="icon-bar"></span>
 								<span class="icon-bar"></span>
 								<span class="icon-bar"></span>
-							</div>
-						</div>
+
+							</button>
+						</span>
 					</div>
 					<div class="left_channels_container left_content_item">
 						<div class="left_channels_flex_container">
-							
+							<ul class="channel_list">
+								<li class="left_channels_flex_item server_item">
+									<a href="#">Freenode <small>(irc.freenode.org/6667)</small></a>
+								</li>
+								<li class="left_channels_flex_item channel_item channel_item_active">
+									<a href="#">#new_messages</a>
+								</li>
+								<li class="left_channels_flex_item channel_item">
+									<a href="#">#no_new_messages</a>
+								</li>
+								<li class="left_channels_flex_item channel_item channel_item_focused">
+									<a href="#">#test123_focused</a>
+								</li>
+								<li class="left_channels_flex_item server_item server_item_disconnected">
+									<a href="#">Rizon <small>(irc.rizon.net/6667)</small></a>
+								</li>
+								<li class="left_channels_flex_item channel_item">
+									<a href="#">#no_new_messages</a>
+								</li>
+							</ul>
 						</div>
-						end-of-left-channels-container
 					</div>
 					<div class="left_account_container left_content_item">
 						<div class="container-fluid">
