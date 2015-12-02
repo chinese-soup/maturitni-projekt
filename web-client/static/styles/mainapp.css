@@ -1,3 +1,5 @@
+/* TODO: CLEAN UP, CLEAN UP NAMES */
+/* TODO: Fix for chrome/chromium */
 html, body
 {	
 	/*margin: 0;
@@ -23,7 +25,7 @@ html, body
 	width: 100vw;
 }
 
-/* affects both our columns, mainly here to override bootstrap tbh fam */
+/* Affects both of our columns, mainly here only to override bootstrap  */
 .main-column
 {
 	background-color: #A6BFBA;		
@@ -32,11 +34,13 @@ html, body
 	padding: 0 !important; /* OVERRIDE BOOTSTRAP */
 }
 
+/* Toplevel element: left column */
 #column_toplevel_left
 {
 	min-width: 100px; /* CONSIDER HIDING IT !!! */
 }
 
+/* Toplevel element: center column */
 #column_toplevel_center
 {
 	-webkit-box-shadow: -3px 0px 4px -3px rgba(0,86,112,1);
@@ -44,12 +48,13 @@ html, body
 	box-shadow: -3px 0px 4px -3px rgba(0,86,112,1);	
 }
 
-/* affects every container div in center layout */
+/* Affects every container div in center layout */
 .center_content_item
 {
 	
 }
 
+/* Container for the center column <------ CHANNEL VIEW, DISPLAY: NONE THIS TO SHOW OTHER STUFF LIKE SETTINGS/JOIN A SERVER/... IN THE CENTER COLUMN */
 .center_content_container
 {
 	display: flex;
@@ -73,6 +78,7 @@ html, body
 	background-color: #36393e;
 }
 
+/* shows channel topic and name  and eventually will feature a button for a menu of channel actions (kicking people, setting topic) */
 .center_header
 {
 	background-color: #2e3136; /* 38 38 38 */
@@ -201,7 +207,6 @@ html, body
 	font-size: 15px;
 	position: relative;
 	cursor: pointer;
-	padding: 0;
 }
 
 .channel_item 
@@ -229,9 +234,9 @@ html, body
 .channel_item_focused:before
 {
 	backgorund-color: blue;
+	right: 0;
+	top: 0;
 	position: absolute;
-	top: 0px;
-	left: 0px;
 	height: 100%;
 	content: " ";
 	border-left: 5px solid #738BD7;
@@ -242,7 +247,7 @@ html, body
 .channel_item_focused
 {	
 	/*background-color: #295179;*/
-	background: transparent linear-gradient(to right, #282B30 85%, #2E3136) repeat scroll 0% 0%;
+	background: transparent linear-gradient(to left, #282B30 75%, #2E3136) repeat scroll 0% 0%;
 }
 
 .channel_item_focused a
@@ -263,17 +268,26 @@ html, body
 	height: 60px;
 	line-height: 40px;
 	font-size: 24px;
-	white-space: nowrap;
-}
-
-.server_item a:hover
-{
-	color: #909090;
+	display: flex;
+	flex-direction: row;
 }
 
 .server_item a
 {
 	color: #fafafa;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis ellipsis; /* ... the topic if it's too long */
+}
+
+.server_item button
+{
+	flex: 1 0 0;
+}
+
+.server_item a:hover
+{
+	color: #909090;	
 }
 
 .server_item_disconnected 
@@ -297,4 +311,10 @@ html, body
 {
 	height: 50px;
 	line-height: 40px;
+}
+
+/* dropdown menu in the left footer */
+.dropdown_menu_main_ul
+{
+
 }
