@@ -1,149 +1,155 @@
-			html, body
-			{	
-				/*margin: 0;
-				padding: 0;
-				background-color: #DADADA;
-				height: 100vh;
-				width: 100vw;*/
-				/* overflow: hidden; */
-			}
+html, body
+{	
+	/*margin: 0;
+	padding: 0;
+	background-color: #DADADA;
+	height: 100vh;
+	width: 100vw;*/
+	/* overflow: hidden; */
+}
 
-			/* delete this!!!! */
-			*
-			{
-				color: #FDFDFD;
-			}
+/* delete this!!!! */
+*
+{
+	color: #FDFDFD;
+}
 
-			.big-container
-			{
-				background-color: orange;
-				display: flex;
-				/*overflow: hidden;*/
-				height: 100vh;
-				width: 100vw;
-			}
+.big-container
+{
+	background-color: orange;
+	display: flex;
+	/*overflow: hidden;*/
+	height: 100vh;
+	width: 100vw;
+}
 
-			/* affects both our columns, mainly here to override bootstrap tbh fam */
-			.main-column
-			{
-				background-color: #A6BFBA;		
-				/* max-height: 100vh !important; */ /* IS THIS NEEDED ?!!!!!!!!!!!!!!!!! */
-				margin: 0 !important; /* OVERRIDE BOOTSTRAP */
-				padding: 0 !important; /* OVERRIDE BOOTSTRAP */
-			}
+/* affects both our columns, mainly here to override bootstrap tbh fam */
+.main-column
+{
+	background-color: #A6BFBA;		
+	/* max-height: 100vh !important; */ /* IS THIS NEEDED ?!!!!!!!!!!!!!!!!! */
+	margin: 0 !important; /* OVERRIDE BOOTSTRAP */
+	padding: 0 !important; /* OVERRIDE BOOTSTRAP */
+}
 
-			#column_toplevel_left
-			{
-    			background-color: purple;
-				min-width: 200x; /* CONSIDER HIDING IT !!! */
-			}
+#column_toplevel_left
+{
+	min-width: 200x; /* CONSIDER HIDING IT !!! */
+}
 
-			#column_toplevel_center
-			{
-				
-			}
+#column_toplevel_center
+{
+	
+}
 
-			/* affects every container div in center layout */
-			.center_content_item
-			{
-				
-			}
+/* affects every container div in center layout */
+.center_content_item
+{
+	
+}
 
-			.center_content_container
-			{
-				display: flex;
-				width: 100%;
-				height: 100%;
-				
-				background-color: #36393e;
-				overflow: overflow-y; /* zpravy budem scrollovat nahoru a dolu */		
-				padding: 5px;
-				flex-direction: column;
-			}
-			.center_messages_container
-			{
-				background-color: red;
-				overflow: overflow-y; /* zpravy budem scrollovat nahoru a dolu */
-				flex-grow: 1;
-				
-				border-bottom: 2px solid grey;
+.center_content_container
+{
+	display: flex;
+	width: 100%;
+	height: 100%;
+	
+	background-color: #36393e;
+	overflow: overflow-y; /* zpravy budem scrollovat nahoru a dolu */		
+	padding: 5px;
+	flex-direction: column;
+}
+.center_messages_container
+{
+	background-color: red;
+	overflow-x: hidden;
+	overflow-y: scroll; /* zpravy budem scrollovat nahoru a dolu */
+	flex-grow: 1;
+	
+	border-bottom: 2px solid grey;
+	
+	background-color: #36393e;
+}
 
-				background-color: #36393e;
-			}
+.center_header
+{
+	background-color: gray;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	/*overflow-x: inherit;*/
+	white-space: nowrap;
 
-			.center_header
-			{
-				background-color: gray;
-				display: flex;
-				flex-direction: column;
-				overflow: hidden;
-				/*overflow-x: inherit;*/
-				white-space: nowrap;
+	border-bottom: 1px solid gray;
+}
+.header_room_name, header_room_topic
+{
+	margin-bottom: 0px !important;
 
-				border-bottom: 1px solid gray;
-			}
-			.header_room_name, header_room_topic
-			{
-				margin-bottom: 0px !important;
+}
+.header_room_name
+{
+	font-size: 2rem;
+}
 
-			}
-			.header_room_name
-			{
-				font-size: 2rem;
-			}
-
-			#input-group-msgline
-			{
-				margin-top: 10px;
-			}
+#input-group-msgline
+{
+	margin-top: 10px;
+}
 
 
-			.left_content_container
-			{
-				display: flex;
-				width: 100%;
-				height: 100%;
-				background-color: #282b30;
-				overflow: overflow-y; /* zpravy budem scrollovat nahoru a dolu */		
-				padding: 5px;
-				flex-direction: column;
-			}
+.left_content_container
+{
+	display: flex;
+	width: 100%;
+	height: 100%;
+	background-color: #282b30;
+	overflow: overflow-y; /* zpravy budem scrollovat nahoru a dolu */		
+	padding: 5px;
+	flex-direction: column;
+}
 
-			.left_content_item
-			{
-				display: flex;
-			}
-			.left_header
-			{
-				flex-shrink: 1;
-				height: 60px;
-				font-size: 24px;
-				background-color: green;	
-				border-bottom: 2px solid gray;
-			}
-			.left_channels_container
-			{
-				flex-grow: 2;
-				background-color: #282b30;	
-			}
-			.left_account_container
-			{
-				background-color: purple;
-			}
+.left_content_item
+{
+	display: flex;
+}
+.left_header
+{
+	flex-shrink: 1;
+	height: 60px;
+	font-size: 24px;
+	background-color: green;	
+	border-bottom: 2px solid gray;
+}
+.left_channels_container
+{
+	flex-grow: 2;
+	background-color: #2e3136;	
+}
+.left_account_container
+{
+	background-color: #282b30;
+}
 
-			.log_message
-			{
-				padding: 5px;
-			}
-			.log_message_odd
-			{
-				background-color: #43464d;
-			}
-			.log_message_even
-			{
-				background-color: inherit;
-			}
-			.log_message .timestamp
-			{
-				color: #bebebe;
-			}
+.log_message
+{
+	padding: 5px;
+}
+.log_message_odd
+{
+	background-color: #43464d;
+}
+.log_message_even
+{
+	background-color: inherit;
+}
+.log_message .timestamp
+{
+	color: #bebebe;
+}
+
+.left_channels_flex_container
+{
+	background-color: black;
+	margin: 5px;
+}
