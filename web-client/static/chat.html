@@ -16,6 +16,10 @@
 
 		<link rel="stylesheet" href="./styles/mainapp.css">
 
+		<!-- GLYPHS -->
+		<link rel="stylesheet" href="./fonts/whhg-font/css/whhg.css">
+
+
 		<!-- FAVICONS GENERATED -->
 		<link rel="apple-touch-icon" sizes="57x57" href="./icons/favicon/apple-touch-icon-57x57.png">
 		<link rel="apple-touch-icon" sizes="60x60" href="./icons/favicon/apple-touch-icon-60x60.png">
@@ -68,16 +72,13 @@
 			
 			<div id="column_toplevel_left" class="col-xs-3 main-column"> <!-- hidden-xs-->
 				<div class="left_content_container">
-					<div class="left_header left_content_item" style="display: flex; flex-direction: row;">
+					<div class="left_header left_content_item header_shadows">
 						<span class="header_text">
 							&#128172; CloudChat
 						</span>
 						<span class="header_btn">
 							<button style="height: 40px; " class="btn btn-primary" type="button">
-								<span class="icon-bar"></span>
-								<span class="icon-bar"></span>
-								<span class="icon-bar"></span>
-
+								<i class="icon-menu"></i> 
 							</button>
 						</span>
 					</div>
@@ -106,20 +107,22 @@
 						</div>
 					</div>
 					<div class="left_account_container left_content_item">
-						<div class="container-fluid">
-							<div class="container-fluid text-center">
-								<b>Logged in as:</b>
-								username@example.com
+						<div class="container left_footer">
+							Logged in as: <b>username@example.com</b>
+
+							<div class="dropup">
+								<button class="btn btn-primary pull-right dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									<i class="icon-settingsthree-gears"></i>
+								</button>
+								<ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+									<li><a href="#">Action</a></li>
+									<li><a href="#">Another action</a></li>
+									<li><a href="#">Something else here</a></li>
+									<li role="separator" class="divider"></li>
+									<li><a href="#">Separated link</a></li>
+								</ul>
 							</div>
-							<div class="container-fluid text-center">
-								<div id="column_toplevel_left" class="col-sm-6">
-									<button class="btn btn-primary" type="button">Log out</button>
-								</div>
-								<div id="column_toplevel_left" class="col-sm-6">
-									<button class="btn btn-primary" type="button">Settings</button>
-								</div>
-								
-							</div>
+							
 						</div>
 					</div>
 				</div> <!--/center_content-->
@@ -136,8 +139,8 @@
 
 				<!-- CENTER_CONTENT = CHANNEL_VIEW, others: settings, some other shit? -->
 				<div class="center_content_container">
-					<div class="center_header center_content_item"> <!-- topic -->
-						<span class="header_room_name">#test122_focused <small>(nickname @ Freenode)</small></span>
+					<div class="center_header center_content_item header_shadows"> <!-- topic -->
+						<span class="header_room_name">#test123_focused <small>(nickname @ Freenode)</small></span>
 						<span class="header_room_topic"><b>Topic</b>: Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet.</span>
 					</div>
 					<div class="center_messages_container center_content_item"> <!-- log container -->
@@ -151,7 +154,7 @@
 						</div>
 					</div>
 					<div class="input-group center_content_item" id="input-group-msgline">
-						<input type="text" class="form-control">
+						<input type="text" class="form-control dark_input" placeholder="Chat in #test123_focused&hellip;">
 						<span class="input-group-btn">
 							<button class="btn btn-primary" type="button">Send</button>
 						</span>
@@ -161,5 +164,6 @@
 
 			</div><!--/column_toplevel_center-->
 		</div><!--/big-container-->		
+
 	</body>
 </html>
