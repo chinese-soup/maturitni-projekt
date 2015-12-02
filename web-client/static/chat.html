@@ -66,25 +66,47 @@
 			
 			<!-- sidebar -->
 			
-			<div id="column_toplevel_left" class="col-xs-3 main-column hidden-xs">
+			<div id="column_toplevel_left" class="col-xs-3 main-column"> <!-- hidden-xs-->
 				<div class="left_content_container">
 					<div class="left_header left_content_item">
-						
+						<div class="container-fluid">
+							<div class="col-xs-10">
+								&#128172; CloudChat
+							</div>
+							<div class="col-xs-2">
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+							</div>
+						</div>
 					</div>
 					<div class="left_channels_container left_content_item">
-
+						<div style="margin: 5px;">
+							<p>>implying content</p>
+							<p>>implying content</p>
+							<p>>implying content</p>
+							<p>>implying content</p>
+							<p>this container needs some serious flexing tbh</p>
+							<p>end of randoms p's</p>
+							margin2Px?
+						</div>
+						end-of-left-channels-container
 					</div>
 					<div class="left_account_container left_content_item">
-						<div class="container-fluid text-center">
-							Logged in as<br>
-							<p>username@example.com</p>
-							<div id="column_toplevel_left" class="col-sm-6">
-								<button class="btn btn-primary" type="button">Log out</button>
+						<div class="container-fluid">
+							<div class="container-fluid text-center">
+								<b>Logged in as:</b>
+								username@example.com
 							</div>
-							<div id="column_toplevel_left" class="col-sm-6">
-								<button class="btn btn-primary" type="button">Settings</button>
+							<div class="container-fluid text-center">
+								<div id="column_toplevel_left" class="col-sm-6">
+									<button class="btn btn-primary" type="button">Log out</button>
+								</div>
+								<div id="column_toplevel_left" class="col-sm-6">
+									<button class="btn btn-primary" type="button">Settings</button>
+								</div>
+								
 							</div>
-							
 						</div>
 					</div>
 				</div> <!--/center_content-->
@@ -102,10 +124,18 @@
 				<!-- CENTER_CONTENT = CHANNEL_VIEW, others: settings, some other shit? -->
 				<div class="center_content_container">
 					<div class="center_header center_content_item"> <!-- topic -->
-						<span class="header_room_name">#test122_focused (nickname @ Freenode)</span>
-						<span class="header_room_topic"><b>Topic</b>: Lorem ipsum dot sir amet.</span>
+						<span class="header_room_name">#test122_focused <small>(nickname @ Freenode)</small></span>
+						<span class="header_room_topic"><b>Topic</b>: Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet.</span>
 					</div>
 					<div class="center_messages_container center_content_item"> <!-- log container -->
+						<div class="log_message log_message_even">
+							<span class="timestamp">00:59:12</span>
+							<span class="message-body"><@Brano> Pekne na tom vidiet,co v praci vlastne robis :D</span>
+						</div>
+						<div class="log_message log_message_odd">
+							<span class="timestamp">01:21:12</span>
+							<span class="message-body"><@system> This shit will need some serious flexin' as well, my boy. </span>
+						</div>
 					</div>
 					<div class="input-group center_content_item" id="input-group-msgline">
 						<input type="text" class="form-control">

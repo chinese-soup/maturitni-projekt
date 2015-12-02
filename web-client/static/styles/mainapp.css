@@ -8,15 +8,22 @@
 				/* overflow: hidden; */
 			}
 
+			/* delete this!!!! */
+			*
+			{
+				color: #FDFDFD;
+			}
+
 			.big-container
 			{
-				background-color: blue;
+				background-color: orange;
 				display: flex;
 				/*overflow: hidden;*/
 				height: 100vh;
 				width: 100vw;
 			}
-			/* affects both our columns */
+
+			/* affects both our columns, mainly here to override bootstrap tbh fam */
 			.main-column
 			{
 				background-color: #A6BFBA;		
@@ -28,7 +35,7 @@
 			#column_toplevel_left
 			{
     			background-color: purple;
-				min-width: 180x; /* CONSIDER HIDING IT !!! */
+				min-width: 200x; /* CONSIDER HIDING IT !!! */
 			}
 
 			#column_toplevel_center
@@ -36,11 +43,10 @@
 				
 			}
 
-
+			/* affects every container div in center layout */
 			.center_content_item
 			{
-				display: flex;
-
+				
 			}
 
 			.center_content_container
@@ -48,23 +54,42 @@
 				display: flex;
 				width: 100%;
 				height: 100%;
-				background-color: blue;
+				
+				background-color: #36393e;
 				overflow: overflow-y; /* zpravy budem scrollovat nahoru a dolu */		
 				padding: 5px;
 				flex-direction: column;
-				
 			}
 			.center_messages_container
 			{
 				background-color: red;
 				overflow: overflow-y; /* zpravy budem scrollovat nahoru a dolu */
 				flex-grow: 1;
+				
+				border-bottom: 2px solid grey;
+
+				background-color: #36393e;
 			}
 
 			.center_header
 			{
-				height: 50px;
 				background-color: gray;
+				display: flex;
+				flex-direction: column;
+				overflow: hidden;
+				/*overflow-x: inherit;*/
+				white-space: nowrap;
+
+				border-bottom: 1px solid gray;
+			}
+			.header_room_name, header_room_topic
+			{
+				margin-bottom: 0px !important;
+
+			}
+			.header_room_name
+			{
+				font-size: 2rem;
 			}
 
 			#input-group-msgline
@@ -78,7 +103,7 @@
 				display: flex;
 				width: 100%;
 				height: 100%;
-				background-color: yellow;
+				background-color: #282b30;
 				overflow: overflow-y; /* zpravy budem scrollovat nahoru a dolu */		
 				padding: 5px;
 				flex-direction: column;
@@ -91,14 +116,34 @@
 			.left_header
 			{
 				flex-shrink: 1;
+				height: 60px;
+				font-size: 24px;
 				background-color: green;	
+				border-bottom: 2px solid gray;
 			}
 			.left_channels_container
 			{
 				flex-grow: 2;
-				background-color: gray;	
+				background-color: #282b30;	
 			}
 			.left_account_container
 			{
 				background-color: purple;
+			}
+
+			.log_message
+			{
+				padding: 5px;
+			}
+			.log_message_odd
+			{
+				background-color: #43464d;
+			}
+			.log_message_even
+			{
+				background-color: inherit;
+			}
+			.log_message .timestamp
+			{
+				color: #bebebe;
 			}
