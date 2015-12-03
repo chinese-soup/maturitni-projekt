@@ -222,6 +222,7 @@ html, body
 .channel_item a
 {
 	color: #636669;
+	padding-left: 1em;
 }
 
 .channel_item a:hover
