@@ -161,7 +161,6 @@ html, body
 {
 	flex-grow: 2;
 	background-color: #2e3136;	
-
 }
 .left_account_container
 {
@@ -212,7 +211,7 @@ html, body
 .channel_item 
 {
 	color: #dfdfdf;
-	width: 90%;
+	width: 100%;
 }
 
 .channel_item:hover
@@ -245,7 +244,7 @@ html, body
 .channel_item_focused
 {	
 	/*background-color: #295179;*/
-	background: transparent linear-gradient(to left, #282B30 75%, #2E3136) repeat scroll 0% 0%;
+	background: transparent linear-gradient(to right, #282B30 75%, #2E3136) repeat scroll 0% 0%;
 }
 
 .channel_item_focused a
@@ -314,6 +313,7 @@ html, body
 {
 	list-style: outside none none;
 	padding: 0;
+
 }
 
 .header_shadows
