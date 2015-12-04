@@ -32,6 +32,7 @@ html, body
 	/* max-height: 100vh !important; */ /* IS THIS NEEDED ?!!!!!!!!!!!!!!!!! */
 	margin: 0 !important; /* OVERRIDE BOOTSTRAP */
 	padding: 0 !important; /* OVERRIDE BOOTSTRAP */
+	height: 100vh; /* chromium/chrome fix */
 }
 
 /* Toplevel element: left column */
@@ -361,7 +362,7 @@ html, body
 
 }
 
-.button_channel_settings
+.button_channel_settings+
 {
 	height: 34px;
 }
