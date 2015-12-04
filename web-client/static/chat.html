@@ -86,9 +86,16 @@
 							<ul class="channel_list">
 								<li class="left_channels_flex_item server_item">
 									<a href="#">Freenode <small>(irc.freenode.org/6667)</small></a>
-									<button class="btn" type="button">
+									<button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 										<i class="icon-settingsfour-gearsalt"></i> 
 									</button>
+									<ul class="dropdown-menu server_dropdown_ul">
+										<li><a href="#">Join another channel&hellip;</a></li>
+										<li><a href="#">Disconnect</a></li>
+										<li role="separator" class="divider"></li>
+										<li><a href="#">Edit</a></li>
+
+									</ul>
 								</li>
 								<li class="left_channels_flex_item channel_item channel_item_active">
 									<a href="#">#new_messages</a>
@@ -101,9 +108,16 @@
 								</li>
 								<li class="left_channels_flex_item server_item server_item_disconnected">
 									<a href="#">ReallyLongNameOfANetwork <small>(irc.really-long-names-are.fun/6667)</small></a>
-									<button class="btn" type="button">
+									<button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 										<i class="icon-settingsfour-gearsalt"></i> 
 									</button>
+									<ul class="dropdown-menu server_dropdown_ul">
+										<li><a href="#">Join another channel&hellip;</a></li>
+										<li><a href="#">Disconnect</a></li>
+										<li role="separator" class="divider"></li>
+										<li><a href="#">Edit</a></li>
+
+									</ul>
 								</li>
 								<li class="left_channels_flex_item channel_item">
 									<a href="#">#no_new_messages</a>
@@ -118,10 +132,10 @@
 									Logged in as: <b>username@example.com</b>
 								</div>
 								<div style="flex: 1 0 0; float:right;">
-									<button class="btn btn-primary pull-right dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									<button class="btn btn-primary pull-right dropdown-toggle" type="button" id="dropdownAccount" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 										<i class="icon-settingsthree-gears"></i>
 									</button>
-									<ul class="dropdown-menu pull-right dropdown_menu_main_ul" aria-labelledby="dropdownMenu2">
+									<ul class="dropdown-menu pull-right dropdown_menu_main_ul" aria-labelledby="dropdownAccount">
 										<li><a href="#">Join another server&hellip;</a></li>
 										<li><a href="#">Settings&hellip;</a></li>
 										<li role="separator" class="divider"></li>
@@ -173,8 +187,22 @@
 					</div>
 					<div class="input-group center_content_item" id="input-group-msgline">
 						<input type="text" class="form-control dark_input" placeholder="Chat in #test123_focused&hellip;">
-						<span class="input-group-btn">
-							<button class="btn btn-primary" type="button">Send</button>
+						<span class="input-group-btn dropup">
+							<button class="btn btn-primary" type="button">
+								Send
+							</button>
+							<button class="btn btn-primary button_channel_settings dropdown-toggle" type="button" type="button" id="dropdownMenuChannel" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								<i class="icon-settingsfour-gearsalt"></i>
+							</button>
+							<ul class="dropdown-menu pull-right dropdown_menu_main_ul" aria-labelledby="dropdownMenuChannel">
+								<li><a href="#">Join another server&hellip;</a></li>
+								<li><a href="#">Settings&hellip;</a></li>
+								<li role="separator" class="divider"></li>
+								<li><a href="#">Help</a></li>
+								<li><a href="#">About</a></li>
+								<li role="separator" class="divider"></li>
+								<li><a href="#">Logout</a></li>
+							</ul>
 						</span>
 					</div>
 				</div>

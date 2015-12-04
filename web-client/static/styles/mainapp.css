@@ -216,7 +216,14 @@ html, body
 
 .channel_item:hover
 {
-	background-color: #295179;
+	background-color: #1D1F23;
+	opacity: 0.8;
+}
+
+.channel_item:hover ~ a
+{
+	color: #ffffff;
+	text-decoration: none;
 }
 
 .channel_item a
@@ -228,6 +235,7 @@ html, body
 .channel_item a:hover
 {
 	color: #ffffff;
+	text-decoration: none
 }
 
 .channel_item_focused:before
@@ -257,8 +265,26 @@ html, body
 
 .channel_item_active
 {
-	font-style: italic;
 
+}
+
+.channel_item_active:after
+{
+	content: "2";
+	backgorund-color: blue;
+	top: 0;
+	right: 0;
+	margin: 4px 15px 4px 4px;
+	padding-left: 3%;
+	padding-right: 3%;
+	padding-top: 2px;
+	position: absolute;
+	height: 80%;
+	width: auto;
+	/*background-color: #738AAC;*/
+	background-color: #0E5381;
+	border-radius: 5px;
+	opacity: 1 !important;
 }
 
 .server_item
@@ -291,12 +317,12 @@ html, body
 .server_item button:hover
 {
 	display: flex;
+	background-color: transparent;
 }
-
 
 .server_item a:hover
 {
-	color: #909090;	
+
 }
 
 .server_item a:hover ~ button
@@ -304,10 +330,9 @@ html, body
 	display: flex;
 }
 
-
 .server_item_disconnected 
-{;
-	opacity: 0.4;
+{
+	color: #B5B5B5;	
 }
 
 .channel_list /* ul */
@@ -334,4 +359,9 @@ html, body
 .dropdown_menu_main_ul
 {
 
+}
+
+.button_channel_settings
+{
+	height: 34px;
 }
