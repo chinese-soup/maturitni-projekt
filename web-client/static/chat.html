@@ -51,11 +51,13 @@
 			<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 		<![endif]-->
 
-		<style>
-
-
-		</style>
-
+		<script>
+			function global_settings_toggle()
+			{
+				$("#center_content_message").fadeOut(100);
+				$("#center_content_global_settings").fadeIn(100);
+			}
+		</script>
 
 	</head>
 	<body>
@@ -89,13 +91,13 @@
 									<button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 										<i class="icon-settingsfour-gearsalt"></i> 
 									</button>
-									<ul class="dropdown-menu server_dropdown_ul">
-										<li><a href="#">Join another channel&hellip;</a></li>
-										<li><a href="#">Disconnect</a></li>
-										<li role="separator" class="divider"></li>
-										<li><a href="#">Edit</a></li>
+										<ul class="dropdown-menu server_dropdown_ul">
+											<li><a href="#">Join another channel&hellip;</a></li>
+											<li><a href="#">Disconnect</a></li>
+											<li role="separator" class="divider"></li>
+											<li><a href="#">Edit</a></li>
 
-									</ul>
+										</ul>
 								</li>
 								<li class="left_channels_flex_item channel_item channel_item_active">
 									<a href="#">#new_messages</a>
@@ -127,7 +129,7 @@
 					<div class="left_account_container left_content_item">
 						<div class="container left_footer">
 							<div class="dropup" style="display: flex; flex-direction: row;"> <!-- TODO: GET RID OF INLINE STYLING IN THIS SECTION -->
-								<div class="hidden-xs"><!-- HIDE THIS ON PHONE RES SO WE CAN STILL REACH THE BUTTON -->
+								<div class=""><!-- HIDE THIS ON PHONE RES SO WE CAN STILL REACH THE BUTTON -->
 									Logged in as: <b>username@example.com</b>
 								</div>
 								<div style="flex: 1 0 0; float:right;">
@@ -136,7 +138,7 @@
 									</button>
 									<ul class="dropdown-menu pull-right dropdown_menu_main_ul" aria-labelledby="dropdownAccount">
 										<li><a href="#">Join another server&hellip;</a></li>
-										<li><a href="#">Settings&hellip;</a></li>
+										<li><a href="#setings" onclick="global_settings();">Settings&hellip;</a></li>
 										<li role="separator" class="divider"></li>
 										<li><a href="#">Help</a></li>
 										<li><a href="#">About</a></li>
@@ -153,15 +155,13 @@
 			
 			<!-- main content -->
 			<div id="column_toplevel_center" class="col-xs-9 main-column">
-				<!-- TODO: zjistit jak napozicovat ten textbox pod ten messagecontainer -->
-				<!-- TODO zajistit natvrdo sirku a vysku messagecontaineru -->
 				<!-- TODO: vyresit zpravy v ramci message containeru -->
 				<!-- TODO: vyresit prekryvani nastaveni/etc./ -->
 				<!-- TODO: vyresit zmensovani leveho panelu -->
 				<!-- TODO: vyresit togglovani leveho panelu -->
 
 				<!-- CENTER_CONTENT = CHANNEL_VIEW, others: settings, some other shit? -->
-				<div class="center_content_container">
+				<div class="center_content_container" id="center_content_message">
 					<div class="center_header center_content_item header_shadows"> <!-- topic -->
 						<span class="header_room_name">#test123_focused <small>(nickname @ Freenode)</small></span>
 						<span class="header_room_topic"><b>Topic</b>: Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet.</span>
@@ -171,17 +171,17 @@
 							<span class="timestamp">00:59:12</span>
 							<span class="message-body"><@Marii> お後がまたよろしくて</span>
 						</div>
-					<div class="log_message log_message_odd">
-							<span class="timestamp">00:59:16</span>
-							<span class="message-body"><@Marii> お先も前もよろしくね</span>
+						<div class="log_message log_message_odd">
+								<span class="timestamp">00:59:16</span>
+								<span class="message-body"><@Marii> お先も前もよろしくね</span>
 						</div>
-					<div class="log_message log_message_even">
-							<span class="timestamp">00:59:20</span>
-							<span class="message-body"><@Marii> 謎解きドキドキ指南</span>
+						<div class="log_message log_message_even">
+								<span class="timestamp">0	0:59:20</span>
+								<span class="message-body"><@Marii> 謎解きドキドキ指南</span>
 						</div>
-					<div class="log_message log_message_odd">
-							<span class="timestamp">00:59:24</span>
-							<span class="message-body"><@Tetora> 仕掛けがアリアリです</span>
+						<div class="log_message log_message_odd">
+								<span class="timestamp">00:59:24</span>
+								<span class="message-body"><@Tetora> 仕掛けがアリアリです</span>
 						</div>
 					</div>
 					<div class="input-group center_content_item" id="input-group-msgline">
@@ -195,7 +195,7 @@
 							</button>
 							<ul class="dropdown-menu pull-right dropdown_menu_main_ul" aria-labelledby="dropdownMenuChannel">
 								<li><a href="#">Join another server&hellip;</a></li>
-								<li><a href="#">Settings&hellip;</a></li>
+								<li><a href="#">Channel settings&hellip;</a></li>
 								<li role="separator" class="divider"></li>
 								<li><a href="#">Help</a></li>
 								<li><a href="#">About</a></li>
@@ -204,7 +204,17 @@
 							</ul>
 						</span>
 					</div>
+				</div> <!-- center_content_container -->
+				<div class="center_content_container" id="center_content_global_settings" style="display: none;"> <!-- TODO: get rid of inline styles!! -->
+					<div class="center_header center_content_item header_shadows"> 
+						<span class="header_room_name">Global settings</span>
+						<span class="header_room_topic"><b>Topic</b>: Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet.</span>
+					</div>
+					<div class="center_content_item">
+						<ul></ul>
+					</div>
 				</div>
+
 
 
 			</div><!--/column_toplevel_center-->
