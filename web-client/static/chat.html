@@ -53,9 +53,9 @@
 
 		<script>
 			function global_settings_toggle()
-			{
-				$("#center_content_message").fadeOut(100);
-				$("#center_content_global_settings").fadeIn(100);
+			{	
+				$("#center_content_message").slideToggle(100);
+				$("#center_content_global_settings").toggle();
 			}
 		</script>
 
@@ -138,7 +138,7 @@
 									</button>
 									<ul class="dropdown-menu pull-right dropdown_menu_main_ul" aria-labelledby="dropdownAccount">
 										<li><a href="#">Join another server&hellip;</a></li>
-										<li><a href="#setings" onclick="global_settings();">Settings&hellip;</a></li>
+										<li><a href="#setings" onclick="global_settings_toggle();">Settings&hellip;</a></li>
 										<li role="separator" class="divider"></li>
 										<li><a href="#">Help</a></li>
 										<li><a href="#">About</a></li>
@@ -176,7 +176,7 @@
 								<span class="message-body"><@Marii> お先も前もよろしくね</span>
 						</div>
 						<div class="log_message log_message_even">
-								<span class="timestamp">0	0:59:20</span>
+								<span class="timestamp">00:59:20</span>
 								<span class="message-body"><@Marii> 謎解きドキドキ指南</span>
 						</div>
 						<div class="log_message log_message_odd">
@@ -190,7 +190,7 @@
 							<button class="btn btn-primary" type="button">
 								Send
 							</button>
-							<button class="btn btn-primary button_channel_settings dropdown-toggle" type="button" type="button" id="dropdownMenuChannel" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<button class="btn btn-primary button_channel_settings dropdown-toggle" type="button" id="dropdownMenuChannel" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 								<i class="icon-settingsfour-gearsalt"></i>
 							</button>
 							<ul class="dropdown-menu pull-right dropdown_menu_main_ul" aria-labelledby="dropdownMenuChannel">
@@ -208,10 +208,10 @@
 				<div class="center_content_container" id="center_content_global_settings" style="display: none;"> <!-- TODO: get rid of inline styles!! -->
 					<div class="center_header center_content_item header_shadows"> 
 						<span class="header_room_name">Global settings</span>
-						<span class="header_room_topic"><b>Topic</b>: Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet.</span>
 					</div>
-					<div class="center_content_item">
-						<ul></ul>
+					<div class=" center_content_item">
+						<button class="btn btn-primary" type="button" id="close_global_settings" onclick="global_settings_toggle();">Save</button>
+						<button class="btn btn-primary" type="button" id="close_global_settings" onclick="global_settings_toggle();">Close</button>
 					</div>
 				</div>
 
