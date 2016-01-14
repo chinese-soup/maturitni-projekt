@@ -79,6 +79,19 @@ html, body
 	background-color: #36393e;
 }
 
+
+/* container pro globální nastavení */
+.center_settings_container
+{
+	overflow-x: hidden;
+	overflow-y: scroll; /* zpravy budem scrollovat nahoru a dolu */
+	flex-grow: 1;
+	padding: 10px 10px 10px 10px;
+	background-color: #36393e;
+}
+
+
+
 /* shows channel topic and name  and eventually will feature a button for a menu of channel actions (kicking people, setting topic) */
 .center_header
 {
