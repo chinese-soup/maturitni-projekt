@@ -7,13 +7,19 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>CloudChatApp</title>
 
+		<!-- TODO: CDN libs when done -->
+		
 		<!-- Bootstrap libs -->
 		<link rel="stylesheet" href="./bootstrap-3.3.6-dist/css/bootstrap.min.css">
 		
+		<!-- Bootstrap-dialog -->
+		<link rel="stylesheet" href="./bootstrap3-dialog/bootstrap-dialog.css">
+
 		<!--  -->
 		<link rel="stylesheet" href="./styles/normalize.css">
 		<link rel="stylesheet" href="./styles/noscript.css">
-
+		
+		<!-- moje -->
 		<link rel="stylesheet" href="./styles/mainapp.css">
 
 		<!-- GLYPHS -->
@@ -46,18 +52,17 @@
 		<script src="./bootstrap-3.3.6-dist/jquery-1.11.3.min.js"></script>
 		<script src="./bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
 
+		<!-- Bootstrap3-dialog -->
+		<script src="./bootstrap3-dialog/bootstrap-dialog.js"></script>
+
+		<script src="./js/ui_functions.js"></script>
+		
+
 		<!--[if lt IE 9]>
 			<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
 			<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 		<![endif]-->
 
-		<script>
-			function global_settings_toggle()
-			{	
-				$("#center_content_message").slideToggle(100);
-				$("#center_content_global_settings").toggle();
-			}
-		</script>
 
 	</head>
 	<body>
@@ -74,12 +79,12 @@
 			<div id="column_toplevel_left" class="col-xs-3 main-column"> <!-- hidden-xs-->
 				<div class="left_content_container">
 					<div class="left_header left_content_item header_shadows">
-						<span class="header_text hidden-xs"> <!-- HIDE THIS ON PHONE RES SO WE CAN STILL REACH THE BUTTON -->
-							&#128172; CloudChat
+						<span class="header_text"> <!-- HIDE THIS ON PHONE RES SO WE CAN STILL REACH THE BUTTON -->
+							&#128172; <span class="hidden-sm hidden-xs">CloudChat</span>
 						</span>
 						<span class="header_btn">
-							<button style="height: 40px; " class="btn btn-primary" type="button">
-								<i class="icon-menu"></i> 
+							<button title="Collapse" style="height: 40px;" class="btn btn-primary" type="button">
+								<i class="icon-chevron-left"></i>
 							</button>
 						</span>
 					</div>
@@ -93,7 +98,7 @@
 									</button>
 										<ul class="dropdown-menu server_dropdown_ul">
 											<li><a href="#">Join another channel&hellip;</a></li>
-											<li><a href="#">Disconnect</a></li>
+											<li><a href="#" onclick="disconnect_dialog('Freenode');">Disconnect</a></li>
 											<li role="separator" class="divider"></li>
 											<li><a href="#">Edit</a></li>
 
@@ -115,7 +120,7 @@
 									</button>
 									<ul class="dropdown-menu server_dropdown_ul">
 										<li><a href="#">Join another channel&hellip;</a></li>
-										<li><a href="#">Disconnect</a></li>
+										<li><a href="#" onclick="reconnect_dialog('ReallyLongNameOfANetwork');">Reconnect</a></li>
 										<li role="separator" class="divider"></li>
 										<li><a href="#">Edit</a></li>
 									</ul>
@@ -128,22 +133,22 @@
 					</div>
 					<div class="left_account_container left_content_item">
 						<div class="container left_footer">
-							<div class="dropup" style="display: flex; flex-direction: row;"> <!-- TODO: GET RID OF INLINE STYLING IN THIS SECTION -->
-								<div class=""><!-- HIDE THIS ON PHONE RES SO WE CAN STILL REACH THE BUTTON -->
-									Logged in as: <b>username@example.com</b>
+							<div class="dropup gears_dropup"> <!-- TODO: GET RID OF INLINE STYLING IN THIS SECTION -->
+								<div><!-- HIDE THIS ON PHONE RES SO WE CAN STILL REACH THE BUTTON -->
+									<span class="hidden-xs hidden-sm hidden-md">Logged in as: </span><b>username@example.com</b>
 								</div>
-								<div style="flex: 1 0 0; float:right;">
+								<div class="gears_button">
 									<button class="btn btn-primary pull-right dropdown-toggle" type="button" id="dropdownAccount" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 										<i class="icon-settingsthree-gears"></i>
 									</button>
 									<ul class="dropdown-menu pull-right dropdown_menu_main_ul" aria-labelledby="dropdownAccount">
-										<li><a href="#">Join another server&hellip;</a></li>
-										<li><a href="#setings" onclick="global_settings_toggle();">Settings&hellip;</a></li>
+										<li><a href="#" onclick="">Join another server&hellip;</a></li>
+										<li><a href="#setings" onclick="toggle_center_column('center_content_global_settings');">Settings&hellip;</a></li>
 										<li role="separator" class="divider"></li>
 										<li><a href="#">Help</a></li>
 										<li><a href="#">About</a></li>
 										<li role="separator" class="divider"></li>
-										<li><a href="#">Logout</a></li>
+										<li><a href="#" onclick="global_logout();">Logout</a></li>
 									</ul>
 								</div>
 							</div>
@@ -169,19 +174,40 @@
 					<div class="center_messages_container center_content_item"> <!-- log container -->
 						<div class="log_message log_message_even">
 							<span class="timestamp">00:59:12</span>
-							<span class="message-body"><@Marii> お後がまたよろしくて</span>
+							<span class="message-body"><span class="message-sender message-sender-1">@Marii</span>: お後がまたよろしくて</span>
 						</div>
 						<div class="log_message log_message_odd">
 								<span class="timestamp">00:59:16</span>
-								<span class="message-body"><@Marii> お先も前もよろしくね</span>
+								<span class="message-body"><span class="message-sender message-sender-1">@Marii</span>: お先も前もよろしくね</span>
 						</div>
 						<div class="log_message log_message_even">
 								<span class="timestamp">00:59:20</span>
-								<span class="message-body"><@Marii> 謎解きドキドキ指南</span>
+								<span class="message-body"><span class="message-sender message-sender-1">@Marii</span>: 謎解きドキドキ指南</span>
 						</div>
 						<div class="log_message log_message_odd">
 								<span class="timestamp">00:59:24</span>
-								<span class="message-body"><@Tetora> 仕掛けがアリアリです</span>
+								<span class="message-body"><span class="message-sender message-sender-2">@Tetora</span>: 仕掛けがアリアリです</span>
+						</div>
+						<div class="log_message log_message_even">
+								<span class="timestamp">00:59:27</span>
+								<span class="message-body"><span class="message-sender message-sender-3">@Kigu</span>: じょし的お悩みは双六? 賽を振って!</span>
+						</div>
+						<div class="log_message log_message_odd">
+								<span class="timestamp">00:59:29</span>
+								<span class="message-body"><span class="message-sender message-sender-1">@Marii</span>: はいはい！</span>
+						</div>
+						<div class="log_message log_message_even">
+								<span class="timestamp">00:59:29</span>
+								<span class="message-body"><span class="message-sender message-sender-2">@Tetora</span>: はいはい！</span>
+						</div>
+						<div class="log_message log_message_odd">
+								<span class="timestamp">00:59:29</span>
+								<span class="message-body"><span class="message-sender message-sender-4">@Gan</span>: はいはい！</span>
+						</div>
+						<div class="log_message log_message_even">
+								<span class="timestamp">01:00:34</span>
+								<span class="message-body"><span class="message-sender message-sender-5">MamRadObrazky</span>: <a href="http://i.imgur.com/8SkOwxA.png">http://i.imgur.com/8SkOwxA.png</a></span>
+								<span class="message-image-preview"><a href="http://i.imgur.com/8SkOwxA.png"><img src="http://i.imgur.com/8SkOwxA.png" target="_blank"></a></span>
 						</div>
 					</div>
 					<div class="input-group center_content_item" id="input-group-msgline">
@@ -195,12 +221,9 @@
 							</button>
 							<ul class="dropdown-menu pull-right dropdown_menu_main_ul" aria-labelledby="dropdownMenuChannel">
 								<li><a href="#">Join another server&hellip;</a></li>
+								<li role="separator" class="divider"></li>
 								<li><a href="#">Channel settings&hellip;</a></li>
-								<li role="separator" class="divider"></li>
-								<li><a href="#">Help</a></li>
-								<li><a href="#">About</a></li>
-								<li role="separator" class="divider"></li>
-								<li><a href="#">Logout</a></li>
+								<li><a href="#">Leave this channel</a></li>
 							</ul>
 						</span>
 					</div>
@@ -229,8 +252,12 @@
 								<input type="text" class="form-control" id="hilight_words_input" placeholder="nickname">
 							</div>
 							<div class="form-group col-sm-6">
-								<label for="show_previews_checkbox">Show previews:</label>
-								<input type="checkbox" id="show_previews_checkbox" value="true">
+								<label for="show_previews_checkbox">Show video previews:</label>
+								<input type="checkbox" id="show_video_previews_checkbox" value="true">
+							</div>
+							<div class="form-group col-sm-6">
+								<label for="show_previews_checkbox">Show image previews:</label>
+								<input type="checkbox" id="show_image_previews_checkbox" value="true">
 							</div>
 							<div class="form-group col-sm-6">
 								<label for="show_seconds_checkbox">Show seconds in timestamp:</label>
@@ -241,10 +268,9 @@
 								<input type="checkbox" id="show_joinpartquit_messages" value="true">
 							</div>
 							<div class="form-group col-sm-12">
-								<button class="btn btn-primary" type="button" id="close_global_settings" onclick="global_settings_toggle();">Save</button>
-								<button class="btn btn-primary" type="button" id="close_global_settings" onclick="global_settings_toggle();">Close</button>
+								<button class="btn btn-primary" type="button" id="save_global_settings_button" onclick="save_settings('global');">Save</button>
+								<button class="btn btn-primary" type="button" id="close_global_settings_button" onclick="toggle_center_column('center_content_global_settings');">Close</button>
 							</div>
-
 						</form>
 					</div>
 				</div>

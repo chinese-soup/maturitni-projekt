@@ -8,13 +8,12 @@ html, body
 	height: 100vh;
 	width: 100vw;*/
 	/* overflow: hidden; */
+	color: #FDFDFD;
 }
 
 /* delete this!!!! */
-*
-{
-	color: #FDFDFD;
-}
+
+
 
 .big-container
 {
@@ -38,7 +37,7 @@ html, body
 /* Toplevel element: left column */
 #column_toplevel_left
 {
-	min-width: 100px; /* CONSIDER HIDING IT !!! */
+	min-width: 200px; /* CONSIDER HIDING IT !!! */
 }
 
 /* Toplevel element: center column */
@@ -49,10 +48,10 @@ html, body
 	box-shadow: -3px 0px 4px -3px rgba(0,86,112,1);	
 }
 
-/* Affects every container div in center layout */
+/* Affects every container div in  the center layout */
 .center_content_item
 {
-	
+	color: #FDFDFD !important;
 }
 
 /* Container for the center column <------ CHANNEL VIEW, DISPLAY: NONE THIS TO SHOW OTHER STUFF LIKE SETTINGS/JOIN A SERVER/... IN THE CENTER COLUMN */
@@ -101,6 +100,7 @@ html, body
 	/*overflow-x: inherit;*/
 	white-space: nowrap;
 	height: 60px;	
+	color: #FDFDFD;
 }
 .header_room_name, .header_room_topic
 {
@@ -139,15 +139,17 @@ html, body
 .left_content_container
 {
 	display: flex;
-	width: 100%vw;
+	width: 100%;
 	height: 100vh;
 	background-color: #282b30;
 	overflow: hidden;	
 	flex-direction: column;
+
 }
 
 .left_content_item
 {
+
 	display: flex;
 }
 
@@ -157,6 +159,7 @@ html, body
 	height: 60px;
 	background-color: #282b30; /* test*/ 
 	padding: 10px 0px 10px 10px;
+
 }
 .left_header .header_text
 {
@@ -185,6 +188,7 @@ html, body
 .log_message
 {
 	padding: 5px 7px 5px 7px;
+	color: #FDFDFD;
 }
 
 .log_message_even
@@ -378,4 +382,80 @@ html, body
 .button_channel_settings+
 {
 	height: 34px;
+}
+
+.log_message a
+{
+	color: rgb(101, 182, 233) !important;
+}
+
+.message-sender
+{
+	cursor: pointer;
+	font-weight: bold;
+}
+
+.message-sender-1
+{
+	color: rgb(165, 99, 192);
+}
+
+.message-sender-2
+{
+	color: rgb(52, 152, 219);
+}
+
+.message-sender-3
+{
+	color: rgb(135, 160, 142);
+}
+
+.message-sender-4
+{
+	color: rgb(251, 170, 49);
+}
+
+.message-sender-5
+{
+	color: rgb(255, 67, 67);
+}
+
+.message-sender-6
+{
+	color: rgb(125, 165, 125);
+}
+
+.message-sender-7
+{
+	color: rgb(230, 70, 110);
+}
+
+.message-sender-8
+{
+	color: rgb(251, 149, 0);
+}
+
+.gears_button /* dropdown vedle emailu přihlášenýho uživatele */
+{
+	flex: 1 0 0;
+	float:right;
+	z-index: 42; /* 42 makes everything perfect (chrome fix,  for now) */
+}
+
+.gears_dropup
+{
+	display: flex;
+	flex-direction: row;
+}
+
+.message-image-preview
+{
+	height: 100px;
+	width: 80%;
+	display: block;
+	padding-left: 50px;
+}
+.message-image-preview img
+{ 
+	height: 100%;
 }
