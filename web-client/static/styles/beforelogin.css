@@ -53,6 +53,7 @@ body
 	background-size: cover;
 	overflow: hidden;
 	color: #F6F6F6;
+	padding-top: 100px;
 	border-bottom: 2px solid gray;
 }
 

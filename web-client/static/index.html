@@ -41,8 +41,9 @@
 		<meta name="theme-color" content="#d2d2d2">
 		
 		<!-- External js -->
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-		<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+		<script src="./bootstrap-3.3.6-dist/jquery-1.11.3.min.js"></script>
+		<script src="./bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
+
 
 		<!--[if lt IE 9]>
 			<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -114,8 +115,8 @@
 
 						<!-- LOGIN FORM ON THE TOP -->
 						<li><p class="navbar-text">Already have an account?</p></li>
-						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown">Login <span class="caret"></span></a>
+						<li class="dropdown" id="test">
+							<a href="#" id="drop" class="dropdown-toggle" data-toggle="dropdown">Login <span class="caret"></span></a>
 							<ul id="login-dropdown" class="dropdown-menu">
 								<li>
 									<div class="row">
@@ -175,7 +176,7 @@
 
 						</form>
 						<p>
-							Already have an account? <a href="#" onclick="function(){$('.dropdown-toggle').dropdown();}();" data-target="#login-dropdown">Click here to login.</a>
+							Already have an account? <a href="#">Click here to login.</a>
 						</p>
 					</div>
 				</div>
@@ -186,15 +187,27 @@
 		<div class="container" id="about">
 			<div class="row">
 				<div class="col-sm-6">
-					<img src="images/screenshot1.png" class="img-responsive" style="width:100%" alt="Image">
+					<img src="images/screenshot1.png" class="img-responsive" style="width:100%" alt="Screnshot 1">
 					<h1>Under the hood</h1>
 					<p>
-						The implementation is bad and I should feel bad. Oh wait, there isn't even one yet!
+						<s>The implementation is bad and I should feel bad. Oh wait, there isn't even one yet!</s>
+						The platform is based on modern technologies including JavaScript, WebSockets, HTML5, CSS3, Python and Flask.
 					</p>
 				</div>
 				<div class="col-sm-6">
-					<img src="https://placeholdit.imgix.net/~text?txtsize=128&txt=IMAGE&w=520&h=340&txttrack=0" class="img-responsive" style="width:100%" alt="Image">
-
+					<img src="images/screenshot2.png" class="img-responsive" style="width:100%"  alt="Screnshot 2">
+					<h1>Stay in touch</h1>
+					<p>
+						Connect to your favorite IRC servers and channels and stay there while you are not near your computer.
+						You can then connect from anywhere and resume chatting!
+					</p>
+				</div>
+				<div class="col-sm-12">
+					<img src="images/screenshot3.png" class="img-responsive" style="width:100%" alt="Temp">
+					<h1>Get the source</h1>
+					<p>
+						This implementation is fully open-sourced, meaning you can go get the source code and host your own cloud bouncer that is full of security holes!
+ 					</p>
 				</div>
 			</div>
 
