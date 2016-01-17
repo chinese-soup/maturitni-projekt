@@ -65,7 +65,7 @@
 
 
 	</head>
-	<body>
+	<body onload="onload();">
 		<!-- noscript alert -->
 		<noscript>
 			<span class="noscript-span">For full functionality of this site it is necessary to enable JavaScript.<br>Here are the <a href="http://www.enable-javascript.com/" target="_blank">  instructions how to enable JavaScript in your web browser</a>.</span>
@@ -80,29 +80,30 @@
 				<div class="left_content_container">
 					<div class="left_header left_content_item header_shadows">
 						<span class="header_text"> <!-- HIDE THIS ON PHONE RES SO WE CAN STILL REACH THE BUTTON -->
-							&#128172; <span class="hidden-sm hidden-xs">CloudChat</span>
+							<i class="icon-chat"></i> <span class="">CloudChat</span>
 						</span>
-						<span class="header_btn">
-							<button title="Collapse" style="height: 40px;" class="btn btn-primary" type="button">
+						<!--<span class="header_btn">
+							<button title="Collapse" style="height: 40px;" class="btn btn-primary" type="button" onclick="collapse_left_bar();">
 								<i class="icon-chevron-left"></i>
 							</button>
-						</span>
+						</span>-->
 					</div>
 					<div class="left_channels_container left_content_item">
 						<div class="left_channels_flex_container">
 							<ul class="channel_list">
 								<li class="left_channels_flex_item server_item">
 									<a href="#">Freenode <small>(irc.freenode.org/6667)</small></a>
-									<button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-										<i class="icon-settingsfour-gearsalt"></i> 
-									</button>
-										<ul class="dropdown-menu server_dropdown_ul">
+									<div class="dropdown">
+										<button class="btn dropdown-toggle dropdown_server_wheel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+											<i class="icon-settingsfour-gearsalt"></i> 
+										</button>
+										<ul class="dropdown-menu dropdown-menu-right">
 											<li><a href="#">Join another channel&hellip;</a></li>
 											<li><a href="#" onclick="disconnect_dialog('Freenode');">Disconnect</a></li>
 											<li role="separator" class="divider"></li>
 											<li><a href="#">Edit</a></li>
-
 										</ul>
+									</div>
 								</li>
 								<li class="left_channels_flex_item channel_item channel_item_active">
 									<a href="#">#new_messages</a>
@@ -115,16 +116,17 @@
 								</li>
 								<li class="left_channels_flex_item server_item server_item_disconnected">
 									<a href="#">ReallyLongNameOfANetwork <small>(irc.really-long-names-are.fun/6667)</small></a>
-									<button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-										<i class="icon-settingsfour-gearsalt"></i> 
-									</button>
-									<ul class="dropdown-menu server_dropdown_ul">
-										<li><a href="#">Join another channel&hellip;</a></li>
-										<li><a href="#" onclick="reconnect_dialog('ReallyLongNameOfANetwork');">Reconnect</a></li>
-										<li role="separator" class="divider"></li>
-										<li><a href="#">Edit</a></li>
-									</ul>
-								</li>
+										<div class="dropdown">
+										<button class="btn dropdown-toggle dropdown_server_wheel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+											<i class="icon-settingsfour-gearsalt"></i> 
+										</button>
+										<ul class="dropdown-menu dropdown-menu-right">
+											<li><a href="#">Join another channel&hellip;</a></li>
+											<li><a href="#" onclick="reconnect('ReallyLongNameOfANetwork');">Reconnect</a></li>
+											<li role="separator" class="divider"></li>
+											<li><a href="#">Edit</a></li>
+										</ul>
+									</div>
 								<li class="left_channels_flex_item channel_item">
 									<a href="#">#no_new_messages</a>
 								</li>
@@ -207,7 +209,7 @@
 						<div class="log_message log_message_even">
 								<span class="timestamp">01:00:34</span>
 								<span class="message-body"><span class="message-sender message-sender-5">MamRadObrazky</span>: <a href="http://i.imgur.com/8SkOwxA.png">http://i.imgur.com/8SkOwxA.png</a></span>
-								<span class="message-image-preview"><a href="http://i.imgur.com/8SkOwxA.png"><img src="http://i.imgur.com/8SkOwxA.png" target="_blank"></a></span>
+								<span class="message-image-preview"><a href="#" onclick="preview_images('http://i.imgur.com/8SkOwxA.png');"><img alt="Image preview" title="Image" src="http://i.imgur.com/8SkOwxA.png" target="_blank"></a></span>
 						</div>
 					</div>
 					<div class="input-group center_content_item" id="input-group-msgline">
@@ -220,9 +222,8 @@
 								<i class="icon-settingsfour-gearsalt"></i>
 							</button>
 							<ul class="dropdown-menu pull-right dropdown_menu_main_ul" aria-labelledby="dropdownMenuChannel">
-								<li><a href="#">Join another server&hellip;</a></li>
-								<li role="separator" class="divider"></li>
 								<li><a href="#">Channel settings&hellip;</a></li>
+								<li role="separator" class="divider"></li>
 								<li><a href="#">Leave this channel</a></li>
 							</ul>
 						</span>
@@ -231,7 +232,7 @@
 				<div class="center_content_container" id="center_content_global_settings" style="display: none;"> <!-- TODO: get rid of inline styles!! -->
 					<div class="center_header center_content_item header_shadows"> 
 						<span class="header_room_name">Global settings</span>
-						<span class="header_room_topic">Here you can set your global shit or sth.</span>
+						<span class="header_room_topic">Here you can set some global, non-server and non-channel related settings.</span>
 					</div>
 					<div class="center_content_item center_settings_container">
 						<form role="form" name="signup-form" id="signup-form" action="#register" method="post">

@@ -46,6 +46,7 @@ html, body
 	-webkit-box-shadow: -3px 0px 4px -3px rgba(0,86,112,1);
 	-moz-box-shadow: -3px 0px 4px -3px rgba(0,86,112,1);
 	box-shadow: -3px 0px 4px -3px rgba(0,86,112,1);	
+	background-color: rgb(54, 57, 62); /* fixes the animation transition being retarded */
 }
 
 /* Affects every container div in  the center layout */
@@ -328,13 +329,20 @@ html, body
 .server_item button
 {
 	height: 35px;
-	display: none;
+	display: flex;
 	background-color: transparent;
+}
+
+.dropdown
+{
+	z-index: 50000;
+	position: relative;
 }
 
 .server_item button:hover
 {
 	display: flex;
+	color: #FDFDFD;
 	background-color: transparent;
 }
 
@@ -450,12 +458,12 @@ html, body
 
 .message-image-preview
 {
-	height: 100px;
+	height: 150px;
 	width: 80%;
 	display: block;
-	padding-left: 50px;
+	padding-left: 60px;
 }
 .message-image-preview img
-{ 
-	height: 100%;
+{
+	height: 100%; 
 }

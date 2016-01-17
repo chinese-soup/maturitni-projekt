@@ -2,8 +2,8 @@ function toggle_center_column(what_to_show)
 {	
 	if(what_to_show == "center_content_global_settings")
 	{
-		$("#center_content_message").fadeToggle(500);
-		$("#center_content_global_settings").fadeToggle(500);
+		$("#center_content_message").slideToggle(300);
+		$("#center_content_global_settings").toggle();
 	}
 	else if(what_to_show == "center_content_")
 	{
@@ -11,10 +11,22 @@ function toggle_center_column(what_to_show)
 	}
 	else
 	{
-		$("#center_content_message").fadeToggle(500);
-		$("#center_content_global_settings").fadeToggle(500);
+		$("#center_content_message").slideToggle(300);
+		$("#center_content_global_settings").toggle();
 	}
 }
+
+function join_another_channel(server)
+{
+
+}
+
+function on_load()
+{
+	// hack hack, hide  the wheels next to servers
+	$(".dropdown_server_wheel").css("display", "none");
+}
+
 
 function save_settings(what_settings)
 {
@@ -44,8 +56,8 @@ function save_settings(what_settings)
 			{
 				dialog.close();
 			}, 2500);
-			$("#center_content_global_settings").fadeToggle(500);
-			$("#center_content_message").fadeToggle(500);
+			$("#center_content_global_settings").slideToggle(500)
+			$("#center_content_message").toggle();
 		}
 		else if(failed == true)
 		{
@@ -60,4 +72,32 @@ function disconnect_dialog(what_server) /* make api calls from here as well??? *
 	BootstrapDialog.show({
 		message: '<span style="color: red">Hi Apple!</span>'
 	});
+}
+
+function preview_images(url)
+{
+	var dialog = new BootstrapDialog({
+		title: 'Image preview',
+		buttons: [
+		{
+			label: 'Open image URL',
+			action: function(dialog)
+			{
+				dialog.close();
+				window.open(url, "_blank");
+			}
+		},
+		{
+			label: 'Close',
+			action: function(dialog)
+			{
+				dialog.close();
+			}
+		}
+		]
+	});
+	dialog.realize();
+	dialog.setSize(BootstrapDialog.SIZE_WIDE);
+	dialog.setMessage("<img class='img-responsive' src=" + url + ">")
+	dialog.open();
 }
