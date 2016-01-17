@@ -16,9 +16,21 @@ function toggle_center_column(what_to_show)
 	}
 }
 
-function join_another_channel(server)
+function join_channel_dialog(server)
 {
 
+	var dialog = new BootstrapDialog({
+		title: 'Join a channel on ' + server,
+		message: $('<div></div>').load('channel_join.html'),
+	});
+	$("#channel_to_join_submit_button").on("click", dialog, function(event)
+	{
+		dialog.close();
+	})
+	dialog.realize();		
+	dialog.setSize(BootstrapDialog.SIZE_SMALL);
+    dialog.getModalFooter().hide();
+	dialog.open();
 }
 
 function on_load()
@@ -69,9 +81,31 @@ function save_settings(what_settings)
 
 function disconnect_dialog(what_server) /* make api calls from here as well??? */
 {
-	BootstrapDialog.show({
-		message: '<span style="color: red">Hi Apple!</span>'
+	    var dialog = new BootstrapDialog({
+	    title: 'Disconnecting from ' + what_server,
+		buttons: [
+		{
+			label: 'Disconnect',
+			action: function(dialog)
+			{
+				// disconnect
+				dialog.close();
+			}
+		},
+		{
+			label: 'Cancel',
+			action: function(dialog)
+			{
+				dialog.close();
+			}
+		}
+		]
 	});
+	dialog.realize();
+	dialog.getModalBody().css("color", "red");
+	dialog.setMessage("Are you sure you want to disconnect from '" + what_server + "'?")
+	dialog.open()
+
 }
 
 function preview_images(url)
