@@ -1,18 +1,31 @@
+function onload()
+{
+	console.log("onload();")
+}
+
 function toggle_center_column(what_to_show)
 {	
-	if(what_to_show == "center_content_global_settings")
+	if(what_to_show == "global_settings")
 	{
-		$("#center_content_message").slideToggle(300);
-		$("#center_content_global_settings").toggle();
+		$("#center_content_message").hide();
+		$("#center_content_edit_server").hide();
+		$("#center_content_global_settings").show();
+		console.log("global_setting");
+		
 	}
-	else if(what_to_show == "center_content_")
+	else if(what_to_show == "edit_server")
 	{
-
+		$("#center_content_message").hide();
+		$("#center_content_global_settings").hide();
+		$("#center_content_edit_server").show();
+		console.log("edit_server");
 	}
 	else
 	{
-		$("#center_content_message").slideToggle(300);
-		$("#center_content_global_settings").toggle();
+		$("#center_content_message").show();
+		$("#center_content_edit_server").hide();
+		$("#center_content_global_settings").hide();
+		console.log("messagesd");
 	}
 }
 
@@ -68,8 +81,7 @@ function save_settings(what_settings)
 			{
 				dialog.close();
 			}, 2500);
-			$("#center_content_global_settings").slideToggle(500)
-			$("#center_content_message").toggle();
+			toggle_center_column("messages");
 		}
 		else if(failed == true)
 		{

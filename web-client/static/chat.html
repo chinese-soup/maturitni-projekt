@@ -101,7 +101,7 @@
 											<li><a href="#" onclick="join_channel_dialog('Freenode');">Join another channel&hellip;</a></li>
 											<li><a href="#" onclick="disconnect_dialog('Freenode');">Disconnect</a></li>
 											<li role="separator" class="divider"></li>
-											<li><a href="#">Edit</a></li>
+											<li><a href="#" onclick="toggle_center_column('edit_server');">Edit</a></li>
 										</ul>
 									</div>
 								</li>
@@ -123,7 +123,7 @@
 										<ul class="dropdown-menu dropdown-menu-right">
 											<li><a href="#" onclick="reconnect('ReallyLongNameOfANetwork');">Reconnect</a></li>
 											<li role="separator" class="divider"></li>
-											<li><a href="#">Edit</a></li>
+											<li><a href="#" onclick="toggle_center_column('edit_server');">Edit</a></li>
 										</ul>
 									</div>
 								<li class="left_channels_flex_item channel_item">
@@ -144,12 +144,12 @@
 									</button>
 									<ul class="dropdown-menu pull-right dropdown_menu_main_ul" aria-labelledby="dropdownAccount">
 										<li><a href="#" onclick="">Join another server&hellip;</a></li>
-										<li><a href="#setings" onclick="toggle_center_column('center_content_global_settings');">Settings&hellip;</a></li>
+										<li><a href="#setings" onclick="toggle_center_column('global_settings');">Settings&hellip;</a></li>
 										<li role="separator" class="divider"></li>
 										<li><a href="#">Help</a></li>
 										<li><a href="#">About</a></li>
 										<li role="separator" class="divider"></li>
-										<li><a href="#" onclick="global_logout();">Logout</a></li>
+										<li><a href="index.html">Logout</a></li>
 									</ul>
 								</div>
 							</div>
@@ -228,13 +228,14 @@
 						</span>
 					</div>
 				</div> <!-- center_content_container -->
+				
 				<div class="center_content_container" id="center_content_global_settings" style="display: none;"> <!-- TODO: get rid of inline styles!! -->
 					<div class="center_header center_content_item header_shadows"> 
 						<span class="header_room_name">Global settings</span>
 						<span class="header_room_topic">Here you can set some global, non-server and non-channel related settings.</span>
 					</div>
 					<div class="center_content_item center_settings_container">
-						<form role="form" name="signup-form" id="signup-form" action="#register" method="post">
+						<form role="form" name="global-settings-form" id="global-settings-form" action="#register" method="post">
 							<div class="form-group col-sm-6">
 								<label for="nickname">Nickname:</label>
 								<input type="text" class="form-control" id="nickname" placeholder="nickname">
@@ -264,16 +265,62 @@
 								<input type="checkbox" id="show_seconds_checkbox" value="true">
 							</div>
 							<div class="form-group col-sm-6">
-								<label for="show_seconds">Show join/quit/part messages:</label>
+								<label for="show_joinpartquit_messages">Show join/quit/part messages:</label>
 								<input type="checkbox" id="show_joinpartquit_messages" value="true">
 							</div>
 							<div class="form-group col-sm-12">
-								<button class="btn btn-primary" type="button" id="save_global_settings_button" onclick="save_settings('global');">Save</button>
-								<button class="btn btn-primary" type="button" id="close_global_settings_button" onclick="toggle_center_column('center_content_global_settings');">Close</button>
+								<button class="btn btn-primary" type="button" id="save_global_settings_button" onclick="save_settings('global');">Save changes</button>
+								<button class="btn btn-primary" type="button" id="close_global_settings_button" onclick="toggle_center_column('messages');">Close without saving changes</button>
 							</div>
 						</form>
 					</div>
 				</div>
+
+				<div class="center_content_container" id="center_content_edit_server" style="display: none;"> <!-- TODO: get rid of inline styles!! -->
+					<div class="center_header center_content_item header_shadows"> 
+						<span class="header_room_name">Edit server settings</span>
+						<span class="header_room_topic">Here you can edit server settings for '%s'.</span>
+					</div>
+					<div class="center_content_item center_settings_container">
+						<form role="form" name="server-edit" id="server-edit-form" action="#" method="post">
+							<div class="form-group col-sm-6">
+								<label for="nickname">Nickname <small>(leave empty to use the global setting one)</small>:</label>
+								<input type="text" class="form-control" id="server_edit_nickname" placeholder="nickname">
+							</div>
+							<div class="form-group col-sm-6">
+								<label for="nickname">Username <small>(leave empty to use the global setting one)</small>:</label>
+								<input type="text" class="form-control" id="server_edit_username" placeholder="username">
+							</div>
+							<div class="form-group col-sm-6">
+								<label for="nickname">Realname <small>(leave empty to use the global setting one)</small>:</label>
+								<input type="text" class="form-control" id="server_edit_realname" placeholder="realname">
+							</div>
+							<div class="form-group col-sm-6">
+								<label for="nickname">Password <small>(leave empty if not required)</small>:</label>
+								<input type="password" class="form-control" id="server_edit_password" placeholder="nickname">
+							</div>
+							<div class="form-group col-sm-6">
+								<label for="nickname">Server IP/Hostname:</label>
+								<input type="text" class="form-control" id="server_edit_ip" placeholder="irc.freenode.org">
+							</div>
+							<div class="form-group col-sm-6">
+								<label for="nickname">Port number:</label>
+								<input type="number" class="form-control" id="server_edit_portno" placeholder="6667">
+							</div>
+							<div class="form-group col-sm-6">
+								<label for="use_ssl_tls">Use SSL/TLS:</label>
+								<input type="checkbox" id="use_tls_ssl_checkbox" value="true">
+							</div>
+							</div>
+							<div class="form-group col-sm-12">
+								<button class="btn btn-primary" type="button" id="save_global_settings_button" onclick="save_settings('global');">Save settings and close</button>
+								<button class="btn btn-primary" type="button" id="save_global_settings_button" onclick="delete_server('asdf');">Delete this server</button>
+								<button class="btn btn-primary" type="button" id="close_global_settings_button" onclick="toggle_center_column('edit_server');">Close without saving changes</button>
+							</div>
+						</form>
+					</div>
+				</div>
+
 
 			</div><!--/column_toplevel_center-->
 		</div><!--/big-container-->		
