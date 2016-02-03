@@ -71,8 +71,20 @@ def login():
             print("Reached the end of checking the session cookie with the one in DB.",
                   "The current cookie session does not exist. Gonna relog now.")
 
+        # remove any original session we had (stupid, but whatever, I'd rather pass my last year of high school than have a good session system
+        cursor = db.cursor()
+        result_code = cursor.execute("DELETE FROM `User_sessions` WHERE `Registred_users_userID` = %s", (_id,))
+        db.commit()
+
+        generated_sessionID = str("testicek") # TODO: Fix
+        print(generated_sessionID)
+        result_code = cursor.execute("""INSERT INTO `User_sessions` (session_id, Registred_users_userID) values (%s, %s)""", (generated_sessionID, _id), )
+        db.commit()
+
+        if result_code is not 0:
+            return jsonify(status="ok", message="Logged in successfully.", cookie="ok", sessionid=generated_sessionID)
         else:
-            return jsonify(status="ok", message=str(values))
+            return error("An error occurred while trying to log you in.")
 
     elif result_code is 0:
         return error("The login information you have provided is incorrect. Check your email address and password and try again.", db)
