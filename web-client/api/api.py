@@ -1,6 +1,18 @@
 #!/usr/bin/env python3
 # coding=utf-8
 # neumim programovat
+# TODO: http://flask.pocoo.org/docs/0.10/patterns/packages/
+# TODO: http://flask.pocoo.org/docs/0.10/patterns/packages/
+# TODO: http://flask.pocoo.org/docs/0.10/patterns/packages/
+# TODO: http://flask.pocoo.org/docs/0.10/patterns/packages/
+# TODO: http://flask.pocoo.org/docs/0.10/patterns/packages/
+# TODO: http://flask.pocoo.org/docs/0.10/patterns/packages/
+# TODO: http://flask.pocoo.org/docs/0.10/patterns/packages/
+# TODO: http://flask.pocoo.org/docs/0.10/patterns/packages/
+# TODO: http://flask.pocoo.org/docs/0.10/patterns/packages/
+# TODO: http://flask.pocoo.org/docs/0.10/patterns/packages/
+# TODO: http://flask.pocoo.org/docs/0.10/patterns/packages/
+
 
 # db access lib
 import MySQLdb
@@ -10,7 +22,6 @@ from passlib.hash import sha512_crypt
 
 # randomness for session IDs
 from os import urandom
-
 
 from flask import Flask, request, jsonify
 app = Flask(__name__)
