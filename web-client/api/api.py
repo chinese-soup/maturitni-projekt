@@ -12,7 +12,14 @@
 # TODO: http://flask.pocoo.org/docs/0.10/patterns/packages/
 # TODO: http://flask.pocoo.org/docs/0.10/patterns/packages/
 # TODO: http://flask.pocoo.org/docs/0.10/patterns/packages/
-
+# TODO2: http://flask.pocoo.org/docs/0.10/deploying/mod_wsgi/
+# TODO2: http://flask.pocoo.org/docs/0.10/deploying/mod_wsgi/
+# TODO2: http://flask.pocoo.org/docs/0.10/deploying/mod_wsgi/
+# TODO2: http://flask.pocoo.org/docs/0.10/deploying/mod_wsgi/
+# TODO2: http://flask.pocoo.org/docs/0.10/deploying/mod_wsgi/
+# TODO2: http://flask.pocoo.org/docs/0.10/deploying/mod_wsgi/
+# TODO2: http://flask.pocoo.org/docs/0.10/deploying/mod_wsgi/
+# TODO2: http://flask.pocoo.org/docs/0.10/deploying/mod_wsgi/
 
 # db access lib
 import MySQLdb
