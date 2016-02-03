@@ -2,7 +2,7 @@
 # coding=utf-8
 # neumim programovat
 
-# db
+# db access lib
 import MySQLdb
 
 # passlib for password hashing
@@ -49,23 +49,31 @@ def login():
     cursor = db.cursor()
     result_code = cursor.execute("""SELECT * FROM `Registered_users` WHERE `email` = %s AND `password` = %s""", (_email, _hashed_password))
 
-    if result_code is not 0: # use is not for extra speed (not like it matters, all code around here is slow anyway)
+    if result_code is not 0: # use "is not" for extra speed (not like it matters, all code around here is slow anyway)
         values = cursor.fetchone()
         _id = values[0]
-        _email = values[1]
 
         if "sessionid" in request.cookies:
             cookies_sessionid = request.cookies.get("sessionid")
+            cursor = db.cursor()
             result_code = cursor.execute("""SELECT * FROM `User_sessions` WHERE `Registred_users_userID` = %s""", (_id,))
             if result_code is not 0:
-                session_id = cursor.fetchone()
-                if session_id == request.cookies["sessionid"]:
-                    print("At this point, we are already logged in. Redirect the user here.")
+                session_id = cursor.fetchone()[0]
+
+                session_id_cookie = request.cookies.get("sessionid")
+                print("session_id DB:", session_id)
+                print("session_id cookie:", session_id_cookie)
+
+                if session_id == session_id_cookie:
+                    print("At this point, we are already logged in. TODO: Redirect the user here!!!!")
                     return error("You are already logged in.", db)
+
+            print("Reached the end of checking the session cookie with the one in DB.",
+                  "The current cookie session does not exist. Gonna relog now.")
+
 
 
         else:
-
             return jsonify(status="ok", message=str(values))
 
     elif result_code is 0:
