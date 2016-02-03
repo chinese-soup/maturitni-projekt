@@ -20,6 +20,12 @@
 # TODO2: http://flask.pocoo.org/docs/0.10/deploying/mod_wsgi/
 # TODO2: http://flask.pocoo.org/docs/0.10/deploying/mod_wsgi/
 # TODO2: http://flask.pocoo.org/docs/0.10/deploying/mod_wsgi/
+# TODO3: Check for invalid data in forms
+# TODO3: Check for invalid data in forms
+# TODO3: Check for invalid data in forms
+# TODO3: Check for invalid data in forms
+# TODO3: Check for invalid data in forms
+
 
 # db access lib
 import MySQLdb
@@ -30,7 +36,7 @@ from passlib.hash import sha512_crypt
 # randomness for session IDs
 from os import urandom
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, redirect
 app = Flask(__name__)
 
 from werkzeug.exceptions import default_exceptions
@@ -128,20 +134,20 @@ def register():
 
         if exists is not 0:
             db.close()
-            return error("A user with that email is already registered. Login!", db)
+            return error("A user with that email is already registered. Please login!", db) # TODO: Tell user to login
         elif exists is 0:
             a = cursor.execute("""INSERT INTO `Registered_users` (email, password, isActivated) values (%s, %s, %s);""", (_email, _hashed_password, 1),)
             db.commit()
             if a == 1:
-                return jsonify(status="ok", message="Your account was sucessfully registered. You can now login.")
+                #return jsonify(status="ok", message="Your account was sucessfully registered. You can now login.")
+                return redirect("login.html?reg=success", code=200)
             else:
                 return error("Uknown error occurred, please try again later.", db)
         else:
             return "Error"
     except Exception as exp:
-        return error(exp)
-    finally:
-        db.close()
+        print("Hello" + str(exp))
+
 
 @app.route("/get_servers", methods=["GET", "POST"])
 def get_servers():
