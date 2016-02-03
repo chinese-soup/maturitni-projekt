@@ -71,15 +71,13 @@ def login():
             print("Reached the end of checking the session cookie with the one in DB.",
                   "The current cookie session does not exist. Gonna relog now.")
 
-
-
         else:
             return jsonify(status="ok", message=str(values))
 
     elif result_code is 0:
-        return error("The login information you have provided is incorrect.", db)
+        return error("The login information you have provided is incorrect. Check your email address and password and try again.", db)
 
-    return jsonify(status="error", message="REACHED END OF LOGIN() WITHOUT RETURNING BEFORE THAT")
+    return jsonify(status="error", message="REACHED END OF LOGIN() WITHOUT RETURNING BEFORE THAT, THIS SHOULD NEVER HAPPEN.")
 
 
 @app.route("/register", methods=["GET", "POST"])
