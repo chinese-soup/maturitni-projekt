@@ -57,8 +57,8 @@ def get_messages():
 
 @app.route("/login", methods=["POST"])
 def login():
-    _email = request.form.get("email") # WARNING: make lower() because USER@EXAMPLE.COM is the same as UsER@eXamPle.com !!!!!
-    _password = request.form.get("password")
+    _email = request.form.get("email_login") # WARNING: make lower() because USER@EXAMPLE.COM is the same as UsER@eXamPle.com !!!!!
+    _password = request.form.get("password_login")
     _email = str(_email).lower()
     _hashed_password = sha512_crypt.encrypt(_password, salt="CodedSaltIsBad")
 
