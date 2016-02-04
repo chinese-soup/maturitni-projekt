@@ -120,8 +120,9 @@ def login():
 def register():
     db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
     try:
-        _email = request.args.get("email") # WARNING: make lower() because USER@EXAMPLE.COM is the same as UsER@eXamPle.com !!!!!
-        _password = request.args.get("password")
+        print(request.form)
+        _email = request.form.get("email") # WARNING: make lower() because USER@EXAMPLE.COM is the same as UsER@eXamPle.com !!!!!
+        _password = request.form.get("password")
         _email = str(_email).lower()
         _hashed_password = sha512_crypt.encrypt(_password, salt="CodedSaltIsBad")
         print("EMAIL =", _email)

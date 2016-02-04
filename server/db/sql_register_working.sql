@@ -6,7 +6,7 @@ use `cloudchatdb`;
 #insert into `User_sessions` (session_id, Registred_users_userID) values ("asdf", 20);
 
 
-#select * from `Registered_users`;
 select * from `User_sessions`;
+select * from `Registered_users`;
 #SELECT (email) FROM `Registered_users` WHERE `email` = 'test@localhost';
 #insert into `Registered_users` (email, password, isActivated) values ("test@localhost", "heslicko", 1);
