@@ -12,7 +12,7 @@
 }*/
 function homePageOnLoad()
 {
-    var signup_form = document.getElementsByName("signup-form")[0];
+    var signup_form = document.getElementById("signup-form");
     signup_form.addEventListener("submit", register);
 }
 

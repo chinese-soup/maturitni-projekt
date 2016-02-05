@@ -119,35 +119,34 @@ def login():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
-    try:
-        print(request.form)
-        _email = request.form.get("email") # WARNING: make lower() because USER@EXAMPLE.COM is the same as UsER@eXamPle.com !!!!!
-        _password = request.form.get("password")
-        _email = str(_email).lower()
-        _hashed_password = sha512_crypt.encrypt(_password, salt="CodedSaltIsBad")
-        print("EMAIL =", _email)
-        print("PASSWORD =", _password)
-        print("PASSWORD =", _hashed_password)
 
-        cursor = db.cursor()
-        cursor.execute("""SELECT (email) FROM `Registered_users` WHERE `email` = %s;""", (_email,))
-        exists = db.affected_rows()
+    print(request.form.getlist("email"))
+    _email = request.form.getlist("email") # WARNING: make lower() because USER@EXAMPLE.COM is the same as UsER@eXamPle.com !!!!!
+    _password = request.form.getlist("password")
+    _email = str(_email).lower()
+    _hashed_password = sha512_crypt.encrypt(_password, salt="CodedSaltIsBad")
+    print("EMAIL =", _email)
+    print("PASSWORD =", _password)
+    print("PASSWORD =", _hashed_password)
 
-        if exists is not 0:
-            db.close()
-            return error("A user with that email is already registered. Please login!", db) # TODO: Tell user to login
-        elif exists is 0:
-            a = cursor.execute("""INSERT INTO `Registered_users` (email, password, isActivated) values (%s, %s, %s);""", (_email, _hashed_password, 1),)
-            db.commit()
-            if a == 1:
-                #return jsonify(status="ok", message="Your account was sucessfully registered. You can now login.")
-                return redirect("login.html?reg=success", code=200)
-            else:
-                return error("Uknown error occurred, please try again later.", db)
+    cursor = db.cursor()
+    cursor.execute("""SELECT (email) FROM `Registered_users` WHERE `email` = %s;""", (_email,))
+    exists = db.affected_rows()
+
+    if exists is not 0:
+        db.close()
+        return error("A user with that email is already registered. Please login!", db) # TODO: Tell user to login
+    elif exists is 0:
+        a = cursor.execute("""INSERT INTO `Registered_users` (email, password, isActivated) values (%s, %s, %s);""", (_email, _hashed_password, 1),)
+        db.commit()
+        if a == 1:
+            #return jsonify(status="ok", message="Your account was sucessfully registered. You can now login.")
+            return redirect("login.html?reg=success", code=200)
         else:
-            return "Error"
-    except Exception as exp:
-        print("Hello" + str(exp))
+            return error("Uknown error occurred, please try again later.", db)
+    else:
+        return "Error"
+
 
 
 @app.route("/get_servers", methods=["GET", "POST"])
