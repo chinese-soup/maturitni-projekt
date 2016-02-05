@@ -20,7 +20,12 @@ function homePageOnLoad()
 function register(event)
 {
 
-    $.post( 'http://localhost:5000/register', { email: "meme@meme.com", password: "passwordlol" } , function(data)
+    $.post("http://localhost:5000/register",
+    {
+        email: $("#signup-form input[id=email]").val(),
+        password: $("#signup-form input[id=pwd]").val()
+    },
+    function(data)
     {
         console.log(data);
     },

@@ -137,7 +137,6 @@ def register():
     exists = db.affected_rows()
 
     if exists is not 0:
-        db.close()
         return error("A user with that email is already registered. Please login!", db) # TODO: Tell user to login
     elif exists is 0:
         a = cursor.execute("""INSERT INTO `Registered_users` (email, password, isActivated) values (%s, %s, %s);""", (_email, _hashed_password, 1),)
