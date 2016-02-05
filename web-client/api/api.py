@@ -39,18 +39,21 @@ from os import urandom
 from flask import Flask, request, jsonify, redirect
 app = Flask(__name__)
 
+
 from werkzeug.exceptions import default_exceptions
 from werkzeug.exceptions import HTTPException
 
 
+@app.after_request
+def after_request(response):
+  response.headers.add('Access-Control-Allow-Origin', '*')
+  response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Cookies')
+  response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+  return response
+
 def error(error, db_pointer):
     db_pointer.close()
     return jsonify(status="error", message=str(error))
-
-@app.after_request
-def cross_site_requests_enable(resp): # USED FOR DEBUGGING AS THE SERVER LISTENS ON :5000
-    resp.headers["Access-Control-Allow-Origin"] = request.headers.get("Origin", "*")
-    return resp
 
 @app.route("/")
 def hello_world():
@@ -119,10 +122,10 @@ def login():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
-
+    print(request.form)
     print(request.form.getlist("email"))
-    _email = request.form.getlist("email") # WARNING: make lower() because USER@EXAMPLE.COM is the same as UsER@eXamPle.com !!!!!
-    _password = request.form.getlist("password")
+    _email = request.form.get("email") # WARNING: make lower() because USER@EXAMPLE.COM is the same as UsER@eXamPle.com !!!!!
+    _password = request.form.get("password")
     _email = str(_email).lower()
     _hashed_password = sha512_crypt.encrypt(_password, salt="CodedSaltIsBad")
     print("EMAIL =", _email)

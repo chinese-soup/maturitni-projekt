@@ -19,7 +19,8 @@ function homePageOnLoad()
 /*  makes an api call to register an account */
 function register(event)
 {
-    $.post( 'http://localhost:5000/register', $('form#signup-form').serialize(), function(data)
+
+    $.post( 'http://localhost:5000/register', { email: "meme@meme.com", password: "passwordlol" } , function(data)
     {
         console.log(data);
     },
