@@ -8,5 +8,6 @@ use `cloudchatdb`;
 
 select * from `User_sessions`;
 select * from `Registered_users`;
+delete from `Registered_users` where like %%;
 #SELECT (email) FROM `Registered_users` WHERE `email` = 'test@localhost';
 #insert into `Registered_users` (email, password, isActivated) values ("test@localhost", "heslicko", 1);

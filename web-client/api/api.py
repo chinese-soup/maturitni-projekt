@@ -33,6 +33,9 @@ import MySQLdb
 # passlib for password hashing
 from passlib.hash import sha512_crypt
 
+# re for regular expressions parsing
+import re
+
 # randomness for session IDs
 from os import urandom
 
@@ -43,6 +46,9 @@ app = Flask(__name__)
 from werkzeug.exceptions import default_exceptions
 from werkzeug.exceptions import HTTPException
 
+def validate_email(email):
+    regexp = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
+    re.match(email, regexp)
 
 @app.after_request
 def after_request(response):

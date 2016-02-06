@@ -2,10 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e47bbbae-1c4e-42ef-88b9-697ea23f2b17" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/db/sql_register_working.sql" afterPath="$PROJECT_DIR$/server/db/sql_register_working.sql" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web-client/api/api.py" afterPath="$PROJECT_DIR$/web-client/api/api.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web-client/static/js/general-dialog.js" afterPath="$PROJECT_DIR$/web-client/static/js/general-dialog.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web-client/static/js/homepage.js" afterPath="$PROJECT_DIR$/web-client/static/js/homepage.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web-client/static/js/loginpage.js" afterPath="$PROJECT_DIR$/web-client/static/js/loginpage.js" />
     </list>
     <ignored path="maturitni-projekt.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -51,20 +50,20 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="api.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="api.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/web-client/api/api.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="157" column="72" selection-start-line="157" selection-start-column="72" selection-end-line="157" selection-end-column="72" />
+            <state vertical-scroll-proportion="0.6220096">
+              <caret line="50" column="27" selection-start-line="50" selection-start-column="27" selection-end-line="50" selection-end-column="27" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="homepage.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="homepage.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/web-client/static/js/homepage.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.7200957">
+            <state vertical-scroll-proportion="0.0">
               <caret line="46" column="105" selection-start-line="46" selection-start-column="105" selection-end-line="46" selection-end-column="105" />
               <folding />
             </state>
@@ -158,10 +157,10 @@
         <option value="$PROJECT_DIR$/web-client/static/js/ui_functions.js" />
         <option value="$PROJECT_DIR$/web-client/static/login.html" />
         <option value="$PROJECT_DIR$/web-client/static/index.html" />
-        <option value="$PROJECT_DIR$/web-client/api/api.py" />
         <option value="$PROJECT_DIR$/web-client/static/js/loginpage.js" />
         <option value="$PROJECT_DIR$/web-client/static/js/general-dialog.js" />
         <option value="$PROJECT_DIR$/web-client/static/js/homepage.js" />
+        <option value="$PROJECT_DIR$/web-client/api/api.py" />
       </list>
     </option>
   </component>
@@ -559,9 +558,9 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="1680" y="18" width="1364" height="748" extended-state="0" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.34462446" sideWeight="0.5021994" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.34462446" sideWeight="0.5021994" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14956012" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -805,18 +804,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/web-client/api/api.py">
+    <entry file="file://$PROJECT_DIR$/web-client/static/js/homepage.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="157" column="72" selection-start-line="157" selection-start-column="72" selection-end-line="157" selection-end-column="72" />
+          <caret line="46" column="105" selection-start-line="46" selection-start-column="105" selection-end-line="46" selection-end-column="105" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/web-client/static/js/homepage.js">
+    <entry file="file://$PROJECT_DIR$/web-client/api/api.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7200957">
-          <caret line="46" column="105" selection-start-line="46" selection-start-column="105" selection-end-line="46" selection-end-column="105" />
+        <state vertical-scroll-proportion="0.6220096">
+          <caret line="50" column="27" selection-start-line="50" selection-start-column="27" selection-end-line="50" selection-end-column="27" />
           <folding />
         </state>
       </provider>
