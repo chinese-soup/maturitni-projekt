@@ -89,7 +89,7 @@
 		</noscript>
 
 		<!-- topnav bar -->
-		<nav class="navbar-inverse navbar-default navbar-fixed-top" role="navigation" id="top">
+		<nav class="navbar-inverse navbar-default navbar-fixed-top" role="navigation">
 			<div class="container-fluid">
 				<div class="navbar-header">
 					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbarTop">
@@ -102,10 +102,10 @@
 				</div>
 				<div class="collapse navbar-collapse" id="navbarTop">
 					<ul class="nav navbar-nav">
-						<li class="active">
+						<li class="active" id="navbar-home-button">
 							<a href="#top">Home</a>
 						</li>
-						<li>
+						<li id="navbar-about-button">
 							<a href="#about">About</a>
 						</li>
 					</ul>
@@ -120,7 +120,8 @@
 
 						<!-- LOGIN FORM ON THE TOP -->
 						<li><p class="navbar-text">Already have an account?</p></li>
-						<li class="dropdown" id="test">
+                        <li><p class="navbar-text"><a href="login.html">Login</a></p></li>
+						<!--<li class="dropdown" id="test">
 							<a href="login.html" id="drop" class="dropdown-toggle" data-toggle="dropdown">Login <span class="caret"></span></a>
 							<ul id="login-dropdown" class="dropdown-menu">
 								<li>
@@ -135,9 +136,9 @@
 													<label class="label sr-only" for="password_login">Password:</label>
 													<input type="password" class="form-control" id="password_login" name="password_login" placeholder="●●●●●●●●">
 												</div>
-												<!--<div class="checkbox">
+												<div class="checkbox">
 													<label class=" label-inverse"><input type="checkbox">Remember me on this computer</label>
-												</div>-->
+												</div>
 												<button type="submit" class="btn btn-primary btn-block"><span class="glyphicon glyphicon-log-in"></span> Login</button>
 												<p>
 													Forgot your password? <a href="#" data-toggle="modal" data-target="#modalResetPasswd" style="font-weight: bold;">Reset it!</a>
@@ -145,7 +146,7 @@
 											</form>
 										</div>
 									</div>
-								</li>
+								</li>-->
 							</ul>
 						</li>
 					</ul>

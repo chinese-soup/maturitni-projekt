@@ -1,17 +1,25 @@
-/*window.onhashchange = function()
-{
-  switch(location.hash) {
-    case '#exists':
-
-    break;
-  }
-}*/
-
 /* function loaded on page load */
 function homePageOnLoad()
 {
     var signup_form = document.getElementById("signup-form");
     signup_form.addEventListener("submit", register);
+}
+
+
+
+window.onhashchange = function()
+{
+  switch(location.hash) {
+    case '#about':
+        $("#navbar-home-button").removeClass("active");
+        $("#navbar-about-button").addClass("active");
+    break;
+    case '#top':
+        $("#navbar-home-button").addClass("active");
+        $("#navbar-about-button").removeClass("active");
+        $('html,body').scrollTop(0);
+    break
+  }
 }
 
 /*
@@ -20,7 +28,6 @@ function homePageOnLoad()
  */
 function register(event)
 {
-    if()
     var posting = $.post("http://localhost:5000/register",
     {
         email: $("#signup-form input[id=email]").val(),
@@ -28,7 +35,7 @@ function register(event)
     }, dataType='json'
     );
 
-    posting.success(function(data)
+    posting.done(function(data)
     {
         console.log(data);
         json_parsed = data;
@@ -43,7 +50,7 @@ function register(event)
         }
     });
 
-    posting.error(function()
+    posting.fail(function()
     {
          general_dialog("Registration failed", "An error occurred while trying to contact the API server.", "error", 2);
     });

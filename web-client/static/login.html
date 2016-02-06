@@ -56,9 +56,10 @@
 		<![endif]-->
 
 	</head>
-	<body>
-		<!-- reset pasword modal window -->
-		<div class="modal fade" id="modalResetPasswd" tabindex="-1">
+
+	<body onload="homePageOnLoad();">
+	<!-- reset pasword modal window -->
+	<div class="modal fade" id="modalResetPasswd" tabindex="-1">
 		 <div class="modal-dialog">
 			<div class="modal-content">
 
@@ -102,11 +103,14 @@
 				</div>
 				<div class="collapse navbar-collapse" id="navbarTop">
 					<ul class="nav navbar-nav">
-						<li class="active">
-							<a href="#top">Home</a>
+						<li>
+							<a href="index.html">Home</a>
 						</li>
 						<li>
-							<a href="#about">About</a>
+							<a href="index.html#about">About</a>
+						</li>
+						<li class="active">
+							<a href="login.html">Login</a>
 						</li>
 					</ul>
 
@@ -126,7 +130,7 @@
 
 					<div class="col-sm-6">
 						<h2>Login:</h2>
-						<form class="form" role="form" name="login-form" id="login-form" action="http://localhost:5000/login" method="post">
+						<form class="form" role="form" name="login-form" id="login-form" action="#attempt" method="post">
                             <div class="form-group">
                                 <label class="label sr-only" for="email_login">Email address:</label>
                                 <input type="email" class="form-control" id="email_login" name="email_login" placeholder="user@example.com">
@@ -142,10 +146,11 @@
                             <p>
                                 Forgot your password? <a href="#" data-toggle="modal" data-target="#modalResetPasswd" style="font-weight: bold;">Reset it!</a>
                             </p>
+							<p>
+							Don't have an account yet? <a href="index.html">Go check out the homepage to sign up!</a>
+							</p>
                         </form>
-						<p>
-							Don't have an account yet? <a href="#">Go check out the homepage to sign up!</a>
-						</p>
+
 					</div>
 				</div>
 

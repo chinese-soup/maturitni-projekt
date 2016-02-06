@@ -1,3 +1,12 @@
+/* function loaded on page load */
+function loginPageOnLoad()
+{
+    var login_form = document.getElementById("login-form");
+    login_form.addEventListener("submit", login);
+}
+
+
+
 window.onhashchange = function()
 {
   switch(location.hash) {
@@ -14,20 +23,13 @@ window.onhashchange = function()
   }
 }
 
-/* function loaded on page load */
-function homePageOnLoad()
-{
-    var signup_form = document.getElementById("login-form");
-    signup_form.addEventListener("submit", register);
-}
 
 /*
- *  register(event): function called upon submitting the registration form;
- *  makes an api call to register an account
+ *  login(event): function called upon submitting the login form;
+ *  makes an api call to login an account
  */
 function login(event)
 {
-    if()
     var posting = $.post("http://localhost:5000/login",
     {
         email: $("#login-form input[id=email]").val(),
@@ -35,24 +37,16 @@ function login(event)
     }, dataType='json'
     );
 
-    posting.success(function(data)
+    posting.done(function(data)
     {
         console.log(data);
         json_parsed = data;
-        if(json_parsed["status"] == "ok" && json_parsed["reason"] == "reg_success")
-        {
-            window.location = "login.html#regsuccess";
-        }
-        else if(json_parsed["status"] == "error")
-        {
-            console.log(json_parsed["message"]);
-            general_dialog("Registration failed", json_parsed["message"], "error", 2);
-        }
+
     });
 
-    posting.error(function()
+    posting.fail(function()
     {
-         general_dialog("Registration failed", "An error occurred while trying to contact the API server.", "error", 2);
+         general_dialog("Login failed", "An error occurred while trying to contact the API server.", "error", 2);
     });
 
     event.preventDefault();

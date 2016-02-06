@@ -46,9 +46,13 @@ app = Flask(__name__)
 from werkzeug.exceptions import default_exceptions
 from werkzeug.exceptions import HTTPException
 
-def validate_email(email_to_check): # TODO: maybe move to api_utils or sth??????
+def is_email_valid(email_to_check): # TODO: maybe move to api_utils or sth??????
     regexp = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
-    re.match(regexp, email_to_check)
+    result = re.match(regexp, email_to_check)
+    if result is None:
+        return False
+    else:
+        return True
 
 @app.after_request
 def after_request(response):
@@ -57,9 +61,8 @@ def after_request(response):
   response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
   return response
 
-def error(error, db_pointer):
-    db_pointer.close()
-    return jsonify(status="error", message=str(error))
+def error(_status, _reason, _message):
+    return jsonify(status=_status, reason=_reason, message=_message)
 
 @app.route("/")
 def hello_world():
@@ -99,7 +102,7 @@ def login():
 
                 if session_id == session_id_cookie:
                     print("At this point, we are already logged in. TODO: Redirect the user here!!!!")
-                    return error("You are already logged in.", db)
+                    return error("You are already logged in.", "already_loggedin", "")
 
             print("Reached the end of checking the session cookie with the one in DB.",
                   "The current cookie session does not exist. Gonna relog now.")
@@ -126,21 +129,31 @@ def login():
     return jsonify(status="error", message="REACHED END OF LOGIN() WITHOUT RETURNING BEFORE THAT, THIS SHOULD NEVER HAPPEN.")
 
 
-@app.route("/register", methods=["GET", "POST"])
+@app.route("/register", methods=["POST"])
 def register():
     db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+    _email = None
+    _password = None
+    try:
+        _email = request.form.get("email").lower() or None # WARNING: make lower() because USER@EXAMPLE.COM is the same as UsER@eXamPle.com !!!!!
+        _password = request.form.get("password") or None
+    except:
+        return jsonify(status="error", reason="email_invalid", message="The email address you have specified is invalid.")
 
-    _email = request.form.get("email") # WARNING: make lower() because USER@EXAMPLE.COM is the same as UsER@eXamPle.com !!!!!
-    _password = request.form.get("password")
+    if _email == is_email_valid(_email) == False: # checking for email's validness automatically already checks if it's empty
+        return jsonify(status="error", reason="email_invalid", message="The email address you have specified is invalid.")
+    if _password == None:
+        return jsonify(status="error", reason="password_empty", message="The password is empty.")
+
     _email = str(_email).lower()
     _hashed_password = sha512_crypt.encrypt(_password, salt="CodedSaltIsBad")
 
     cursor = db.cursor()
     cursor.execute("""SELECT (email) FROM `Registered_users` WHERE `email` = %s;""", (_email,))
-
     exists_result = db.affected_rows()
+
     if exists_result is not 0:
-        return jsonify(status="error", reason="account_exists", message="An account with this email address is already registered, please login.")
+        return jsonify(status="error", reason="account_exists", message="An account with this email address is already registered,<br>please login instead.")
     elif exists_result is 0:
         _result = cursor.execute("""INSERT INTO `Registered_users` (email, password, isActivated) values (%s, %s, %s);""", (_email, _hashed_password, 1),)
         db.commit()
