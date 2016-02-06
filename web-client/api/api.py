@@ -105,6 +105,7 @@ def login():
 
         generated_sessionID = str("testicek") # TODO: Fix
         print(generated_sessionID)
+
         result_code = cursor.execute("""INSERT INTO `User_sessions` (session_id, Registred_users_userID) values (%s, %s)""", (generated_sessionID, _id), )
         db.commit()
 
@@ -122,33 +123,27 @@ def login():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
-    print(request.form)
-    print(request.form.getlist("email"))
+
     _email = request.form.get("email") # WARNING: make lower() because USER@EXAMPLE.COM is the same as UsER@eXamPle.com !!!!!
     _password = request.form.get("password")
     _email = str(_email).lower()
     _hashed_password = sha512_crypt.encrypt(_password, salt="CodedSaltIsBad")
-    print("EMAIL =", _email)
-    print("PASSWORD =", _password)
-    print("PASSWORD =", _hashed_password)
 
     cursor = db.cursor()
     cursor.execute("""SELECT (email) FROM `Registered_users` WHERE `email` = %s;""", (_email,))
-    exists = db.affected_rows()
 
-    if exists is not 0:
-        return error("A user with that email is already registered. Please login!", db) # TODO: Tell user to login
-    elif exists is 0:
-        a = cursor.execute("""INSERT INTO `Registered_users` (email, password, isActivated) values (%s, %s, %s);""", (_email, _hashed_password, 1),)
+    exists_result = db.affected_rows()
+    if exists_result is not 0:
+        return jsonify(status="error", reason="account_exists", message="An account with this email address is already registered, please login.")
+    elif exists_result is 0:
+        result = cursor.execute("""INSERT INTO `Registered_users` (email, password, isActivated) values (%s, %s, %s);""", (_email, _hashed_password, 1),)
         db.commit()
         if a == 1:
-            #return jsonify(status="ok", message="Your account was sucessfully registered. You can now login.")
-            return redirect("login.html?reg=success", code=200)
+            return jsonify(status="ok", reason="reg_success", message="Your account was sucessfully registered. You can now login.")
         else:
-            return error("Uknown error occurred, please try again later.", db)
+            return jsonify(status="error", reason="insert_failed", message="Account registration failed.")
     else:
-        return "Error"
-
+        return jsonify(status="error", reason="insert_failed", message="Account registration failed.")
 
 
 @app.route("/get_servers", methods=["GET", "POST"])

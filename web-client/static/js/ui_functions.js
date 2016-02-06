@@ -1,3 +1,5 @@
+/* THIS FILE DEPENDS ON bootstrap-dialog */
+
 function onload()
 {
 	console.log("onload();")
@@ -49,10 +51,9 @@ function join_channel_dialog(server)
 
 function on_load()
 {
-	// hack hack, hide  the wheels next to servers
+	// hack hack, hide the wheels next to servers
 	$(".dropdown_server_wheel").css("display", "none");
 }
-
 
 function save_settings(what_settings)
 {
