@@ -28,6 +28,8 @@ window.onhashchange = function()
  */
 function register(event)
 {
+    $("body").css("cursor", "wait"); // indicate to the user that we are working on stuff
+
     var posting = $.post("http://localhost:5000/register",
     {
         email: $("#signup-form input[id=email]").val(),
@@ -41,10 +43,13 @@ function register(event)
         json_parsed = data;
         if(json_parsed["status"] == "ok" && json_parsed["reason"] == "reg_success")
         {
-            window.location = "login.html#regsuccess";
+            $("body").css("cursor", "pointer");
+            $("#signup-form input").val("");
+            general_dialog("Registration successful", "You have successfully registered.<br>You can now <a href='login.html'>login</a>.", "success", 2);
         }
         else if(json_parsed["status"] == "error")
         {
+            $("body").css("cursor", "pointer");
             console.log(json_parsed["message"]);
             general_dialog("Registration failed", json_parsed["message"], "error", 2);
         }

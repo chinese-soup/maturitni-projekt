@@ -38,6 +38,8 @@ import re
 
 # randomness for session IDs
 from os import urandom
+from base64 import b64encode
+from time import time
 
 from flask import Flask, request, jsonify, redirect
 app = Flask(__name__)
@@ -48,11 +50,34 @@ from werkzeug.exceptions import HTTPException
 
 def is_email_valid(email_to_check): # TODO: maybe move to api_utils or sth??????
     regexp = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
-    result = re.match(regexp, email_to_check)
+    result = re.match(regexp, str(email_to_check)) # if we conv to string we don't have to care about checking if the string is None and the regexp will just say it's not a valid email address, i will forever wonder what is faster, probably checking for None, but we may never be sure and I am too lazy to test it out so instead I am writing out this long comment on a single line without word wrapping just to calm myself down
     if result is None:
         return False
     else:
         return True
+
+def error(_status, _reason, _message):
+    return jsonify(status=_status, reason=_reason, message=_message)
+
+
+# this function checks for a sessionID in the database and joins it with the userID of a user
+def get_userID_if_loggedin(request):
+    if "sessionid" in request.cookies:
+        session_id_cookie = request.cookies.get("sessionid")
+        cursor = db.cursor()
+        result_code = cursor.execute("""SELECT * FROM `User_sessions` WHERE `session_id` = %s""", (cookies_sessionid,))
+        if result_code is not 0:
+            session_id = cursor.fetchone()[0]
+            userID = cursor.fetchone()[2]
+            if session_id == session_id_cookie:
+                return (True, userID)
+            else:
+                return False
+        else:
+            return False
+    else:
+        return False
+
 
 @app.after_request
 def after_request(response):
@@ -61,8 +86,6 @@ def after_request(response):
   response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
   return response
 
-def error(_status, _reason, _message):
-    return jsonify(status=_status, reason=_reason, message=_message)
 
 @app.route("/")
 def hello_world():
@@ -73,11 +96,24 @@ def hello_world():
 def get_messages():
     return "get_messages()"
 
+@app.route("/logout", methods=["POST"])
+def logout(request):
+    if "sessionid" in request.cookies:
+        print("asdf")
+
+@app.route("/upon_login", methods=["POST"])
+def session_check():
+    if get_userID_if_loggedin(request) is not False:
+        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+
+        cursor = db.cursor()
+        cursor.execute("""SELECT * FROM `Registered_users` WHERE `email` = %s AND `password` = %s""", (_email, _hashed_password))
+
+
 @app.route("/login", methods=["POST"])
 def login():
-    _email = request.form.get("email_login") # WARNING: make lower() because USER@EXAMPLE.COM is the same as UsER@eXamPle.com !!!!!
-    _password = request.form.get("password_login")
-    _email = str(_email).lower()
+    _email = request.form.get("email").lower() # WARNING: make lower() because USER@EXAMPLE.COM is the same as UsER@eXamPle.com !!!!!
+    _password = request.form.get("password")
     _hashed_password = sha512_crypt.encrypt(_password, salt="CodedSaltIsBad")
 
     db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
@@ -101,8 +137,8 @@ def login():
                 print("session_id cookie:", session_id_cookie)
 
                 if session_id == session_id_cookie:
-                    print("At this point, we are already logged in. TODO: Redirect the user here!!!!")
-                    return error("You are already logged in.", "already_loggedin", "")
+                    print("At this point, we are already logged in. Redirect the user here!!!!")
+                    return jsonify(status="ok", reason="already_loggedin", message="You are already logged in.")
 
             print("Reached the end of checking the session cookie with the one in DB.",
                   "The current cookie session does not exist. Gonna relog now.")
@@ -112,19 +148,19 @@ def login():
         result_code = cursor.execute("DELETE FROM `User_sessions` WHERE `Registred_users_userID` = %s", (_id,))
         db.commit()
 
-        generated_sessionID = str("testicek") # TODO: Fix
-        print(generated_sessionID)
+        generated_sessionID = b64encode(urandom(64)).decode("utf-8")
+        print("Generated sessionID", generated_sessionID)
 
         result_code = cursor.execute("""INSERT INTO `User_sessions` (session_id, Registred_users_userID) values (%s, %s)""", (generated_sessionID, _id), )
         db.commit()
 
-        if result_code is not 0:
-            return jsonify(status="ok", message="Logged in successfully.", cookie="ok", sessionid=generated_sessionID)
+        if result_code != 0:
+            return jsonify(status="ok", reason="cookie_ok", message="Logged in successfully.", sessionid=generated_sessionID)
         else:
-            return error("An error occurred while trying to log you in.")
+            return error("error", "loginerror", "An error occurred while trying to log you in.")
 
     elif result_code is 0:
-        return error("The login information you have provided is incorrect. Check your email address and password and try again.", db)
+        return error("error", "badlogin", "The login information you have provided is incorrect. Check your email address and password and try again.")
 
     return jsonify(status="error", message="REACHED END OF LOGIN() WITHOUT RETURNING BEFORE THAT, THIS SHOULD NEVER HAPPEN.")
 
@@ -140,7 +176,7 @@ def register():
     except:
         return jsonify(status="error", reason="email_invalid", message="The email address you have specified is invalid.")
 
-    if _email == is_email_valid(_email) == False: # checking for email's validness automatically already checks if it's empty
+    if is_email_valid(_email) == False: # checking for email's validness automatically already checks if it's empty
         return jsonify(status="error", reason="email_invalid", message="The email address you have specified is invalid.")
     if _password == None:
         return jsonify(status="error", reason="password_empty", message="The password is empty.")
