@@ -9,7 +9,6 @@ function general_dialog(_title, _message, _result, _timeout) /* make api calls f
 			label: 'OK',
 			action: function(dialog)
 			{
-				// disconnect
 				dialog.close();
 			}
 		},

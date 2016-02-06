@@ -136,9 +136,10 @@ def register():
     if exists_result is not 0:
         return jsonify(status="error", reason="account_exists", message="An account with this email address is already registered, please login.")
     elif exists_result is 0:
-        result = cursor.execute("""INSERT INTO `Registered_users` (email, password, isActivated) values (%s, %s, %s);""", (_email, _hashed_password, 1),)
+        _result = cursor.execute("""INSERT INTO `Registered_users` (email, password, isActivated) values (%s, %s, %s);""", (_email, _hashed_password, 1),)
         db.commit()
-        if a == 1:
+
+        if _result == 1:
             return jsonify(status="ok", reason="reg_success", message="Your account was sucessfully registered. You can now login.")
         else:
             return jsonify(status="error", reason="insert_failed", message="Account registration failed.")

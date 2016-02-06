@@ -24,8 +24,10 @@ function register(event)
     {
         email: $("#signup-form input[id=email]").val(),
         password: $("#signup-form input[id=pwd]").val()
-    },
-    function(data)
+    }, dataType='json'
+    );
+
+    posting.success(function(data)
     {
         console.log(data);
         json_parsed = data;
@@ -38,9 +40,12 @@ function register(event)
             console.log(json_parsed["message"]);
             general_dialog("Registration failed", json_parsed["message"], "error", 2);
         }
-    },
-       'json'
-    );
+    });
+
+    posting.error(function()
+    {
+         general_dialog("Registration failed", "An error occurred while trying to contact the API server.", "error", 2);
+    });
 
     event.preventDefault();
     return false;
