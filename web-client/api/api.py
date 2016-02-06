@@ -46,9 +46,9 @@ app = Flask(__name__)
 from werkzeug.exceptions import default_exceptions
 from werkzeug.exceptions import HTTPException
 
-def validate_email(email):
+def validate_email(email_to_check): # TODO: maybe move to api_utils or sth??????
     regexp = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
-    re.match(email, regexp)
+    re.match(regexp, email_to_check)
 
 @app.after_request
 def after_request(response):

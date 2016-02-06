@@ -20,6 +20,7 @@ function homePageOnLoad()
  */
 function register(event)
 {
+    if()
     var posting = $.post("http://localhost:5000/register",
     {
         email: $("#signup-form input[id=email]").val(),
