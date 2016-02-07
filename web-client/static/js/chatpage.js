@@ -10,6 +10,7 @@ function onChatLoad()
 {
     console.log("onChatLoad();");
     checkIfUserIsLoggedInOnStart();
+
 }
 
 
@@ -29,7 +30,7 @@ function showLoadingMemeCircleInsteadOfTheElement(target_element)
 
 function sendUserAway(url, time)
 {
-    setTimeout(sendUserAwayTimeout(url), time);
+    setTimeout(sendUserAwayTimeout, time, url);
 }
 
 function sendUserAwayTimeout(url)
@@ -37,6 +38,29 @@ function sendUserAwayTimeout(url)
     window.location.href = url;
 }
 
+/* call before every command just to see if the user is still logged in */
+/* returns true (loggedin) /false (notloggedin) */
+function isUserLoggedIn()
+{
+    var posting = $.post("http://localhost:5000/check_session", {}, datatype="text");
+    posting.done(function(data)
+    {
+        console.log("Hello");
+        if(data["status"] == "ok" && data["reason"])
+        {
+            return true;
+        }
+
+    })
+
+    posting.fail(function(data)
+    {
+        console.log("Checking user's session failed.");
+        return false;
+    })
+
+    return false;
+}
 
 function checkIfUserIsLoggedInOnStart()
 {
@@ -48,13 +72,13 @@ function checkIfUserIsLoggedInOnStart()
     posting.done(function(data)
     {
         console.log(data);
-        json_parsed = data;
         if(data["status"] == "error")
         {
             if(data["reason"] == "not_loggedin")
             {
                 general_dialog("Access denied: You are not logged in.", data["message"], "error");
                 /*sendUserAway("login.html", 3000);*/
+                sendUserAway("login.html", 2000);
             }
         }
         else if(data["status"] == "ok")
@@ -63,6 +87,7 @@ function checkIfUserIsLoggedInOnStart()
            {
                 //general_dialog("OK", "OK", "success");
                 $("#loggedin_email_status").text(data["message"]);
+                loadServers();
            }
         }
 
@@ -74,6 +99,22 @@ function checkIfUserIsLoggedInOnStart()
     });
 }
 
+
+function loadServers()
+{
+    console.log("loadServers();");
+    var posting = $.post("http://localhost:5000/get_server_list",
+    {
+    }, dataType="text"
+    );
+
+    posting.done(function(data)
+    {
+        console.log(data);
+    });
+}
+
+
 function logout()
 {
    var posting = $.post("http://localhost:5000/logout",
@@ -84,13 +125,12 @@ function logout()
     posting.done(function(data)
     {
         console.log(data);
-        json_parsed = data;
         if(data["status"] == "error")
         {
-            if(data["reason"] == not_loggedin)
+            if(data["reason"] == "not_loggedin")
             {
                 general_dialog("Couldn't log you out.", data["message"], data["status"]);
-                sendUserAway("login.html", 3000);
+                sendUserAway("login.html", 4000);
             }
         }
         else if(data["status"] == "ok")

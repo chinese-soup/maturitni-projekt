@@ -46,7 +46,6 @@ function login(event)
     posting.done(function(data)
     {
         console.log(data);
-        json_parsed = data;
         if(data["status"] == "ok")
         {
             if(data["reason"] == "already_loggedin")

@@ -113,10 +113,6 @@ def hello_world():
         asdf = dict(status="ok", message="API is up.")
         return jsonify(asdf)
 
-@app.route("/get_messages")
-def get_messages():
-    return "get_messages()"
-
 @app.route("/logout", methods=["POST"])
 def logout():
     if "sessionid" in request.cookies:
@@ -156,7 +152,7 @@ def logout():
 
         return response
     else:
-         data = jsonify(status="error", reason="not_loggedin", message="You are not logged in.")
+         return jsonify(status="error", reason="not_loggedin", message="You are not logged in.")
 
 @app.route("/upon_login", methods=["POST"])
 def upon_login():
@@ -235,7 +231,7 @@ def login():
             return error("error", "loginerror", "An error occurred while trying to log you in.")
 
     elif result_code is 0:
-        return error("error", "badlogin", "The login information you have provided is incorrect. Check your email address and password and try again.")
+        return error("error", "badlogin", "The login information you have provided is incorrect.<br>Check your email address and password and try again.")
 
     return jsonify(status="error", message="REACHED END OF LOGIN() WITHOUT RETURNING BEFORE THAT, THIS SHOULD NEVER HAPPEN.")
 
@@ -277,15 +273,28 @@ def register():
         return jsonify(status="error", reason="insert_failed", message="Account registration failed.")
 
 
-@app.route("/get_servers", methods=["GET", "POST"])
-def get_servers():
-    db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
-    cursor = db.cursor()
-    cursor.execute("SHOW TABLES;")
+@app.route("/get_server_list", methods=["GET", "POST"])
+def get_server_list():
+    userID = get_userID_if_loggedin(request)
+    print("UserID = ", userID)
 
-    tables = cursor.fetchall()
+    if userID is not False:
+        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+        cursor = db.cursor()
+        cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s;""", (userID,))
+        result = cursor.fetchall()
+        print(result)
+        return error("error", "debug", str(result))
 
-    return "get_servers();" + str(tables) + str(request.args.get("lol"))
+    else:
+        return error("error", "not_loggedin", "You are not logged in.")
+
+
+@app.route("/get_messages")
+def get_messages():
+    return "get_messages()"
+
 
 if __name__ == '__main__':
     app.run(debug=True)
+

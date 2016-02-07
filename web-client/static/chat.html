@@ -1,338 +1,303 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<!-- TODO: CLEAN UP, CLEAN UP NAMES -->
-		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>CloudChatApp</title>
+<head>
+    <!-- TODO: CLEAN UP, CLEAN UP NAMES -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CloudChatApp</title>
 
-		<!-- TODO: CDN libs when done -->
-		
-		<!-- Bootstrap libs -->
-		<link rel="stylesheet" href="./bootstrap-3.3.6-dist/css/bootstrap.min.css">
-		
-		<!-- Bootstrap-dialog -->
-		<link rel="stylesheet" href="./bootstrap3-dialog/bootstrap-dialog.css">
+    <!-- TODO: CDN libs when done -->
 
-		<!--  -->
-		<link rel="stylesheet" href="./styles/normalize.css">
-		<link rel="stylesheet" href="./styles/noscript.css">
-		
-		<!-- moje -->
-		<link rel="stylesheet" href="./styles/mainapp.css">
+    <!-- Bootstrap libs -->
+    <link rel="stylesheet" href="./bootstrap-3.3.6-dist/css/bootstrap.min.css">
 
-		<!-- GLYPHS -->
-		<link rel="stylesheet" href="./fonts/whhg-font/css/whhg.css">
+    <!-- Bootstrap-dialog -->
+    <link rel="stylesheet" href="./bootstrap3-dialog/bootstrap-dialog.css">
 
+    <!--  -->
+    <link rel="stylesheet" href="./styles/normalize.css">
+    <link rel="stylesheet" href="./styles/noscript.css">
 
-		<!-- FAVICONS GENERATED -->
-		<link rel="apple-touch-icon" sizes="57x57" href="./icons/favicon/apple-touch-icon-57x57.png">
-		<link rel="apple-touch-icon" sizes="60x60" href="./icons/favicon/apple-touch-icon-60x60.png">
-		<link rel="apple-touch-icon" sizes="72x72" href="./icons/favicon/apple-touch-icon-72x72.png">
-		<link rel="apple-touch-icon" sizes="76x76" href="./icons/favicon/apple-touch-icon-76x76.png">
-		<link rel="apple-touch-icon" sizes="114x114" href="./icons/favicon/apple-touch-icon-114x114.png">
-		<link rel="apple-touch-icon" sizes="120x120" href="./icons/favicon/apple-touch-icon-120x120.png">
-		<link rel="apple-touch-icon" sizes="144x144" href="./icons/favicon/apple-touch-icon-144x144.png">
-		<link rel="apple-touch-icon" sizes="152x152" href="./icons/favicon/apple-touch-icon-152x152.png">
-		<link rel="apple-touch-icon" sizes="180x180" href="./icons/favicon/apple-touch-icon-180x180.png">
-		<link rel="icon" type="image/png" href="./icons/favicon/favicon-32x32.png" sizes="32x32">
-		<link rel="icon" type="image/png" href="./icons/favicon/android-chrome-192x192.png" sizes="192x192">
-		<link rel="icon" type="image/png" href="./icons/favicon/favicon-96x96.png" sizes="96x96">
-		<link rel="icon" type="image/png" href="./icons/favicon/favicon-16x16.png" sizes="16x16">
-		<link rel="manifest" href="./icons/favicon/manifest.json">
-		<link rel="mask-icon" href="./icons/favicon/safari-pinned-tab.svg" color="#5bbad5">
-		<link rel="shortcut icon" href="./icons/favicon/favicon.ico">
-		<meta name="msapplication-TileColor" content="#da532c">
-		<meta name="msapplication-TileImage" content="./icons/favicon/mstile-144x144.png">
-		<meta name="msapplication-config" content="./icons/favicon/browserconfig.xml">
-		<meta name="theme-color" content="#d2d2d2">
-		
-		<!-- External js -->
-		<script src="./bootstrap-3.3.6-dist/jquery-1.11.3.min.js"></script>
-		<script src="./bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
+    <!-- moje -->
+    <link rel="stylesheet" href="./styles/mainapp.css">
 
-		<script src="./js/chatpage.js"></script>
-
-        <script src="./js/general-dialog.js"></script>
+    <!-- GLYPHS -->
+    <link rel="stylesheet" href="./fonts/whhg-font/css/whhg.css">
 
 
-		<!-- Bootstrap3-dialog -->
-		<script src="./bootstrap3-dialog/bootstrap-dialog.js"></script>
+    <!-- FAVICONS GENERATED -->
+    <link rel="apple-touch-icon" sizes="57x57" href="./icons/favicon/apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="./icons/favicon/apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="./icons/favicon/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="./icons/favicon/apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="./icons/favicon/apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="./icons/favicon/apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="./icons/favicon/apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="./icons/favicon/apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="./icons/favicon/apple-touch-icon-180x180.png">
+    <link rel="icon" type="image/png" href="./icons/favicon/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="./icons/favicon/android-chrome-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="./icons/favicon/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="./icons/favicon/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="./icons/favicon/manifest.json">
+    <link rel="mask-icon" href="./icons/favicon/safari-pinned-tab.svg" color="#5bbad5">
+    <link rel="shortcut icon" href="./icons/favicon/favicon.ico">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="./icons/favicon/mstile-144x144.png">
+    <meta name="msapplication-config" content="./icons/favicon/browserconfig.xml">
+    <meta name="theme-color" content="#d2d2d2">
 
-		<script src="./js/ui_functions.js"></script>
-		
+    <!-- External js -->
+    <script src="./bootstrap-3.3.6-dist/jquery-1.11.3.min.js"></script>
+    <script src="./bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
 
-		<!--[if lt IE 9]>
-			<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-			<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-		<![endif]-->
+    <script src="./js/chatpage.js"></script>
+
+    <script src="./js/general-dialog.js"></script>
 
 
-	</head>
-	<body onload="onChatLoad();">
-		<!-- noscript alert -->
-       <noscript>
-            <meta http-equiv="refresh" content="0; url=index.html"> <!-- Redirect the user because what's the point of him being here without js (and how did he even get here without it?) -->
-			<span class="noscript-span">For full functionality of this site it is necessary to enable JavaScript.<br>Here are the <a href="http://www.enable-javascript.com/" target="_blank">  instructions how to enable JavaScript in your web browser</a>.</span>
-		</noscript>
+    <!-- Bootstrap3-dialog -->
+    <script src="./bootstrap3-dialog/bootstrap-dialog.js"></script>
 
-		<!-- main container class -->
-		
-		<div class="big-container">
-			
-			<!-- sidebar -->			
-			<div id="column_toplevel_left" class="col-xs-3 main-column"> <!-- hidden-xs-->
-				<div class="left_content_container">
-					<div class="left_header left_content_item header_shadowD:\s">
+    <script src="./js/ui_functions.js"></script>
+
+
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+</head>
+<body onload="onChatLoad();">
+<!-- noscript alert -->
+<noscript>
+    <meta http-equiv="refresh" content="0; url=index.html"> <!-- Redirect the user because what's the point of him being here without js (and how did he even get here without it?) -->
+    <span class="noscript-span">For full functionality of this site it is necessary to enable JavaScript.<br>Here are the <a href="http://www.enable-javascript.com/" target="_blank">  instructions how to enable JavaScript in your web browser</a>.</span>
+</noscript>
+
+<!-- main container class -->
+
+<div class="big-container">
+
+    <!-- sidebar -->
+    <div id="column_toplevel_left" class="col-xs-3 main-column"> <!-- hidden-xs-->
+        <div class="left_content_container">
+            <div class="left_header left_content_item header_shadowD:\s">
 						<span class="header_text"> <!-- HIDE THIS ON PHONE RES SO WE CAN STILL REACH THE BUTTON -->
 							<i class="icon-chat"></i> <span class="">CloudChat</span>
 						</span>
-						<!--<span class="header_btn">
-							<button title="Collapse" style="height: 40px;" class="btn btn-primary" type="button" onclick="collapse_left_bar();">
-								<i class="icon-chevron-left"></i>
-							</button>
-						</span>-->
-					</div>
-					<div class="left_channels_container left_content_item">
-						<div class="left_channels_flex_container">
-							<ul class="channel_list">
-								<li class="left_channels_flex_item server_item">
-									<a href="#">Freenode <small>(irc.freenode.org/6667)</small></a>
-									<div class="dropdown">
-										<button class="btn dropdown-toggle dropdown_server_wheel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-											<i class="icon-settingsfour-gearsalt"></i> 
-										</button>
-										<ul class="dropdown-menu dropdown-menu-right">
-											<li><a href="#" onclick="join_channel_dialog('Freenode');">Join another channel&hellip;</a></li>
-											<li><a href="#" onclick="disconnect_dialog('Freenode');">Disconnect</a></li>
-											<li role="separator" class="divider"></li>
-											<li><a href="#" onclick="toggle_center_column('edit_server');">Edit</a></li>
-										</ul>
-									</div>
-								</li>
-								<li class="left_channels_flex_item channel_item channel_item_active">
-									<a href="#">#new_messages</a>
-								</li>
-								<li class="left_channels_flex_item channel_item">
-									<a href="#">#no_new_messages</a>
-								</li>
-								<li class="left_channels_flex_item channel_item channel_item_focused">
-									<a href="#">#test123_focused</a>
-								</li>
-								<li class="left_channels_flex_item server_item server_item_disconnected">
-									<a href="#">ReallyLongNameOfANetwork <small>(irc.really-long-names-are.fun/6667)</small></a>
-										<div class="dropdown">
-										<button class="btn dropdown-toggle dropdown_server_wheel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-											<i class="icon-settingsfour-gearsalt"></i> 
-										</button>
-										<ul class="dropdown-menu dropdown-menu-right">
-											<li><a href="#" onclick="reconnect('ReallyLongNameOfANetwork');">Reconnect</a></li>
-											<li role="separator" class="divider"></li>
-											<li><a href="#" onclick="toggle_center_column('edit_server');">Edit</a></li>
-										</ul>
-									</div>
-								<li class="left_channels_flex_item channel_item">
-									<a href="#">#no_new_messages</a>
-								</li>
-							</ul>
-						</div>
-					</div>
-					<div class="left_account_container left_content_item">
-						<div class="container left_footer">
-							<div class="dropup gears_dropup"> <!-- TODO: GET RID OF INLINE STYLING IN THIS SECTION -->
-								<div><!-- HIDE THIS ON PHONE RES SO WE CAN STILL REACH THE BUTTON -->
-									<span class="hidden-xs hidden-sm hidden-md">Logged in as: </span><b><span id="loggedin_email_status">loading...</span></b>
-								</div>
-								<div class="gears_button">
-									<button class="btn btn-primary pull-right dropdown-toggle" type="button" id="dropdownAccount" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-										<i class="icon-settingsthree-gears"></i>
-									</button>
-									<ul class="dropdown-menu pull-right dropdown_menu_main_ul" aria-labelledby="dropdownAccount">
-										<li><a href="#" onclick="toggle_center_column('edit_server');">Join another server&hellip;</a></li>
-										<li><a href="#setings" onclick="toggle_center_column('global_settings');">Settings&hellip;</a></li>
-										<li role="separator" class="divider"></li>
-										<li><a href="#">Help</a></li>
-										<li><a href="#">About</a></li>
-										<li role="separator" class="divider"></li>
-										<li><a href="logout.html">Logout</a></li>
-									</ul>
-								</div>
-							</div>
-							
-						</div>
-					</div>
-				</div> <!--/center_content-->
-			</div><!--/column_toplevel_left-->
-			
-			<!-- main content -->
-			<div id="column_toplevel_center" class="col-xs-9 main-column">
-				<!-- TODO: vyresit zpravy v ramci message containeru -->
-				<!-- TODO: vyresit prekryvani nastaveni/etc./ -->
-				<!-- TODO: vyresit zmensovani leveho panelu -->
-				<!-- TODO: vyresit togglovani leveho panelu -->
+                <!--<span class="header_btn">
+                    <button title="Collapse" style="height: 40px;" class="btn btn-primary" type="button" onclick="collapse_left_bar();">
+                        <i class="icon-chevron-left"></i>
+                    </button>
+                </span>-->
+            </div>
+            <div class="left_channels_container left_content_item">
+                <div class="left_channels_flex_container">
+                    <ul class="channel_list">
+                        <li class="left_channels_flex_item server_item">
+                            <div class="loading-ajax"></div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="left_account_container left_content_item">
+                <div class="container left_footer">
+                    <div class="dropup gears_dropup"> <!-- TODO: GET RID OF INLINE STYLING IN THIS SECTION -->
+                        <div><!-- HIDE THIS ON PHONE RES SO WE CAN STILL REACH THE BUTTON -->
+                            <span class="hidden-xs hidden-sm hidden-md">Logged in as: </span><b><span id="loggedin_email_status">loading...</span></b>
+                        </div>
+                        <div class="gears_button">
+                            <button class="btn btn-primary pull-right dropdown-toggle" type="button" id="dropdownAccount" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="icon-settingsthree-gears"></i>
+                            </button>
+                            <ul class="dropdown-menu pull-right dropdown_menu_main_ul" aria-labelledby="dropdownAccount">
+                                <li><a href="#" onclick="toggle_center_column('edit_server');">Join another server&hellip;</a></li>
+                                <li><a href="#setings" onclick="toggle_center_column('global_settings');">Settings&hellip;</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="#">Help</a></li>
+                                <li><a href="#">About</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="#logout" onclick="logout();">Logout</a></li>
+                            </ul>
+                        </div>
+                    </div>
 
-				<!-- CENTER_CONTENT = CHANNEL_VIEW, others: settings, some other shit? -->
-				<div class="center_content_container" id="center_content_message">
-					<div class="center_header center_content_item header_shadows"> <!-- topic -->
-						<span class="header_room_name">#test123_focused <small>(nickname @ Freenode)</small></span>
-						<span class="header_room_topic"><b>Topic</b>: Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet.</span>
-					</div>
-					<div class="center_messages_container center_content_item"> <!-- log container -->
-						<div class="log_message log_message_even">
-							<span class="timestamp">00:59:12</span>
-							<span class="message-body"><span class="message-sender message-sender-1">@Marii</span>: お後がまたよろしくて</span>
-						</div>
-						<div class="log_message log_message_odd">
-								<span class="timestamp">00:59:16</span>
-								<span class="message-body"><span class="message-sender message-sender-1">@Marii</span>: お先も前もよろしくね</span>
-						</div>
-						<div class="log_message log_message_even">
-								<span class="timestamp">00:59:20</span>
-								<span class="message-body"><span class="message-sender message-sender-1">@Marii</span>: 謎解きドキドキ指南</span>
-						</div>
-						<div class="log_message log_message_odd">
-								<span class="timestamp">00:59:24</span>
-								<span class="message-body"><span class="message-sender message-sender-2">@Tetora</span>: 仕掛けがアリアリです</span>
-						</div>
-						<div class="log_message log_message_even">
-								<span class="timestamp">00:59:27</span>
-								<span class="message-body"><span class="message-sender message-sender-3">@Kigu</span>: じょし的お悩みは双六? 賽を振って!</span>
-						</div>
-						<div class="log_message log_message_odd">
-								<span class="timestamp">00:59:29</span>
-								<span class="message-body"><span class="message-sender message-sender-1">@Marii</span>: はいはい！</span>
-						</div>
-						<div class="log_message log_message_even">
-								<span class="timestamp">00:59:29</span>
-								<span class="message-body"><span class="message-sender message-sender-2">@Tetora</span>: はいはい！</span>
-						</div>
-						<div class="log_message log_message_odd">
-								<span class="timestamp">00:59:29</span>
-								<span class="message-body"><span class="message-sender message-sender-4">@Gan</span>: はいはい！</span>
-						</div>
-						<div class="log_message log_message_even">
-								<span class="timestamp">01:00:34</span>
-								<span class="message-body"><span class="message-sender message-sender-5">MamRadObrazky</span>: <a href="http://i.imgur.com/8SkOwxA.png">http://i.imgur.com/8SkOwxA.png</a></span>
-								<span class="message-image-preview"><a href="#" onclick="preview_images('http://i.imgur.com/8SkOwxA.png');"><img alt="Image preview" title="Image" src="http://i.imgur.com/8SkOwxA.png" target="_blank"></a></span>
-						</div>
-					</div>
-					<div class="input-group center_content_item" id="input-group-msgline">
-						<input type="text" class="form-control dark_input" placeholder="Chat in #test123_focused&hellip;">
+                </div>
+            </div>
+        </div> <!--/center_content-->
+    </div><!--/column_toplevel_left-->
+
+    <!-- main content -->
+    <div id="column_toplevel_center" class="col-xs-9 main-column">
+        <!-- TODO: vyresit zpravy v ramci message containeru -->
+        <!-- TODO: vyresit prekryvani nastaveni/etc./ -->
+        <!-- TODO: vyresit zmensovani leveho panelu -->
+        <!-- TODO: vyresit togglovani leveho panelu -->
+
+        <!-- CENTER_CONTENT = CHANNEL_VIEW, others: settings, some other shit? -->
+        <div class="center_content_container" id="center_content_message">
+            <div class="center_header center_content_item header_shadows"> <!-- topic -->
+                <span class="header_room_name">#test123_focused <small>(nickname @ Freenode)</small></span>
+                <span class="header_room_topic"><b>Topic</b>: Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet.</span>
+            </div>
+            <div class="center_messages_container center_content_item"> <!-- log container -->
+                <div class="log_message log_message_even">
+                    <span class="timestamp">00:59:12</span>
+                    <span class="message-body"><span class="message-sender message-sender-1">@Marii</span>: お後がまたよろしくて</span>
+                </div>
+                <div class="log_message log_message_odd">
+                    <span class="timestamp">00:59:16</span>
+                    <span class="message-body"><span class="message-sender message-sender-1">@Marii</span>: お先も前もよろしくね</span>
+                </div>
+                <div class="log_message log_message_even">
+                    <span class="timestamp">00:59:20</span>
+                    <span class="message-body"><span class="message-sender message-sender-1">@Marii</span>: 謎解きドキドキ指南</span>
+                </div>
+                <div class="log_message log_message_odd">
+                    <span class="timestamp">00:59:24</span>
+                    <span class="message-body"><span class="message-sender message-sender-2">@Tetora</span>: 仕掛けがアリアリです</span>
+                </div>
+                <div class="log_message log_message_even">
+                    <span class="timestamp">00:59:27</span>
+                    <span class="message-body"><span class="message-sender message-sender-3">@Kigu</span>: じょし的お悩みは双六? 賽を振って!</span>
+                </div>
+                <div class="log_message log_message_odd">
+                    <span class="timestamp">00:59:29</span>
+                    <span class="message-body"><span class="message-sender message-sender-1">@Marii</span>: はいはい！</span>
+                </div>
+                <div class="log_message log_message_even">
+                    <span class="timestamp">00:59:29</span>
+                    <span class="message-body"><span class="message-sender message-sender-2">@Tetora</span>: はいはい！</span>
+                </div>
+                <div class="log_message log_message_odd">
+                    <span class="timestamp">00:59:29</span>
+                    <span class="message-body"><span class="message-sender message-sender-4">@Gan</span>: はいはい！</span>
+                </div>
+                <div class="log_message log_message_even">
+                    <span class="timestamp">01:00:34</span>
+                    <span class="message-body"><span class="message-sender message-sender-5">MamRadObrazky</span>: <a href="http://i.imgur.com/8SkOwxA.png">http://i.imgur.com/8SkOwxA.png</a></span>
+                    <span class="message-image-preview"><a href="#" onclick="preview_images('http://i.imgur.com/8SkOwxA.png');"><img alt="Image preview" title="Image" src="http://i.imgur.com/8SkOwxA.png" target="_blank"></a></span>
+                </div>
+            </div>
+            <div class="input-group center_content_item" id="input-group-msgline">
+                <input type="text" class="form-control dark_input" placeholder="Chat in #test123_focused&hellip;">
 						<span class="input-group-btn dropup">
 							<button class="btn btn-primary" type="button">
-								Send
-							</button>
+                                Send
+                            </button>
 							<button class="btn btn-primary button_channel_settings dropdown-toggle" type="button" id="dropdownMenuChannel" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-								<i class="icon-settingsfour-gearsalt"></i>
-							</button>
+                                <i class="icon-settingsfour-gearsalt"></i>
+                            </button>
 							<ul class="dropdown-menu pull-right dropdown_menu_main_ul" aria-labelledby="dropdownMenuChannel">
-								<li><a href="#">Don't show image previews for this channel</a></li>
-								<li><a href="#">Don't show video previews for this channel</a></li>
-								<li><a href="#">Upload and send an image</a></li>
-								<li role="separator" class="divider"></li>
-								<li><a href="#">Leave this channel</a></li>
-							</ul>
+                                <li><a href="#">Don't show image previews for this channel</a></li>
+                                <li><a href="#">Don't show video previews for this channel</a></li>
+                                <li><a href="#">Upload and send an image</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="#">Leave this channel</a></li>
+                            </ul>
 						</span>
-					</div>
-				</div> <!-- center_content_container -->
-				
-				<div class="center_content_container" id="center_content_global_settings" style="display: none;"> <!-- TODO: get rid of inline styles!! -->
-					<div class="center_header center_content_item header_shadows"> 
-						<span class="header_room_name">Global settings</span>
-						<span class="header_room_topic">Here you can set some global, non-server and non-channel related settings.</span>
-					</div>
-					<div class="center_content_item center_settings_container">
-						<form role="form" name="global-settings-form" id="global-settings-form" action="#register" method="post">
-							<div class="form-group col-sm-6">
-								<label for="nickname">Nickname:</label>
-								<input type="text" class="form-control" id="nickname" placeholder="nickname">
-							</div>
-							<div class="form-group col-sm-6">
-								<label for="username">Username:</label>
-								<input type="text" class="form-control" id="username" placeholder="username">
-							</div>
-							<div class="form-group col-sm-6">
-								<label for="realname">Realname:</label>
-								<input type="text" class="form-control" id="realname" placeholder="realname">
-							</div>
-							<div class="form-group col-sm-6">
-								<label for="hilight_words_input">Highlight words (split with a semicolon):</label>
-								<input type="text" class="form-control" id="hilight_words_input" placeholder="nickname">
-							</div>
-							<div class="form-group col-sm-6">
-								<label for="show_previews_checkbox">Show video previews:</label>
-								<input type="checkbox" id="show_video_previews_checkbox" value="true">
-							</div>
-							<div class="form-group col-sm-6">
-								<label for="show_previews_checkbox">Show image previews:</label>
-								<input type="checkbox" id="show_image_previews_checkbox" value="true">
-							</div>
-							<div class="form-group col-sm-6">
-								<label for="show_seconds_checkbox">Show seconds in timestamp:</label>
-								<input type="checkbox" id="show_seconds_checkbox" value="true">
-							</div>
-							<div class="form-group col-sm-6">
-								<label for="show_joinpartquit_messages">Show join/quit/part messages:</label>
-								<input type="checkbox" id="show_joinpartquit_messages" value="true">
-							</div>
-							<div class="form-group col-sm-12">
-								<button class="btn btn-primary" type="button" id="save_global_settings_button" onclick="save_settings('global');"><i class="icon-check"></i> Save changes</button>
-								<button class="btn btn-primary" type="button" id="close_global_settings_button" onclick="toggle_center_column('messages');">Close without saving changes</button> <!-- temp -->
-							</div>
-						</form>
-					</div>
-				</div>
+            </div>
+        </div> <!-- center_content_container -->
 
-				<div class="center_content_container" id="center_content_edit_server" style="display: none;"> <!-- TODO: get rid of inline styles!! -->
-					<div class="center_header center_content_item header_shadows"> 
-						<span class="header_room_name">Edit server settings</span>
-						<span class="header_room_topic">Here you can edit server settings for '%s'.</span>
-					</div>
-					<div class="center_content_item center_settings_container">
-						<form role="form" name="server-edit" id="server-edit-form" action="#" method="post">
-							<div class="form-group col-sm-6">
-								<label for="nickname">Nickname <small>(leave empty to use the global setting)</small>:</label>
-								<input type="text" class="form-control" id="server_edit_nickname" placeholder="nickname">
-							</div>
-							<div class="form-group col-sm-6">
-								<label for="nickname">Username <small>(leave empty to use the global setting)</small>:</label>
-								<input type="text" class="form-control" id="server_edit_username" placeholder="username">
-							</div>
-							<div class="form-group col-sm-6">
-								<label for="nickname">Realname <small>(leave empty to use the global setting)</small>:</label>
-								<input type="text" class="form-control" id="server_edit_realname" placeholder="realname">
-							</div>
-							<div class="form-group col-sm-6">
-								<label for="nickname">Password <small>(leave empty if not required)</small>:</label>
-								<input type="password" class="form-control" id="server_edit_password" placeholder="nickname">
-							</div>
-							<div class="form-group col-sm-6">
-								<label for="nickname">Server IP/Hostname:</label>
-								<input type="text" class="form-control" id="server_edit_ip" placeholder="irc.freenode.org">
-							</div>
-							<div class="form-group col-sm-6">
-								<label for="nickname">Port number:</label>
-								<input type="number" class="form-control" id="server_edit_portno" placeholder="6667">
-							</div>
-							<div class="form-group col-sm-6">
-								<label for="use_ssl_tls">Use SSL/TLS:</label>
-								<input type="checkbox" id="use_tls_ssl_checkbox" value="true">
-							</div>
-							</div>
-							<div class="form-group col-sm-12">
-								<button class="btn btn-primary" type="button" id="save_global_settings_button" onclick="save_settings('global');"><i class="icon-check"></i> Save settings and close</button>
-								<button class="btn btn-primary" type="button" id="save_global_settings_button" onclick="delete_server('asdf');"><i class="icon-circledelete"></i> Delete this server</button>
-								<button class="btn btn-primary" type="button" id="close_global_settings_button" onclick="toggle_center_column('messages');">Close without saving changes</button>
-							</div>
-						</form>
-					</div>
-				</div>
+        <div class="center_content_container" id="center_content_global_settings" style="display: none;"> <!-- TODO: get rid of inline styles!! -->
+            <div class="center_header center_content_item header_shadows">
+                <span class="header_room_name">Global settings</span>
+                <span class="header_room_topic">Here you can set some global, non-server and non-channel related settings.</span>
+            </div>
+            <div class="center_content_item center_settings_container">
+                <form role="form" name="global-settings-form" id="global-settings-form" action="#register" method="post">
+                    <div class="form-group col-sm-6">
+                        <label for="nickname">Nickname:</label>
+                        <input type="text" class="form-control" id="nickname" placeholder="nickname">
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label for="username">Username:</label>
+                        <input type="text" class="form-control" id="username" placeholder="username">
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label for="realname">Realname:</label>
+                        <input type="text" class="form-control" id="realname" placeholder="realname">
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label for="hilight_words_input">Highlight words (split with a semicolon):</label>
+                        <input type="text" class="form-control" id="hilight_words_input" placeholder="nickname">
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label for="show_video_previews_checkbox">Show video previews:</label>
+                        <input type="checkbox" id="show_video_previews_checkbox" value="true">
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label for="show_image_previews_checkbox">Show image previews:</label>
+                        <input type="checkbox" id="show_image_previews_checkbox" value="true">
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label for="show_seconds_checkbox">Show seconds in timestamp:</label>
+                        <input type="checkbox" id="show_seconds_checkbox" value="true">
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label for="show_joinpartquit_messages">Show join/quit/part messages:</label>
+                        <input type="checkbox" id="show_joinpartquit_messages" value="true">
+                    </div>
+                    <div class="form-group col-sm-12">
+                        <button class="btn btn-primary" type="button" id="save_global_settings_button" onclick="save_settings('global');"><i class="icon-check"></i> Save changes</button>
+                        <button class="btn btn-primary" type="button" id="close_global_settings_button" onclick="toggle_center_column('messages');">Close without saving changes</button> <!-- temp -->
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="center_content_container" id="center_content_edit_server" style="display: none;"> <!-- TODO: get rid of inline styles!! -->
+            <div class="center_header center_content_item header_shadows">
+                <span class="header_room_name">Edit server settings</span>
+                <span class="header_room_topic">Here you can edit server settings for '%s'.</span>
+            </div>
+            <div class="center_content_item center_settings_container">
+                <form role="form" name="server-edit" id="server-edit-form" action="#" method="post">
+                    <div class="form-group col-sm-6">
+                        <label for="nickname">Nickname <small>(leave empty to use the global setting)</small>:</label>
+                        <input type="text" class="form-control" id="server_edit_nickname" placeholder="nickname">
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label for="nickname">Username <small>(leave empty to use the global setting)</small>:</label>
+                        <input type="text" class="form-control" id="server_edit_username" placeholder="username">
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label for="nickname">Realname <small>(leave empty to use the global setting)</small>:</label>
+                        <input type="text" class="form-control" id="server_edit_realname" placeholder="realname">
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label for="nickname">Password <small>(leave empty if not required)</small>:</label>
+                        <input type="password" class="form-control" id="server_edit_password" placeholder="nickname">
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label for="nickname">Server IP/Hostname:</label>
+                        <input type="text" class="form-control" id="server_edit_ip" placeholder="irc.freenode.org">
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label for="nickname">Port number:</label>
+                        <input type="number" class="form-control" id="server_edit_portno" placeholder="6667">
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label for="use_tls_ssl_checkbox">Use SSL/TLS:</label>
+                        <input type="checkbox" id="use_tls_ssl_checkbox" value="true">
+                    </div>
+            </div>
+            <div class="form-group col-sm-12">
+                <button class="btn btn-primary" type="button" id="save_global_settings_button" onclick="save_settings('global');"><i class="icon-check"></i> Save settings and close</button>
+                <button class="btn btn-primary" type="button" id="save_global_settings_button" onclick="delete_server('asdf');"><i class="icon-circledelete"></i> Delete this server</button>
+                <button class="btn btn-primary" type="button" id="close_global_settings_button" onclick="toggle_center_column('messages');">Close without saving changes</button>
+            </div>
+            </form>
+        </div>
+    </div>
 
 
 
-			</div><!--/column_toplevel_center-->
-		</div><!--/big-container-->		
+</div><!--/column_toplevel_center-->
+</div><!--/big-container-->
 
-	</body>
+</body>
 </html>
