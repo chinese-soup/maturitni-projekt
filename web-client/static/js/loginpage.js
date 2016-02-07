@@ -8,10 +8,10 @@ function loginPageOnLoad()
 window.onhashchange = function()
 {
   switch(location.hash) {
-    case '#regsuccess':
+    case "#regsuccess":
         general_dialog("Registration success", "You have successfully registered an account. You can now login using this page.", "success", 2);
     break;
-    case '#has2':
+    case "#has2":
       //do something else
     break;
     default:
@@ -54,10 +54,10 @@ function login(event)
             else if(data["reason"] == "cookie_ok")
             {
                 console.log("Server set your cookie of localhost:5000 to:" + data["sessionid"])
-                //Cookies.set("sessionid", data["sessionid"], { expires: 7, domain: "localhost" });*/
+                // Cookies.set("sessionid", data["sessionid"], { expires: 7, domain: "localhost" });*/
                 $("#login-form input[id=email_login]").prop('disabled', true);
                 $("#login-form input[id=password_login]").prop('disabled', true);
-                text
+                window.location.href = "chat.html";
             }
         }
         else if(data["status"] == "error")

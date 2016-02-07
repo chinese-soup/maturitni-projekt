@@ -1,11 +1,5 @@
 /* THIS FILE DEPENDS ON bootstrap-dialog */
 
-function onload()
-{
-	console.log("onload();")
-}
-
-
 function toggle_center_column(what_to_show)
 {	
 	if(what_to_show == "global_settings")

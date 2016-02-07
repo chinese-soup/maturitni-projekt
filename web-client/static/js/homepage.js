@@ -45,7 +45,8 @@ function register(event)
         {
             $("body").css("cursor", "pointer");
             $("#signup-form input").val("");
-            general_dialog("Registration successful", "You have successfully registered.<br>You can now <a href='login.html'>login</a>.", "success", 2);
+            general_dialog("Registration successful", "You have successfully registered.<br>You can now use the <a href='login.html'>login page</a> to log in.", "success", 2);
+            /*window.location.href = "login.html#regsuccess";*/
         }
         else if(json_parsed["status"] == "error")
         {

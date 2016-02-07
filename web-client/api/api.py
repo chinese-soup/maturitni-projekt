@@ -59,6 +59,17 @@ def is_email_valid(email_to_check): # TODO: maybe move to api_utils or sth??????
 def error(_status, _reason, _message):
     return jsonify(status=_status, reason=_reason, message=_message)
 
+def get_userIP(request):
+    return request.remote_addr
+
+def _make_login_response(data_to_send, generated_sessionID):
+    response = app.make_response(data_to_send)
+    response.set_cookie("session_id", value=generated_sessionID)
+    response.headers.add('Access-Control-Allow-Origin', "localhost")
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Cookies')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+    return response
+
 
 # this function checks for a sessionID in the database and joins it with the userID of a user
 def get_userID_if_loggedin(request):
@@ -84,9 +95,10 @@ def get_userID_if_loggedin(request):
 
 @app.after_request
 def after_request(response):
-  response.headers.add('Access-Control-Allow-Origin', '*')
+  response.headers.add('Access-Control-Allow-Origin', 'http://localhost')
   response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Cookies')
   response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+  response.headers.add('Access-Control-Allow-Credentials', 'true')
   return response
 
 
@@ -163,10 +175,14 @@ def login():
         db.commit()
 
         if result_code != 0:
-            a = jsonify(status="ok", reason="cookie_ok", message="Logged in successfully.", sessionid=generated_sessionID)
-
-            response = app.make_response(a)
+            data_to_send = jsonify(status="ok", reason="cookie_ok", message="Logged in successfully.", sessionid=generated_sessionID)
+            response = app.make_response(data_to_send)
             response.set_cookie("session_id", value=generated_sessionID)
+            response.headers.add('Access-Control-Allow-Origin', "http://localhost")
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Cookies')
+            response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+
             print("RESPONSE", response)
             return response
         else:
