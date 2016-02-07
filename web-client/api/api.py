@@ -64,7 +64,7 @@ def get_userIP(request):
 
 def _make_login_response(data_to_send, generated_sessionID):
     response = app.make_response(data_to_send)
-    response.set_cookie("session_id", value=generated_sessionID)
+    response.set_cookie("sessionid", value=generated_sessionID)
     response.headers.add('Access-Control-Allow-Origin', "localhost")
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Cookies')
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
@@ -82,9 +82,11 @@ def get_userID_if_loggedin(request):
         if result_code is not 0:
             result = cursor.fetchone()
             session_id = result[0]
-            userID = result[2]
+            userID = result[3]
+            print("MRDKY: ")
+            print(session_id, userID)
             if session_id == session_id_cookie:
-                return (True, userID)
+                return userID
             else:
                 return False
         else:
@@ -101,7 +103,6 @@ def after_request(response):
   response.headers.add('Access-Control-Allow-Credentials', 'true')
   return response
 
-
 @app.route("/")
 def hello_world():
     if "sessionid" in request.cookies:
@@ -117,17 +118,62 @@ def get_messages():
     return "get_messages()"
 
 @app.route("/logout", methods=["POST"])
-def logout(request):
+def logout():
     if "sessionid" in request.cookies:
-        print("asdf")
-
-@app.route("/upon_login", methods=["POST"])
-def session_check():
-    userID = get_userID_if_loggedin(request)
-    if userID is not False:
         db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
         cursor = db.cursor()
-        cursor.execute("""SELECT * FROM `Registered_users` WHERE `userID` = %s""", (userID),)
+        cookies_sessionid = request.cookies.get("sessionid")
+        cursor = db.cursor()
+        result_code = cursor.execute("""SELECT * FROM `User_sessions` WHERE `session_id` = %s""", (cookies_sessionid,))
+
+        print("session_id cookie:", cookies_sessionid)
+
+        if result_code is not 0:
+            session_id = cursor.fetchone()[0]
+            session_id_cookie = request.cookies.get("sessionid")
+            print("session_id DB:", session_id)
+            print("session_id cookie:", cookies_sessionid)
+
+            if session_id == session_id_cookie:
+                cursor = db.cursor()
+                # delete the session cookie from database
+                result_code = cursor.execute("DELETE FROM `User_sessions` WHERE `session_id` = %s", (session_id,))
+                db.commit()
+                db.close()
+
+        print("Reached the end of checking the session cookie with the one in DB.",
+              "The current cookie session does not exist (anymore). The user is logged out.",
+              "It's time to remove his cookie.")
+
+        # delete the cookie from client's browser, we delete it even if it isn't in the database. as he's trying to login with an invalid sessionid
+        data = jsonify(status="ok", reason="loggedout", message="Logged out successfully.")
+        response = app.make_response(data)
+        response.set_cookie("sessionid", value="", expires=0)
+        #response.headers.add('Access-Control-Allow-Origin', "http://localhost")
+        #response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Cookies')
+        #response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+        #response.headers.add('Access-Control-Allow-Credentials', 'true')
+
+        return response
+    else:
+         data = jsonify(status="error", reason="not_loggedin", message="You are not logged in.")
+
+@app.route("/upon_login", methods=["POST"])
+def upon_login():
+    userID = get_userID_if_loggedin(request)
+    print("UserID = ", userID)
+    if userID is not False:
+        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+        print("Hello boys")
+        cursor = db.cursor()
+        cursor.execute("""SELECT (email) FROM `Registered_users` WHERE `userID` = %s""", (userID,))
+        result = cursor.fetchone()
+        _email = result[0]
+        print("Email" + _email)
+        return jsonify(status="ok", reason="loggedin_email_status", message=_email)
+
+    else:
+        return jsonify(status="error", reason="not_loggedin", message="You are not logged in.")
 
 
 @app.route("/login", methods=["POST"])
@@ -177,13 +223,13 @@ def login():
         if result_code != 0:
             data_to_send = jsonify(status="ok", reason="cookie_ok", message="Logged in successfully.", sessionid=generated_sessionID)
             response = app.make_response(data_to_send)
-            response.set_cookie("session_id", value=generated_sessionID)
-            response.headers.add('Access-Control-Allow-Origin', "http://localhost")
-            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Cookies')
-            response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
-            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            response.set_cookie("sessionid", value=generated_sessionID)
+            #response.headers['Access-Control-Allow-Origin'] = "http://localhost"
+            #response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization,Cookies'
+            #response.headers['Access-Control-Allow-Methods'] = 'GET,PUT,POST,DELETE'
+            #response.headers['Access-Control-Allow-Credentials'] = 'true'
 
-            print("RESPONSE", response)
+            #print("RESPONSE", response)
             return response
         else:
             return error("error", "loginerror", "An error occurred while trying to log you in.")
