@@ -34,6 +34,8 @@ $.ajaxSetup({
  */
 function login(event)
 {
+    $("#login-form input[id=email_login]").prop('disabled', true);
+    $("#login-form input[id=password_login]").prop('disabled', true);
     var posting = $.post("http://localhost:5000/login",
     {
         email: $("#login-form input[id=email_login]").val(),
@@ -50,13 +52,12 @@ function login(event)
             if(data["reason"] == "already_loggedin")
             {
                 general_dialog("Already logged in.", data["message"], "error");
+                window.location.href = "chat.html";
             }
             else if(data["reason"] == "cookie_ok")
             {
                 console.log("Server set your cookie of localhost:5000 to:" + data["sessionid"])
                 // Cookies.set("sessionid", data["sessionid"], { expires: 7, domain: "localhost" });*/
-                $("#login-form input[id=email_login]").prop('disabled', true);
-                $("#login-form input[id=password_login]").prop('disabled', true);
                 window.location.href = "chat.html";
             }
         }
@@ -70,9 +71,10 @@ function login(event)
             {
                 general_dialog("General error", data["message"], "error");
             }
-            $("#login-form input[id=email_login]").prop('disabled', false);
-            $("#login-form input[id=password_login]").prop('disabled', false);
+
         }
+        $("#login-form input[id=email_login]").prop('disabled', false);
+        $("#login-form input[id=password_login]").prop('disabled', false);
 
     });
 
