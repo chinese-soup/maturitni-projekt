@@ -64,11 +64,14 @@ def error(_status, _reason, _message):
 def get_userID_if_loggedin(request):
     if "sessionid" in request.cookies:
         session_id_cookie = request.cookies.get("sessionid")
+        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+        print("session_id_cookie = ", session_id_cookie)
         cursor = db.cursor()
-        result_code = cursor.execute("""SELECT * FROM `User_sessions` WHERE `session_id` = %s""", (cookies_sessionid,))
+        result_code = cursor.execute("""SELECT * FROM `User_sessions` WHERE `session_id` = %s""", (session_id_cookie,))
         if result_code is not 0:
-            session_id = cursor.fetchone()[0]
-            userID = cursor.fetchone()[2]
+            result = cursor.fetchone()
+            session_id = result[0]
+            userID = result[2]
             if session_id == session_id_cookie:
                 return (True, userID)
             else:
@@ -91,7 +94,7 @@ def after_request(response):
 def hello_world():
     if "sessionid" in request.cookies:
         print("request.cookies", request.cookies)
-        asdf = dict(status="ok", message=str(request.cookies))
+        asdf = dict(status="ok", message=str(request.cookies["sessionid"]))
         return jsonify(asdf)
     else:
         asdf = dict(status="ok", message="API is up.")
@@ -108,11 +111,11 @@ def logout(request):
 
 @app.route("/upon_login", methods=["POST"])
 def session_check():
-    if get_userID_if_loggedin(request) is not False:
+    userID = get_userID_if_loggedin(request)
+    if userID is not False:
         db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
-
         cursor = db.cursor()
-        cursor.execute("""SELECT * FROM `Registered_users` WHERE `email` = %s AND `password` = %s""", (_email, _hashed_password))
+        cursor.execute("""SELECT * FROM `Registered_users` WHERE `userID` = %s""", (userID),)
 
 
 @app.route("/login", methods=["POST"])
