@@ -21,6 +21,12 @@ window.onhashchange = function()
   }
 }
 
+$.ajaxSetup({
+    crossDomain: true,
+    xhrFields: {
+        withCredentials: true
+    }
+});
 
 /*
  *  login(event): function called upon submitting the login form;
@@ -32,7 +38,7 @@ function login(event)
     {
         email: $("#login-form input[id=email_login]").val(),
         password: $("#login-form input[id=password_login]").val()
-    }, dataType='json'
+    }, dataType="text"
     );
 
     posting.done(function(data)
@@ -47,12 +53,12 @@ function login(event)
             }
             else if(data["reason"] == "cookie_ok")
             {
-                console.log("Setting your cookie to:" + data["sessionid"])
-                Cookies.set("sessionid", data["sessionid"], { expires: 7, domain: "localhost"});
+                console.log("Server set your cookie of localhost:5000 to:" + data["sessionid"])
+                //Cookies.set("sessionid", data["sessionid"], { expires: 7, domain: "localhost" });*/
                 $("#login-form input[id=email_login]").prop('disabled', true);
                 $("#login-form input[id=password_login]").prop('disabled', true);
+                text
             }
-
         }
         else if(data["status"] == "error")
         {
@@ -64,12 +70,16 @@ function login(event)
             {
                 general_dialog("General error", data["message"], "error");
             }
+            $("#login-form input[id=email_login]").prop('disabled', false);
+            $("#login-form input[id=password_login]").prop('disabled', false);
         }
 
     });
 
     posting.fail(function()
     {
+        $("#login-form input[id=email_login]").prop('disabled', false);
+        $("#login-form input[id=password_login]").prop('disabled', false);
          general_dialog("Login failed", "An error occurred while trying to contact the API server.", "error", 2);
     });
 

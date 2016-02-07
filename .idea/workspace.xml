@@ -3,11 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="e47bbbae-1c4e-42ef-88b9-697ea23f2b17" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/db/sql_register_working.sql" afterPath="$PROJECT_DIR$/server/db/sql_register_working.sql" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web-client/api/api.py" afterPath="$PROJECT_DIR$/web-client/api/api.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web-client/static/js/homepage.js" afterPath="$PROJECT_DIR$/web-client/static/js/homepage.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web-client/static/js/loginpage.js" afterPath="$PROJECT_DIR$/web-client/static/js/loginpage.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web-client/static/login.html" afterPath="$PROJECT_DIR$/web-client/static/login.html" />
     </list>
     <ignored path="maturitni-projekt.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -66,7 +63,7 @@
         <entry file="file://$PROJECT_DIR$/web-client/static/js/homepage.js">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="47" column="125" selection-start-line="47" selection-start-column="125" selection-end-line="47" selection-end-column="125" />
+              <caret line="32" column="58" selection-start-line="32" selection-start-column="17" selection-end-line="32" selection-end-column="58" />
               <folding />
             </state>
           </provider>
@@ -115,21 +112,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="api.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="api.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/web-client/api/api.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.31612903">
-              <caret line="106" column="8" selection-start-line="106" selection-start-column="8" selection-end-line="106" selection-end-column="8" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="165" column="40" selection-start-line="165" selection-start-column="40" selection-end-line="165" selection-end-column="40" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="loginpage.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="loginpage.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/web-client/static/js/loginpage.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="54" column="0" selection-start-line="54" selection-start-column="0" selection-end-line="54" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.53118277">
+              <caret line="28" column="3" selection-start-line="28" selection-start-column="3" selection-end-line="28" selection-end-column="3" />
               <folding />
             </state>
           </provider>
@@ -778,18 +775,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/web-client/static/js/general-dialog.js">
+    <entry file="file://$PROJECT_DIR$/web-client/static/js/homepage.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="29" column="13" selection-start-line="29" selection-start-column="12" selection-end-line="29" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/web-client/static/chat.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-1.375">
-          <caret line="134" column="28" selection-start-line="134" selection-start-column="27" selection-end-line="134" selection-end-column="28" />
+          <caret line="32" column="58" selection-start-line="32" selection-start-column="17" selection-end-line="32" selection-end-column="58" />
           <folding />
         </state>
       </provider>
@@ -805,26 +794,34 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/web-client/static/js/homepage.js">
+    <entry file="file://$PROJECT_DIR$/web-client/static/chat.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="47" column="125" selection-start-line="47" selection-start-column="125" selection-end-line="47" selection-end-column="125" />
+        <state vertical-scroll-proportion="-1.375">
+          <caret line="134" column="28" selection-start-line="134" selection-start-column="27" selection-end-line="134" selection-end-column="28" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/web-client/static/js/loginpage.js">
+    <entry file="file://$PROJECT_DIR$/web-client/static/js/general-dialog.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="54" column="0" selection-start-line="54" selection-start-column="0" selection-end-line="54" selection-end-column="0" />
+          <caret line="29" column="13" selection-start-line="29" selection-start-column="12" selection-end-line="29" selection-end-column="13" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/web-client/api/api.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.31612903">
-          <caret line="106" column="8" selection-start-line="106" selection-start-column="8" selection-end-line="106" selection-end-column="8" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="165" column="40" selection-start-line="165" selection-start-column="40" selection-end-line="165" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web-client/static/js/loginpage.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.53118277">
+          <caret line="28" column="3" selection-start-line="28" selection-start-column="3" selection-end-line="28" selection-end-column="3" />
           <folding />
         </state>
       </provider>

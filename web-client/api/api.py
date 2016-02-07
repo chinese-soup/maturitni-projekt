@@ -89,8 +89,13 @@ def after_request(response):
 
 @app.route("/")
 def hello_world():
-    asdf = dict(status="ok", message="API is up.")
-    return jsonify(asdf)
+    if "sessionid" in request.cookies:
+        print("request.cookies", request.cookies)
+        asdf = dict(status="ok", message=str(request.cookies))
+        return jsonify(asdf)
+    else:
+        asdf = dict(status="ok", message="API is up.")
+        return jsonify(asdf)
 
 @app.route("/get_messages")
 def get_messages():
@@ -155,7 +160,12 @@ def login():
         db.commit()
 
         if result_code != 0:
-            return jsonify(status="ok", reason="cookie_ok", message="Logged in successfully.", sessionid=generated_sessionID)
+            a = jsonify(status="ok", reason="cookie_ok", message="Logged in successfully.", sessionid=generated_sessionID)
+
+            response = app.make_response(a)
+            response.set_cookie("session_id", value=generated_sessionID)
+            print("RESPONSE", response)
+            return response
         else:
             return error("error", "loginerror", "An error occurred while trying to log you in.")
 
