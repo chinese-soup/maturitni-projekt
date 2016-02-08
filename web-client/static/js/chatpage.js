@@ -99,6 +99,7 @@ function checkIfUserIsLoggedInOnStart()
     });
 }
 
+/* no formatting in js? :( */
 function generateServerHTML(serverID)
 {
     var html = '<li id="server_' + serverID + '" class="left_channels_flex_item server_item">' +
@@ -118,11 +119,15 @@ function generateServerHTML(serverID)
     return(html);
 }
 
-
+/* function to reload the server and channel list */
+/* called when servers or channels are changed/added/removed */
+/* called when user first loads chat.html */
+/* NOT CALLED when a channel has new activity */
 function loadServers()
 {
     console.log("loadServers();");
-    $(".channel_list .loading-ajax").parent().show(); // hide the loading servers icon
+    $(".left_channels_flex_container .loading-ajax").show(); // hide the loading servers icon
+    $(".channel_list").empty(); // clear the server list so we don't dupe the server entries (beware of element id hazard)
 
     var posting = $.post("http://localhost:5000/get_server_list",
     {
@@ -146,8 +151,9 @@ function loadServers()
             useSSL = servers[key]["useSSL"];
 
             $(".channel_list").append(generateServerHTML(serverID));  // generate a dummy <li> list and append it to the server list
-            $(".channel_list .loading-ajax").parent().hide(); // hide the loading servers icon
+            $(".left_channels_flex_container .loading-ajax").hide(); // hide the loading servers icon
             $(".channel_list #server_" + serverID + " .networkname").html(serverName);
+            $(".channel_list #server_" + serverID + " .networkipport").html("(" + serverIP + "/" + serverPort + ")");
 
             /*$(".channel_list > #server_3 .networkname")*/
 
