@@ -361,6 +361,7 @@ def get_global_settings():
         # TODO: Consider removing this and creating the insert on /register
         # TODO: Consider removing this and creating the insert on /register
         # TODO: Consider removing this and creating the insert on /register
+        # TODO2: ALSO CONSIDER SETTING THE USER_SETTINGS TABLE'S DEFAULT VALUES INSTEAD OF INSERTING STUPID SHIT LIKE THIS #
             cursor = db.cursor()
             cursor.execute("""INSERT INTO `User_settings` (show_previews, highlight_words, whois_username, whois_realname,
             global_nickname, autohide_channels, hide_joinpartquit_messages, show_seconds, Registred_users_userID)
