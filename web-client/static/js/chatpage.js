@@ -260,10 +260,22 @@ function save_global_settings()
         //global-settings-form
         if(data["status"] == "ok")
         {
+            general_dialog("Global settings", data["message"], data["status"], 2);
             if(data["reason"] == "global_settings_saved")
             {
-
                 toggle_center_column("messages");
+
+            }
+            else if(data["reason"] == "global_settings_notupdated")
+            {
+                toggle_center_column("messages");
+            }
+        }
+        else if(data["status"] == "error")
+        {
+            if(data["reason"] == "not_loggedin")
+            {
+                general_dialog("Access denied: You are not logged in.", data["message"], "error", 2)
             }
         }
     })

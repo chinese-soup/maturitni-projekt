@@ -436,13 +436,15 @@ def set_global_settings():
                                                               settings_cols_values[6],
                                                               settings_cols_values[7],))
         db.commit()
+        print("RES", res)
         if res != 0:
             return error("ok", "global_settings_saved", "Global settings saved successfully.")
         else:
-            return error("error", "global_settings_not_found", "Global settings failed to save.")
+            return error("ok", "global_settings_notupdated", "Nothing to save.")
+            #return error("error", "global_settings_not_found", "Global settings failed to save.")
         db.close()
     else:
-        return error("error", "global_settings_set", "Global settings saved successfully.")
+        return error("error", "not_loggedin", "You are not logged in.")
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0") # TODO: remove binding on all interfaces; this is only here for debugging

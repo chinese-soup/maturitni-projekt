@@ -13,7 +13,7 @@ window.onhashchange = function()
 {
   switch(location.hash) {
     case "#regsuccess":
-        general_dialog("Registration success", "You have successfully registered an account. You can now login using this page.", "success", 2);
+        general_dialog("Registration success", "You have successfully registered an account. You can now login using this page.", "success", 0);
     break;
     case "#has2":
       //do something else
@@ -32,14 +32,28 @@ $.ajaxSetup({
     }
 });
 
+function disableLoginFormWhileAjax(toggle)
+{
+    if(Boolean(toggle)== true)
+    {
+        $("#login-form input[id=email_login]").prop('disabled', true);
+        $("#login-form input[id=password_login]").prop('disabled', true);
+    }
+    else if(Boolean(toggle) == false)
+    {
+        $("#login-form input[id=email_login]").prop('disabled', false);
+        $("#login-form input[id=password_login]").prop('disabled', false);
+    }
+}
+
+
 /*
  *  login(event): function called upon submitting the login form;
  *  makes an api call to login an account
  */
 function login(event)
 {
-    $("#login-form input[id=email_login]").prop('disabled', true);
-    $("#login-form input[id=password_login]").prop('disabled', true);
+    disableLoginFormWhileAjax(true);
     var posting = $.post("http://" + hostname + ":5000/login",
     {
        email: $("#login-form input[id=email_login]").val(),
@@ -60,7 +74,6 @@ function login(event)
             else if(data["reason"] == "cookie_ok")
             {
                 console.log("Server set your cookie of localhost:5000 to:" + data["sessionid"])
-                // Cookies.set("sessionid", data["sessionid"], { expires: 7, domain: "localhost" });*/
                 window.location.href = "chat.html";
             }
         }
@@ -76,16 +89,13 @@ function login(event)
             }
 
         }
-        $("#login-form input[id=email_login]").prop("disabled", false);
-        $("#login-form input[id=password_login]").prop("disabled", false);
-
+        disableLoginFormWhileAjax(false);
     });
 
     posting.fail(function()
     {
-        $("#login-form input[id=email_login]").prop("disabled", false);
-        $("#login-form input[id=password_login]").prop("disabled", false);
-         general_dialog("Login failed", "An error occurred while trying to contact the API server.", "error", 2);
+        disableLoginFormWhileAjax(false);
+        general_dialog("Login failed", "An error occurred while trying to contact the API server.", "error", 0);
     });
 
     event.preventDefault();

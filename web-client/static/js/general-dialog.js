@@ -16,7 +16,7 @@ function general_dialog(_title, _message, _result, _timeout) /* make api calls f
 	});
 	dialog.realize();
 	dialog.getModalBody().css("color", "black");
-	if(_result == "success")
+	if(_result == "ok")
 	{
         dialog.getModalHeader().css("background-color", "#00AA00");
         dialog.getModalHeader().css("color", "white");
@@ -28,4 +28,11 @@ function general_dialog(_title, _message, _result, _timeout) /* make api calls f
     }
 	dialog.setMessage(_message);
 	dialog.open();
+    if(_timeout != 0)
+    {
+        setTimeout(function()
+        {
+            dialog.close();
+        }, (_timeout*1000));
+    }
 }
