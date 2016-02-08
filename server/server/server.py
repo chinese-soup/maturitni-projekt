@@ -76,7 +76,8 @@ class IRCSide(object):
 
     def on_connect(self, connection, event):
         print('[{}] Connected to {}' .format(event.type.upper(), event.source))
-        pass
+        if client.is_channel("#test.cz"):
+            connection.join("#test.cz")
 
     def on_disconnect(self, connection, event):
         print('[{}] Disconnected to {}' .format(event.type.upper(), event.source))
@@ -84,28 +85,29 @@ class IRCSide(object):
 
     def on_pubmsg(self, connection, event):
         print('[{}] Pubmsg {}' .format(event.type.upper(), event.source))
-        pass
+        connection.privmsg(event.target, str(event.__dict__))
 
     def on_privmsg(self, connection, event):
         print('[{}] Privmsg {}' .format(event.type.upper(), event.source))
-        pass
+        connection.privmsg(event.target, str(event.__dict__))
 
     def on_join(self, connection, event):
-        print('[{}] Privmsg {}' .format(event.type.upper(), event.source))
-        pass
+        print('[{}] Join {}' .format(event.type.upper(), event.source))
+        connection.privmsg(event.target, str(event.__dict__))
 
     def on_part(self, connection, event):
-        print('[{}] Privmsg {}' .format(event.type.upper(), event.source))
-        pass
+        print('[{}] Part {}' .format(event.type.upper(), event.source))
+
 
     def on_quit(self, connection, event):
-        pass
+        print('[{}] Quit {}' .format(event.type.upper(), event.source))
+
 
     def on_nick(self, connection, event):
-        pass
+        print('[{}] NickChange {}' .format(event.type.upper(), event.source))
 
     def on_nicknameinuse(self, connection, event):
-        pass
+        print('[{}] NickNameInUse {}' .format(event.type.upper(), event.source))
 
 class WSocket(object):
     """WSocket"""
