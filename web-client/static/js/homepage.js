@@ -5,8 +5,6 @@ function homePageOnLoad()
     signup_form.addEventListener("submit", register);
 }
 
-
-
 window.onhashchange = function()
 {
   switch(location.hash) {
@@ -45,20 +43,20 @@ function register(event)
         {
             $("body").css("cursor", "pointer");
             $("#signup-form input").val("");
-            general_dialog("Registration successful", "You have successfully registered.<br>You can now use the <a href='login.html'>login page</a> to log in.", "success", 2);
+            general_dialog("Registration successful", "You have successfully registered.<br>You can now use the <a href='login.html'>login page</a> to log in.", "ok", 0);
             /*window.location.href = "login.html#regsuccess";*/
         }
         else if(json_parsed["status"] == "error")
         {
             $("body").css("cursor", "pointer");
             console.log(json_parsed["message"]);
-            general_dialog("Registration failed", json_parsed["message"], "error", 2);
+            general_dialog("Registration failed", json_parsed["message"], "error", 0);
         }
     });
 
     posting.fail(function()
     {
-         general_dialog("Registration failed", "An error occurred while trying to contact the API server.", "error", 2);
+         general_dialog("Registration failed", "An error occurred while trying to contact the API server.", "error", 0);
     });
 
     event.preventDefault();
