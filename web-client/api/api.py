@@ -281,11 +281,36 @@ def get_server_list():
     if userID is not False:
         db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
         cursor = db.cursor()
-        cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s;""", (userID,))
-        result = cursor.fetchall()
-        print(result)
-        return error("error", "debug", str(result))
+        res = cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s;""", (userID,))
+        if res != 0:
+            result = cursor.fetchall()
+            db.close()
+            print("RESULT", result)
+            servers = dict()
 
+            i = 0
+            for res in result:
+                server_dict_temp = {"serverID": res[0],
+                                    "serverSessionID": res[1],
+                                    "nickname": res[2],
+                                    "isAway": res[3],
+                                    "isConnected": res[4],
+                                    "Registred_users_userID": res[5],
+                                    "serverName": res[6],
+                                    "serverIP": res[7],
+                                    "serverPort": res[8],
+                                    "useSSL": res[9]}
+                servers[i] = server_dict_temp
+                i = i+1
+
+            response = {"status": "ok", "reason": "listing_servers", "message": servers}
+            return jsonify(response)
+
+        else:
+            return error("ok", "no_servers_to_list", "No servers yet.")
+
+
+        #return error("error", "debug", result)
     else:
         return error("error", "not_loggedin", "You are not logged in.")
 

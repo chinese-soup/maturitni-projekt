@@ -99,10 +99,31 @@ function checkIfUserIsLoggedInOnStart()
     });
 }
 
+function generateServerHTML(serverID)
+{
+    var html = '<li id="server_' + serverID + '" class="left_channels_flex_item server_item">' +
+        '<a href="#"><span class="networkname">Memes</span> <small class="networkipport">(irc.freenode.org/6667)</small></a>' +
+        '<div class="dropdown">' +
+            '<button class="btn dropdown-toggle dropdown_server_wheel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+                '<i class="icon-settingsfour-gearsalt"></i>' +
+            '</button>' +
+            '<ul class="dropdown-menu dropdown-menu-right">' +
+                '<li><a class="join_another_channel_link" href="#" onclick="#">Join another channel&hellip;</a></li>' + /*join_channel_dialog(\'Freenode\',\'ID\' ); */
+                '<li><a class="disconnect_link" href="#" onclick="#">Disconnect</a></li>' + /* disconnect_dialog(\'Freenode\', \'ID\');*/
+                '<li role="separator" class="divider"></li>' +
+                '<li><a href="#" onclick="toggle_center_column(\'edit_server\');">Edit</a></li>' +
+            '</ul>' +
+        '</div>' +
+    '</li>';
+    return(html);
+}
+
 
 function loadServers()
 {
     console.log("loadServers();");
+    $(".channel_list .loading-ajax").parent().show(); // hide the loading servers icon
+
     var posting = $.post("http://localhost:5000/get_server_list",
     {
     }, dataType="text"
@@ -110,8 +131,36 @@ function loadServers()
 
     posting.done(function(data)
     {
-        console.log(data);
+        if(data["result"] == "listing_servers")
+        console.log(data["message"][0]);
+        servers = data["message"];
+
+        for (key in servers)
+        {
+            value = servers[key];
+            serverID = servers[key]["serverID"];
+            serversessionID = servers[key]["serversessionID"];
+            serverName = servers[key]["serverName"];
+            serverIP =  servers[key]["serverIP"];
+            serverPort = servers[key]["serverPort"];
+            useSSL = servers[key]["useSSL"];
+
+            $(".channel_list").append(generateServerHTML(serverID));  // generate a dummy <li> list and append it to the server list
+            $(".channel_list .loading-ajax").parent().hide(); // hide the loading servers icon
+            $(".channel_list #server_" + serverID + " .networkname").html(serverName);
+
+            /*$(".channel_list > #server_3 .networkname")*/
+
+
+        }
+
+
     });
+
+    posting.fail(function()
+    {
+        console.log("Failed to load servers.")
+    })
 }
 
 
