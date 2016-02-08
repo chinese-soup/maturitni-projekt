@@ -153,7 +153,11 @@ function loadServers()
             $(".channel_list").append(generateServerHTML(serverID));  // generate a dummy <li> list and append it to the server list
             $(".left_channels_flex_container .loading-ajax").hide(); // hide the loading servers icon
             $(".channel_list #server_" + serverID + " .networkname").html(serverName);
-            $(".channel_list #server_" + serverID + " .networkipport").html("(" + serverIP + "/" + serverPort + ")");
+
+            if(use_SSL == "1")
+                $(".channel_list #server_" + serverID + " .networkipport").html("(" + serverIP + "/" + serverPort + ")");
+            else
+                $(".channel_list #server_" + serverID + " .networkipport").html("(" + serverIP + "/" + serverPort + "/" + useSSL + ")");
 
             /*$(".channel_list > #server_3 .networkname")*/
 

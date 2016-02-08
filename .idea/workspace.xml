@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e47bbbae-1c4e-42ef-88b9-697ea23f2b17" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web-client/static/chat.html" afterPath="$PROJECT_DIR$/web-client/static/chat.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web-client/static/js/chatpage.js" afterPath="$PROJECT_DIR$/web-client/static/js/chatpage.js" />
     </list>
     <ignored path="maturitni-projekt.iws" />
@@ -76,8 +75,8 @@
       <file leaf-file-name="chatpage.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/web-client/static/js/chatpage.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.32903227">
-              <caret line="123" column="44" selection-start-line="123" selection-start-column="44" selection-end-line="123" selection-end-column="44" />
+            <state vertical-scroll-proportion="0.7483871">
+              <caret line="159" column="128" selection-start-line="159" selection-start-column="128" selection-end-line="159" selection-end-column="128" />
               <folding />
             </state>
           </provider>
@@ -756,6 +755,14 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/web-client/static/chat_template.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-7.0416665">
+          <caret line="100" column="64" selection-start-line="100" selection-start-column="64" selection-end-line="100" selection-end-column="64" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/web-client/static/chat.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-5.9166665">
@@ -766,18 +773,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/web-client/static/chat_template.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.0416665">
-          <caret line="100" column="64" selection-start-line="100" selection-start-column="64" selection-end-line="100" selection-end-column="64" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/web-client/static/js/chatpage.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.32903227">
-          <caret line="123" column="44" selection-start-line="123" selection-start-column="44" selection-end-line="123" selection-end-column="44" />
+        <state vertical-scroll-proportion="0.7483871">
+          <caret line="159" column="128" selection-start-line="159" selection-start-column="128" selection-end-line="159" selection-end-column="128" />
           <folding />
         </state>
       </provider>
