@@ -23,7 +23,7 @@ function toggle_center_column(what_to_show)
 		$("#center_content_message").show();
 		$("#center_content_edit_server").hide();
 		$("#center_content_global_settings").hide();
-		console.log("messagesd");
+		console.log("messages");
 	}
 }
 

@@ -5,6 +5,10 @@ function loginPageOnLoad()
     login_form.addEventListener("submit", login);
 }
 
+
+var hostname = location.hostname; // maybe temporary(?): get the current hostname so we know where to make api calls (same host, different port)
+
+
 window.onhashchange = function()
 {
   switch(location.hash) {
@@ -36,10 +40,10 @@ function login(event)
 {
     $("#login-form input[id=email_login]").prop('disabled', true);
     $("#login-form input[id=password_login]").prop('disabled', true);
-    var posting = $.post("http://localhost:5000/login",
+    var posting = $.post("http://" + hostname + ":5000/login",
     {
-        email: $("#login-form input[id=email_login]").val(),
-        password: $("#login-form input[id=password_login]").val()
+       email: $("#login-form input[id=email_login]").val(),
+       password: $("#login-form input[id=password_login]").val()
     }, dataType="text"
     );
 

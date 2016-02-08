@@ -5,6 +5,7 @@ $.ajaxSetup({
     }
 });
 
+var hostname = location.hostname; // maybe temporary(?): get the current hostname so we know where to make api calls (same host, different port)
 
 function onChatLoad()
 {
@@ -38,11 +39,11 @@ function sendUserAwayTimeout(url)
     window.location.href = url;
 }
 
-/* call before every command just to see if the user is still logged in */
+/* call before some commands just to see if the user is still logged in */
 /* returns true (loggedin) /false (notloggedin) */
 function isUserLoggedIn()
 {
-    var posting = $.post("http://localhost:5000/check_session", {}, datatype="text");
+    var posting = $.post("http://" + hostname + "/check_session", {}, datatype="text");
     posting.done(function(data)
     {
         console.log("Hello");
@@ -64,7 +65,7 @@ function isUserLoggedIn()
 
 function checkIfUserIsLoggedInOnStart()
 {
-    var posting = $.post("http://localhost:5000/upon_login",
+    var posting = $.post("http://" + hostname + ":5000/upon_login",
     {
     }, dataType="text"
     );
@@ -129,7 +130,7 @@ function loadServers()
     $(".left_channels_flex_container .loading-ajax").show(); // hide the loading servers icon
     $(".channel_list").empty(); // clear the server list so we don't dupe the server entries (beware of element id hazard)
 
-    var posting = $.post("http://localhost:5000/get_server_list",
+    var posting = $.post("http://" + hostname + ":5000/get_server_list",
     {
     }, dataType="text"
     );
@@ -179,7 +180,7 @@ function loadServers()
 function loadSettingsIntoInputs()
 {
     console.log("loadSettingsIntoInputs();")
-    var posting = $.post("http://localhost:5000/get_global_settings",
+    var posting = $.post("http://" + hostname + ":5000/get_global_settings",
     {
     }, dataType="text"
     );
@@ -218,14 +219,45 @@ function loadSettingsIntoInputs()
 
     posting.fail(function()
     {
-        console.log("Failed to load servers.")
+        general_dialog("API endpoint error.", "An error occurred while trying to retrieve your account's global settings.", "error", 2);
+        toggle_center_column("messages"); // show the messages window instead of global settings, because we can't load user's settings
+        console.log("Failed to load servers.");
+    })
+}
+
+function save_global_settings()
+{
+    var posting = $.post("http://" + hostname + ":5000/save_global_settings",
+    {
+       nickname: $("#login-form input[id=nickname]").val(),
+       username: $("#login-form input[id=username]").val(),
+       realname: $("#login-form input[id=realname]").val(),
+       hilight_words: $("#login-form input[id=hilight_words_input]").val(),
+       show_video_previews: $("#login-form input[id=show_video_previews_checkbox]").val(),
+       show_image_previews: $("#login-form input[id=show_image_previews_checkbox]").val(),
+       show_seconds: $("#login-form input[id=show_seconds]").val(),
+       show_joinpartquit_messages: $("#login-form input[id=show_joinpartquit_messages]").val()
+    }, dataType="text"
+    );
+
+    posting.done(function(data)
+    {
+        console.log(data);
+        //global-settings-form
+
+
+    })
+
+    posting.fail(function(data)
+    {
+        general_dialog("API endpoint error.", "An error occurred while trying to contact the API server.", "error", 2)
     })
 }
 
 
 function logout()
 {
-   var posting = $.post("http://localhost:5000/logout",
+   var posting = $.post("http://" + hostname + ":5000/logout",
     {
     }, dataType="text"
     );

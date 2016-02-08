@@ -71,7 +71,10 @@ def _make_login_response(data_to_send, generated_sessionID):
     return response
 
 
-# this function checks for a sessionID in the database and joins it with the userID of a user
+# this function checks for a sessionID in the database and joins it with the userID of a user #
+# this is used to check if the user is allowed to request the data he's requesting #
+# aka if he's not trying to access data of a user with a different ID #
+
 def get_userID_if_loggedin(request):
     if "sessionid" in request.cookies:
         session_id_cookie = request.cookies.get("sessionid")
@@ -382,6 +385,16 @@ def get_global_settings():
             return error("ok", "no_servers_to_list", "Error loading your current settings, please try again later.")
     else:
          return error("error", "not_loggedin", "You are not logged in.")
+
+# routa volaná při uložení globálních nastavení v okně nastavení globálních nastavení
+@app.route("/set_global_settings", methods=["POST"])
+def set_global_settings():
+    userID = get_userID_if_loggedin(request)
+    print("UserID = ", userID)
+    if userID is not False:
+        return error("error", "global_settings_set", "Global settings saved successfully.")
+    else:
+        return error("error", "global_settings_set", "Global settings saved successfully.")
 
 if __name__ == '__main__':
     app.run(debug=True)
