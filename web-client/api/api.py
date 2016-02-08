@@ -323,24 +323,15 @@ def get_messages():
     return "get_messages()"
 
 
-
-def global_settings_helper(cursor):
-    result = cursor.fetchall()
-
-    print("RESULT", result)
-    global_settings = []
-    global_settings = list(result)
-
-    '''server_dict_temp = {"show_previews": res[0],
-                        "highlight_words": res[1],
-                        "whois_username": res[2],
-                        "whois_realname": res[3],
-                        "global_nickname": res[4],
-                        "Registred_users_userID": res[5],
-                        "autohide_channels": res[6],
-                        "hide_joinpartquit_messages": res[7],
-                        "show_seconds": res[8]}'''
-    return result
+'''server_dict_temp = {"show_previews": res[0],
+                    "highlight_words": res[1],
+                    "whois_username": res[2],
+                    "whois_realname": res[3],
+                    "global_nickname": res[4],
+                    "Registred_users_userID": res[5],
+                    "autohide_channels": res[6],
+                    "hide_joinpartquit_messages": res[7],
+                    "show_seconds": res[8]}'''
 
 
 # routa volaná při zobrazení okna globálních nastavení
@@ -353,25 +344,39 @@ def get_global_settings():
         cursor = db.cursor()
         res = cursor.execute("""SELECT * FROM `User_settings` WHERE `Registred_users_userID` = %s;""", (userID,))
         if res != 0:
-            global_settings = global_settings_helper(cursor)
             db.close()
+            result = cursor.fetchall()
+            global_settings = list(result)
             response = {"status": "ok", "reason": "listing_settings", "message": global_settings}
             print("SETTINGS LISTED")
 
             return jsonify(response)
-
         elif res == 0:
+        # TODO: Consider removing this and creating the insert on /register
+        # TODO: Consider removing this and creating the insert on /register
+        # TODO: Consider removing this and creating the insert on /register
+        # TODO: Consider removing this and creating the insert on /register
+        # TODO: Consider removing this and creating the insert on /register
+        # TODO: Consider removing this and creating the insert on /register
+        # TODO: Consider removing this and creating the insert on /register
+        # TODO: Consider removing this and creating the insert on /register
+        # TODO: Consider removing this and creating the insert on /register
             cursor = db.cursor()
-            res = cursor.execute("""INSERT INTO `User_settings` (show_previews, highlight_words, whois_username, whois_realname,
-            global_nickname, Registred_users_userID, autohide_channels, hide_joinpartquit_messages, show_seconds)
-            values (1, "", "user", "realname", "", %s, 0, 1, 1);""", (userID,))
+            cursor.execute("""INSERT INTO `User_settings` (show_previews, highlight_words, whois_username, whois_realname,
+            global_nickname, autohide_channels, hide_joinpartquit_messages, show_seconds, Registred_users_userID)
+            values (1, "", "user", "realname", "", 0, 1, 1, %s);""", (userID,))
             db.commit()
-            global_settings = global_settings_helper(cursor)
-            db.close()
-            response = {"status": "ok", "reason": "listing_settings", "message": global_settings}
-            print("SETTINGS DIDN'T EXIST UNTIL NOW")
 
-            return jsonify(response)
+            res2 = cursor.execute("""SELECT * FROM `User_settings` WHERE `Registred_users_userID` = %s;""", (userID,))
+            if res2 != 0:
+                db.close()
+                result = cursor.fetchall()
+                global_settings = list(result)
+                response = {"status": "ok", "reason": "listing_settings", "message": global_settings}
+                return jsonify(response)
+            else:
+                db.close()
+                return error("error", "db_error", "You are not logged in.")
         else:
             return error("ok", "no_servers_to_list", "Error loading your current settings, please try again later.")
     else:
