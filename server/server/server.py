@@ -3,6 +3,9 @@
 
 import os, sys, argparse
 
+# db access lib
+import MySQLdb
+
 #irc library
 from irc import client
 
@@ -13,21 +16,41 @@ class IRCSide(object):
         self.client = client.Reactor()
         self.add_handlers()
 
-        self.server_list_text = dict()
         self.server_list_instances = list()
-
 
         self.load_servers_from_db()
 
         self.connect_servers()
 
+        self.client.process_forever()
 
 
     def load_servers_from_db(self):
-        self.server_list_text = [
-            {"ip": "irc.freenode.org", "port": 6667, "use_ssl": False, "nickname": "test"},
-            {"ip": "irc.stealth.net", "port": 6999, "use_ssl": True, "nickname": "test"}
-        ]
+        db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+        cursor = db.cursor()
+        userID = 1
+
+        res = cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s;""", (userID,))
+        if res != 0:
+            result = cursor.fetchall()
+            db.close()
+            print("RESULT", result)
+            servers = list()
+
+            for res in result:
+                server_dict_temp = {"serverID": res[0],
+                                    "serverSessionID": res[1],
+                                    "nickname": res[2],
+                                    "isAway": res[3],
+                                    "isConnected": res[4],
+                                    "Registred_users_userID": res[5],
+                                    "serverName": res[6],
+                                    "serverIP": res[7],
+                                    "serverPort": res[8],
+                                    "useSSL": res[9]}
+                servers.append(server_dict_temp)
+        print("mrdka")
+        self.server_list_text = servers
 
     def add_handlers(self):
         self.client.add_global_handler('welcome', self.on_connect)
@@ -41,15 +64,12 @@ class IRCSide(object):
         self.client.add_global_handler('nick', self.on_nick)
 
 
-
     def connect_server(self, _server, _port, _nickname):
-        self.server_list_instances.append(self.client.server())
-        self.server_list_instances[1:][0].connect(server=_server, port=_port, nickname=_nickname, password=None, username=None, ircname=None)
-
+        self.server_list_instances.append(self.client.server().connect(server=_server, port=_port, nickname=_nickname, password=None, username=None, ircname=None))
 
     def connect_servers(self):
         for srvr in self.server_list_text:
-            self.connect_server(srvr["ip"], srvr["port"], srvr["nickname"])
+            self.connect_server(srvr["serverIP"], int(srvr["serverPort"]), srvr["nickname"])
 
     def start(self):
         pass
