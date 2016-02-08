@@ -357,13 +357,6 @@ def get_global_settings():
         elif res == 0: # global settings row for this user doesn't exist, let's create it
             # TODO: Consider removing this and creating the insert on /register
             # TODO: Consider removing this and creating the insert on /register
-            # TODO: Consider removing this and creating the insert on /register
-            # TODO: Consider removing this and creating the insert on /register
-            # TODO: Consider removing this and creating the insert on /register
-            # TODO: Consider removing this and creating the insert on /register
-            # TODO: Consider removing this and creating the insert on /register
-            # TODO: Consider removing this and creating the insert on /register
-            # TODO: Consider removing this and creating the insert on /register
             # TODO2: ALSO CONSIDER SETTING THE USER_SETTINGS TABLE'S DEFAULT VALUES INSTEAD OF INSERTING STUPID SHIT LIKE THIS #
 
             cursor = db.cursor()
@@ -386,15 +379,71 @@ def get_global_settings():
          return error("error", "not_loggedin", "You are not logged in.")
 
 # routa volaná při uložení globálních nastavení v okně nastavení globálních nastavení
-@app.route("/set_global_settings", methods=["POST"])
+@app.route("/save_global_settings", methods=["POST"])
 def set_global_settings():
     userID = get_userID_if_loggedin(request)
     print("UserID = ", userID)
     if userID is not False:
-        return error("error", "global_settings_set", "Global settings saved successfully.")
+        settings_cols_names = ["highlight_words", "whois_username", "whois_realname", "global_nickname", "show_joinpartquit_messages",
+                              "show_seconds", "show_video_previews", "show_image_previews"]
+        settings_cols_values = []
+
+        for key in settings_cols_names:
+            # fix boolean values
+            if(request.form.get(key) == "true"):
+                settings_cols_values.append(1)
+            elif(request.form.get(key) == "false"):
+                settings_cols_values.append(0)
+            else:
+                settings_cols_values.append(request.form.get(key))
+
+        print("SETTINGS", settings_cols_names, "\n", settings_cols_values)
+
+        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+        cursor = db.cursor()
+        res = cursor.execute("""INSERT INTO `User_settings` (highlight_words,
+                                whois_username,
+                                whois_realname,
+                                global_nickname,
+                                show_joinpartquit_messages,
+                                show_seconds,
+                                show_video_previews,
+                                show_image_previews,
+                                Registred_users_userID)
+                                values (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                ON DUPLICATE KEY UPDATE highlight_words=%s,
+                                whois_username=%s,
+                                whois_realname=%s,
+                                global_nickname=%s,
+                                show_joinpartquit_messages=%s,
+                                show_seconds=%s,
+                                show_video_previews=%s,
+                                show_image_previews=%s;""", (settings_cols_values[0],
+                                                              settings_cols_values[1],
+                                                              settings_cols_values[2],
+                                                              settings_cols_values[3],
+                                                              settings_cols_values[4],
+                                                              settings_cols_values[5],
+                                                              settings_cols_values[6],
+                                                              settings_cols_values[7],
+                                                              userID,
+                                                              settings_cols_values[0],
+                                                              settings_cols_values[1],
+                                                              settings_cols_values[2],
+                                                              settings_cols_values[3],
+                                                              settings_cols_values[4],
+                                                              settings_cols_values[5],
+                                                              settings_cols_values[6],
+                                                              settings_cols_values[7],))
+        db.commit()
+        if res != 0:
+            return error("ok", "global_settings_saved", "Global settings saved successfully.")
+        else:
+            return error("error", "global_settings_not_found", "Global settings failed to save.")
+        db.close()
     else:
         return error("error", "global_settings_set", "Global settings saved successfully.")
 
 if __name__ == '__main__':
-    app.run(debug=True, host="0.0.0.0")
+    app.run(debug=True, host="0.0.0.0") # TODO: remove binding on all interfaces; this is only here for debugging
 

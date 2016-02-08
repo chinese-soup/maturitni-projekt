@@ -128,6 +128,8 @@ function loadServers()
 {
     console.log("loadServers();");
     $(".left_channels_flex_container .loading-ajax").show(); // hide the loading servers icon
+    $(".left_channels_flex_container .loading-ajax-message").hide();
+
     $(".channel_list").empty(); // clear the server list so we don't dupe the server entries (beware of element id hazard)
 
     var posting = $.post("http://" + hostname + ":5000/get_server_list",
@@ -155,16 +157,27 @@ function loadServers()
                 $(".channel_list").append(generateServerHTML(serverID));  // generate a dummy <li> list and append it to the server list
                 $(".left_channels_flex_container .loading-ajax").hide(); // hide the loading servers icon
                 $(".channel_list #server_" + serverID + " .networkname").html(serverName);
+
                 /* TODO: IDS for  onclicks and stuff!!! */
+
                 if(useSSL == 0)
                     $(".channel_list #server_" + serverID + " .networkipport").html("(" + serverIP + "/" + serverPort + ")");
                 else
                     $(".channel_list #server_" + serverID + " .networkipport").html("(" + serverIP + "/" + serverPort + "/SSL)");
 
-                /*$(".channel_list > #server_3 .networkname")*/
-
-
             }
+        }
+        else if(data["reason"] == "no_servers_to_list")
+        {
+            $(".left_channels_flex_container .loading-ajax").hide(); // hide the spinning wheel
+            $(".left_channels_flex_container .loading-ajax-message").show(); // show the div with the message below
+            $(".left_channels_flex_container .loading-ajax-message").html("No servers to be listed (yet).<br>Use the <strong>Join another server</strong> option.");
+        }
+        else if(data["reason"] == "not_loggedin")
+        {
+            $(".left_channels_flex_container .loading-ajax").hide(); // hide the spinning wheel
+            $(".left_channels_flex_container .loading-ajax-message").show();// show the div with the message below
+            $(".left_channels_flex_container .loading-ajax-message").html("You are not logged in.");
         }
 
 
@@ -201,14 +214,14 @@ function loadSettingsIntoInputs()
                 show_seconds,
                 Registred_users_userID, id*/
 
-            $("#global-settings-form #hilight_words_input").val(settings[1]);
-            $("#global-settings-form #username").val(settings[2]);
-            $("#global-settings-form #realname").val(settings[3]);
-            $("#global-settings-form #nickname").val(settings[4]);
-            $("#global-settings-form #show_joinpartquit_messages").prop("checked", Boolean(settings[5]));
-            $("#global-settings-form #show_seconds_checkbox").prop("checked", Boolean(settings[6]));
-            $("#global-settings-form #show_video_previews_checkbox").val(Boolean(settings[7]));
-            $("#global-settings-form #show_image_previews_checkbox").val(Boolean(settings[8]));
+            $("#global-settings-form #hilight_words_input").val(settings[0]);
+            $("#global-settings-form #username").val(settings[1]);
+            $("#global-settings-form #realname").val(settings[2]);
+            $("#global-settings-form #nickname").val(settings[3]);
+            $("#global-settings-form #show_joinpartquit_messages").prop("checked", Boolean(settings[4]));
+            $("#global-settings-form #show_seconds_checkbox").prop("checked", Boolean(settings[5]));
+            $("#global-settings-form #show_video_previews_checkbox").prop("checked", Boolean(settings[6]));
+            $("#global-settings-form #show_image_previews_checkbox").prop("checked", Boolean(settings[7]));
 
                 /*$(".channel_list > #server_3 .networkname")*/
            // }
@@ -226,16 +239,18 @@ function loadSettingsIntoInputs()
 
 function save_global_settings()
 {
+    console.log($("#global-settings-form input[id=hilight_words_input]").val());
     var posting = $.post("http://" + hostname + ":5000/save_global_settings",
     {
-       nickname: $("#login-form input[id=nickname]").val(),
-       username: $("#login-form input[id=username]").val(),
-       realname: $("#login-form input[id=realname]").val(),
-       hilight_words: $("#login-form input[id=hilight_words_input]").val(),
-       show_video_previews: $("#login-form input[id=show_video_previews_checkbox]").val(),
-       show_image_previews: $("#login-form input[id=show_image_previews_checkbox]").val(),
-       show_seconds: $("#login-form input[id=show_seconds]").val(),
-       show_joinpartquit_messages: $("#login-form input[id=show_joinpartquit_messages]").val()
+       /* WARNING: order and names of the data items here matter for the API as it uses the order to insert it into the database */
+       highlight_words: $("#global-settings-form input[id=hilight_words_input]").val(),
+       whois_username: $("#global-settings-form input[id=username]").val(),
+       whois_realname: $("#global-settings-form input[id=realname]").val(),
+       global_nickname: $("#global-settings-form input[id=nickname]").val(),
+       show_joinpartquit_messages: $("#global-settings-form input[id=show_joinpartquit_messages]").prop("checked"),
+       show_seconds: $("#global-settings-form input[id=show_seconds_checkbox]").prop("checked"),
+       show_video_previews: $("#global-settings-form input[id=show_video_previews_checkbox]").prop("checked"),
+       show_image_previews: $("#global-settings-form input[id=show_image_previews_checkbox]").prop("checked")
     }, dataType="text"
     );
 
@@ -243,8 +258,14 @@ function save_global_settings()
     {
         console.log(data);
         //global-settings-form
+        if(data["status"] == "ok")
+        {
+            if(data["reason"] == "global_settings_saved")
+            {
 
-
+                toggle_center_column("messages");
+            }
+        }
     })
 
     posting.fail(function(data)

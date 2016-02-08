@@ -96,7 +96,8 @@
             </div>
             <div class="left_channels_container left_content_item">
                 <div class="left_channels_flex_container">
-                    <div class="loading-ajax" style="text-align: center"><br><img src="images/ajax-loading.gif"></div>
+                    <div class="loading-ajax" style="text-align: center"><img src="images/ajax-loading.gif"></div>
+                    <div class="loading-ajax-message" style="display: none; text-align: center;"></div>
                     <ul class="channel_list">
                         <!--<li class="left_channels_flex_item server_item">-->
                         <!--</li>-->
@@ -242,7 +243,7 @@
                         <input type="checkbox" id="show_joinpartquit_messages" value="true">
                     </div>
                     <div class="form-group col-sm-12">
-                        <button class="btn btn-primary" type="button" id="save_global_settings_button" onclick="save_settings('global');"><i class="icon-check"></i> Save changes</button>
+                        <button class="btn btn-primary" type="button" id="save_global_settings_button" onclick="save_global_settings();"><i class="icon-check"></i> Save changes</button>
                         <button class="btn btn-primary" type="button" id="close_global_settings_button" onclick="toggle_center_column('messages');">Close without saving changes</button> <!-- temp -->
                     </div>
                 </form>

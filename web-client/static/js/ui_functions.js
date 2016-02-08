@@ -50,41 +50,35 @@ function on_load()
 	$(".dropdown_server_wheel").css("display", "none");
 }
 
-function save_settings(what_settings)
+function save_settings(didSuccess)
 {
-	if(what_settings == "global")
-	{
-		// dummy:
-		failed = false; //rename me and remove this declaration
+    var dialog = new BootstrapDialog({
+        title: 'Global settings',
+        buttons: [{
+            id: 'btn-1',
+            label: 'OK',
+            action: function(dialog) {
+                dialog.close();
+            }
+        }]
+    });
+    dialog.realize();
+    dialog.setSize(BootstrapDialog.SIZE_SMALL);
+    dialog.open();
 
-		var dialog = new BootstrapDialog({
-			title: 'Global settings',
-			buttons: [{
-				id: 'btn-1',
-				label: 'OK',
-				action: function(dialog) {
-					dialog.close();
-				}
-			}]
-		});
-		dialog.realize();
-		dialog.setSize(BootstrapDialog.SIZE_SMALL);
-		dialog.open();
+    if(didSuccess == false)
+    {
+        dialog.setMessage("<span style='color: green;'>Settings saved sucessfully.</span>");
+        setTimeout(function()
+        {
+            dialog.close();
+        }, 2500);
 
-		if(failed == false)
-		{
-			dialog.setMessage("<span style='color: green;'>Settings saved sucessfully.</span>");
-			setTimeout(function()
-			{
-				dialog.close();
-			}, 2500);
-			toggle_center_column("messages");
-		}
-		else if(failed == true)
-		{
-			dialog.setMessage("<span style='color: red;'>Settings failed to save. Reason: %s</span>");
-		}
-	}
+    }
+    else if(failed == true)
+    {
+        dialog.setMessage("<span style='color: red;'>Settings failed to save. Reason: %s</span>");
+    }
 }
 
 
