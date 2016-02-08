@@ -76,15 +76,15 @@ function login(event)
             }
 
         }
-        $("#login-form input[id=email_login]").prop('disabled', false);
-        $("#login-form input[id=password_login]").prop('disabled', false);
+        $("#login-form input[id=email_login]").prop("disabled", false);
+        $("#login-form input[id=password_login]").prop("disabled", false);
 
     });
 
     posting.fail(function()
     {
-        $("#login-form input[id=email_login]").prop('disabled', false);
-        $("#login-form input[id=password_login]").prop('disabled', false);
+        $("#login-form input[id=email_login]").prop("disabled", false);
+        $("#login-form input[id=password_login]").prop("disabled", false);
          general_dialog("Login failed", "An error occurred while trying to contact the API server.", "error", 2);
     });
 

@@ -201,15 +201,14 @@ function loadSettingsIntoInputs()
                 show_seconds,
                 Registred_users_userID, id*/
 
-            $("#global-settings-form #show_previews").prop("checked", Boolean(settings[0]));
             $("#global-settings-form #hilight_words_input").val(settings[1]);
             $("#global-settings-form #username").val(settings[2]);
             $("#global-settings-form #realname").val(settings[3]);
             $("#global-settings-form #nickname").val(settings[4]);
-            /*$("#global-settings-form #show_video_previews_checkbox").val(Boolean(settings[5]));
-            $("#global-settings-form #show_image_previews_checkbox").val(Boolean(settings[6]));*/
-            $("#global-settings-form #show_joinpartquit_messages").prop("checked", Boolean(settings[7]));
-            $("#global-settings-form #show_seconds_checkbox").prop("checked", Boolean(settings[8]));
+            $("#global-settings-form #show_joinpartquit_messages").prop("checked", Boolean(settings[5]));
+            $("#global-settings-form #show_seconds_checkbox").prop("checked", Boolean(settings[6]));
+            $("#global-settings-form #show_video_previews_checkbox").val(Boolean(settings[7]));
+            $("#global-settings-form #show_image_previews_checkbox").val(Boolean(settings[8]));
 
                 /*$(".channel_list > #server_3 .networkname")*/
            // }
@@ -278,7 +277,7 @@ function logout()
            if(data["reason"] == "loggedout")
            {
                 general_dialog("Logged out successfully.", data["message"], data["status"]);
-                sendUserAway("login.html", 3000);
+                sendUserAway("login.html", 1000);
            }
         }
 

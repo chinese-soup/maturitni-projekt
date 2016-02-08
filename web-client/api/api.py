@@ -65,9 +65,9 @@ def get_userIP(request):
 def _make_login_response(data_to_send, generated_sessionID):
     response = app.make_response(data_to_send)
     response.set_cookie("sessionid", value=generated_sessionID)
-    response.headers.add('Access-Control-Allow-Origin', "localhost")
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Cookies')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+    response.headers.add("Access-Control-Allow-Origin", "localhost")
+    response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization,Cookies")
+    response.headers.add("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE")
     return response
 
 
@@ -100,10 +100,10 @@ def get_userID_if_loggedin(request):
 
 @app.after_request
 def after_request(response):
-  response.headers.add('Access-Control-Allow-Origin', 'http://localhost')
-  response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Cookies')
-  response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
-  response.headers.add('Access-Control-Allow-Credentials', 'true')
+  response.headers.add("Access-Control-Allow-Origin", "http://localhost")
+  response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization,Cookies")
+  response.headers.add("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE")
+  response.headers.add("Access-Control-Allow-Credentials", "true")
   return response
 
 @app.route("/")
@@ -354,24 +354,23 @@ def get_global_settings():
             print("SETTINGS LISTED")
 
             return jsonify(response)
-        elif res == 0:
-        # TODO: Consider removing this and creating the insert on /register
-        # TODO: Consider removing this and creating the insert on /register
-        # TODO: Consider removing this and creating the insert on /register
-        # TODO: Consider removing this and creating the insert on /register
-        # TODO: Consider removing this and creating the insert on /register
-        # TODO: Consider removing this and creating the insert on /register
-        # TODO: Consider removing this and creating the insert on /register
-        # TODO: Consider removing this and creating the insert on /register
-        # TODO: Consider removing this and creating the insert on /register
-        # TODO2: ALSO CONSIDER SETTING THE USER_SETTINGS TABLE'S DEFAULT VALUES INSTEAD OF INSERTING STUPID SHIT LIKE THIS #
+        elif res == 0: # global settings row for this user doesn't exist, let's create it
+            # TODO: Consider removing this and creating the insert on /register
+            # TODO: Consider removing this and creating the insert on /register
+            # TODO: Consider removing this and creating the insert on /register
+            # TODO: Consider removing this and creating the insert on /register
+            # TODO: Consider removing this and creating the insert on /register
+            # TODO: Consider removing this and creating the insert on /register
+            # TODO: Consider removing this and creating the insert on /register
+            # TODO: Consider removing this and creating the insert on /register
+            # TODO: Consider removing this and creating the insert on /register
+            # TODO2: ALSO CONSIDER SETTING THE USER_SETTINGS TABLE'S DEFAULT VALUES INSTEAD OF INSERTING STUPID SHIT LIKE THIS #
+
             cursor = db.cursor()
-            cursor.execute("""INSERT INTO `User_settings` (show_previews, highlight_words, whois_username, whois_realname,
-            global_nickname, autohide_channels, hide_joinpartquit_messages, show_seconds, Registred_users_userID)
-            values (1, "", "user", "realname", "", 0, 1, 1, %s);""", (userID,))
+            cursor.execute("""INSERT INTO `User_settings` (Registred_users_userID) values (%s);""", (userID,)) # generate default values for user's global settings
             db.commit()
 
-            res2 = cursor.execute("""SELECT * FROM `User_settings` WHERE `Registred_users_userID` = %s;""", (userID,))
+            res2 = cursor.execute("""SELECT * FROM `User_settings` WHERE `Registred_users_userID` = %s;""", (userID,)) # it's redundant to select the settings if we know that we just inserted the default ones, but just to be sure
             if res2 != 0:
                 db.close()
                 result = cursor.fetchall()
@@ -380,7 +379,7 @@ def get_global_settings():
                 return jsonify(response)
             else:
                 db.close()
-                return error("error", "db_error", "You are not logged in.")
+                return error("error", "db_error", "Database error.<br>Are you logged in?")
         else:
             return error("ok", "no_servers_to_list", "Error loading your current settings, please try again later.")
     else:
@@ -397,5 +396,5 @@ def set_global_settings():
         return error("error", "global_settings_set", "Global settings saved successfully.")
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0")
 
