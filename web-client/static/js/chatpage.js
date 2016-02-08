@@ -136,34 +136,83 @@ function loadServers()
 
     posting.done(function(data)
     {
-        if(data["result"] == "listing_servers")
-        console.log(data["message"][0]);
-        servers = data["message"];
-
-        for (key in servers)
+        if(data["reason"] == "listing_servers")
         {
-            value = servers[key];
-            serverID = servers[key]["serverID"];
-            serversessionID = servers[key]["serversessionID"];
-            serverName = servers[key]["serverName"];
-            serverIP =  servers[key]["serverIP"];
-            serverPort = servers[key]["serverPort"];
-            useSSL = servers[key]["useSSL"];
+            console.log(data["message"][0]);
+            servers = data["message"];
 
-            $(".channel_list").append(generateServerHTML(serverID));  // generate a dummy <li> list and append it to the server list
-            $(".left_channels_flex_container .loading-ajax").hide(); // hide the loading servers icon
-            $(".channel_list #server_" + serverID + " .networkname").html(serverName);
-            /* TODO: IDS for  onclicks and stuff!!! */
-            if(useSSL == 0)
-                $(".channel_list #server_" + serverID + " .networkipport").html("(" + serverIP + "/" + serverPort + ")");
-            else
-                $(".channel_list #server_" + serverID + " .networkipport").html("(" + serverIP + "/" + serverPort + "/SSL)");
+            for (key in servers)
+            {
+                value = servers[key];
+                serverID = servers[key]["serverID"];
+                serversessionID = servers[key]["serversessionID"];
+                serverName = servers[key]["serverName"];
+                serverIP =  servers[key]["serverIP"];
+                serverPort = servers[key]["serverPort"];
+                useSSL = servers[key]["useSSL"];
 
-            /*$(".channel_list > #server_3 .networkname")*/
+                $(".channel_list").append(generateServerHTML(serverID));  // generate a dummy <li> list and append it to the server list
+                $(".left_channels_flex_container .loading-ajax").hide(); // hide the loading servers icon
+                $(".channel_list #server_" + serverID + " .networkname").html(serverName);
+                /* TODO: IDS for  onclicks and stuff!!! */
+                if(useSSL == 0)
+                    $(".channel_list #server_" + serverID + " .networkipport").html("(" + serverIP + "/" + serverPort + ")");
+                else
+                    $(".channel_list #server_" + serverID + " .networkipport").html("(" + serverIP + "/" + serverPort + "/SSL)");
+
+                /*$(".channel_list > #server_3 .networkname")*/
 
 
+            }
         }
 
+
+    });
+
+    posting.fail(function()
+    {
+        console.log("Failed to load servers.")
+    })
+}
+
+
+function loadSettingsIntoInputs()
+{
+    console.log("loadSettingsIntoInputs();")
+    var posting = $.post("http://localhost:5000/get_global_settings",
+    {
+    }, dataType="text"
+    );
+
+    posting.done(function(data)
+    {
+        if(data["reason"] == "listing_settings")
+        {
+            console.log(data["message"][0]);
+            settings = data["message"][0];
+            console.log(settings);
+            /*for (key in settings)
+            {
+                value = servers[key];
+                /*show_previews, highlight_words, whois_username, whois_realname,
+                global_nickname, Registred_users_userID, autohide_channels,
+                hide_joinpartquit_messages,
+                show_seconds,
+                Registred_users_userID, id*/
+
+            $("#global-settings-form #show_previews").prop("checked", Boolean(settings[0]));
+            $("#global-settings-form #hilight_words_input").val(settings[1]);
+            $("#global-settings-form #username").val(settings[2]);
+            $("#global-settings-form #realname").val(settings[3]);
+            $("#global-settings-form #nickname").val(settings[4]);
+            /*$("#global-settings-form #show_video_previews_checkbox").val(Boolean(settings[5]));
+            $("#global-settings-form #show_image_previews_checkbox").val(Boolean(settings[6]));*/
+            $("#global-settings-form #show_joinpartquit_messages").prop("checked", Boolean(settings[7]));
+            $("#global-settings-form #show_seconds_checkbox").prop("checked", Boolean(settings[8]));
+
+                /*$(".channel_list > #server_3 .networkname")*/
+           // }
+        }
 
     });
 
@@ -208,3 +257,5 @@ function logout()
          general_dialog("API endpoint error.", "An error occurred while trying to contact the API server.", "error", 2);
     });
 }
+
+
