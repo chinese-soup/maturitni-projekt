@@ -153,7 +153,7 @@ function loadServers()
             $(".channel_list").append(generateServerHTML(serverID));  // generate a dummy <li> list and append it to the server list
             $(".left_channels_flex_container .loading-ajax").hide(); // hide the loading servers icon
             $(".channel_list #server_" + serverID + " .networkname").html(serverName);
-            console.log("usessl= " + useSSL);
+            /* TODO: IDS for  onclicks and stuff!!! */
             if(useSSL == 0)
                 $(".channel_list #server_" + serverID + " .networkipport").html("(" + serverIP + "/" + serverPort + ")");
             else

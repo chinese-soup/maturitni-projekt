@@ -323,11 +323,59 @@ def get_messages():
     return "get_messages()"
 
 
-# routa volaná při zobrazení okna globálních nastavení
-@app.route("/get_global_settings")
-def get_messages():
-    return "get_settings()"
 
+def global_settings_helper(cursor):
+    result = cursor.fetchall()
+
+    print("RESULT", result)
+    global_settings = []
+    global_settings = list(result)
+
+    '''server_dict_temp = {"show_previews": res[0],
+                        "highlight_words": res[1],
+                        "whois_username": res[2],
+                        "whois_realname": res[3],
+                        "global_nickname": res[4],
+                        "Registred_users_userID": res[5],
+                        "autohide_channels": res[6],
+                        "hide_joinpartquit_messages": res[7],
+                        "show_seconds": res[8]}'''
+    return result
+
+
+# routa volaná při zobrazení okna globálních nastavení
+@app.route("/get_global_settings", methods=["POST"])
+def get_global_settings():
+    userID = get_userID_if_loggedin(request)
+    print("UserID = ", userID)
+    if userID is not False:
+        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+        cursor = db.cursor()
+        res = cursor.execute("""SELECT * FROM `User_settings` WHERE `Registred_users_userID` = %s;""", (userID,))
+        if res != 0:
+            global_settings = global_settings_helper(cursor)
+            db.close()
+            response = {"status": "ok", "reason": "listing_settings", "message": global_settings}
+            print("SETTINGS LISTED")
+
+            return jsonify(response)
+
+        elif res == 0:
+            cursor = db.cursor()
+            res = cursor.execute("""INSERT INTO `User_settings` (show_previews, highlight_words, whois_username, whois_realname,
+            global_nickname, Registred_users_userID, autohide_channels, hide_joinpartquit_messages, show_seconds)
+            values (1, "", "user", "realname", "", %s, 0, 1, 1);""", (userID,))
+            db.commit()
+            global_settings = global_settings_helper(cursor)
+            db.close()
+            response = {"status": "ok", "reason": "listing_settings", "message": global_settings}
+            print("SETTINGS DIDN'T EXIST UNTIL NOW")
+
+            return jsonify(response)
+        else:
+            return error("ok", "no_servers_to_list", "Error loading your current settings, please try again later.")
+    else:
+         return error("error", "not_loggedin", "You are not logged in.")
 
 if __name__ == '__main__':
     app.run(debug=True)
