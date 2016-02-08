@@ -153,11 +153,11 @@ function loadServers()
             $(".channel_list").append(generateServerHTML(serverID));  // generate a dummy <li> list and append it to the server list
             $(".left_channels_flex_container .loading-ajax").hide(); // hide the loading servers icon
             $(".channel_list #server_" + serverID + " .networkname").html(serverName);
-
-            if(use_SSL == "1")
+            console.log("usessl= " + useSSL);
+            if(useSSL == 0)
                 $(".channel_list #server_" + serverID + " .networkipport").html("(" + serverIP + "/" + serverPort + ")");
             else
-                $(".channel_list #server_" + serverID + " .networkipport").html("(" + serverIP + "/" + serverPort + "/" + useSSL + ")");
+                $(".channel_list #server_" + serverID + " .networkipport").html("(" + serverIP + "/" + serverPort + "/SSL)");
 
             /*$(".channel_list > #server_3 .networkname")*/
 
@@ -194,7 +194,7 @@ function logout()
         }
         else if(data["status"] == "ok")
         {
-           if(data["reason"] == "loggedin_email_status")
+           if(data["reason"] == "loggedout")
            {
                 general_dialog("Logged out successfully.", data["message"], data["status"]);
                 sendUserAway("login.html", 3000);

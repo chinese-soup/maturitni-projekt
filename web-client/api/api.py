@@ -154,6 +154,7 @@ def logout():
     else:
          return jsonify(status="error", reason="not_loggedin", message="You are not logged in.")
 
+# routa volaná při načtení chat.html pro ověření, zda je uživatel přihlášen
 @app.route("/upon_login", methods=["POST"])
 def upon_login():
     userID = get_userID_if_loggedin(request)
@@ -171,7 +172,7 @@ def upon_login():
     else:
         return jsonify(status="error", reason="not_loggedin", message="You are not logged in.")
 
-
+# routa volaná při přihlášení na login.html
 @app.route("/login", methods=["POST"])
 def login():
     _email = request.form.get("email").lower() # WARNING: make lower() because USER@EXAMPLE.COM is the same as UsER@eXamPle.com !!!!!
@@ -235,7 +236,7 @@ def login():
 
     return jsonify(status="error", message="REACHED END OF LOGIN() WITHOUT RETURNING BEFORE THAT, THIS SHOULD NEVER HAPPEN.")
 
-
+# routa volaná při registraci na index.html
 @app.route("/register", methods=["POST"])
 def register():
     db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
@@ -272,7 +273,9 @@ def register():
     else:
         return jsonify(status="error", reason="insert_failed", message="Account registration failed.")
 
-
+# routa volaná při načtení chat.html
+# routa volaná při přidání / odstranění serveru
+# split with get_channel_list?
 @app.route("/get_server_list", methods=["GET", "POST"])
 def get_server_list():
     userID = get_userID_if_loggedin(request)
@@ -314,10 +317,16 @@ def get_server_list():
     else:
         return error("error", "not_loggedin", "You are not logged in.")
 
-
+# routa volaná při volbě kanálu ze seznamu, routa volaná při scrollnutí nahoru v chatovacím okénku pro získání více zpráv z minulosti
 @app.route("/get_messages")
 def get_messages():
     return "get_messages()"
+
+
+# routa volaná při zobrazení okna globálních nastavení
+@app.route("/get_global_settings")
+def get_messages():
+    return "get_settings()"
 
 
 if __name__ == '__main__':
