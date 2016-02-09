@@ -440,11 +440,57 @@ def set_global_settings():
         if res != 0:
             return error("ok", "global_settings_saved", "Global settings saved successfully.")
         else:
-            return error("ok", "global_settings_notupdated", "Nothing to save.")
+            return error("ok", "global_settings_notupdated", "No changes to save.")
             #return error("error", "global_settings_not_found", "Global settings failed to save.")
         db.close()
     else:
         return error("error", "not_loggedin", "You are not logged in.")
+
+
+
+
+
+# routa volaná při načtení chat.html
+# routa volaná při přidání / odstranění serveru
+# split with get_channel_list?
+@app.route("/get_channel_list", methods=["GET", "POST"])
+def get_channel_list():
+    userID = get_userID_if_loggedin(request)
+    print("UserID = ", userID)
+
+    if userID is not False:
+        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+        cursor = db.cursor()
+        res = cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s;""", (userID,))
+        if res != 0:
+            result = cursor.fetchall()
+            db.close()
+            print("RESULT", result)
+            servers = dict()
+
+            i = 0
+            for res in result:
+                server_dict_temp = {"serverID": res[0],
+                                    "serverSessionID": res[1],
+                                    "nickname": res[2],
+                                    "isAway": res[3],
+                                    "isConnected": res[4],
+                                    "Registred_users_userID": res[5],
+                                    "serverName": res[6],
+                                    "serverIP": res[7],
+                                    "serverPort": res[8],
+                                    "useSSL": res[9]}
+                servers[i] = server_dict_temp
+                i = i+1
+
+            response = {"status": "ok", "reason": "listing_servers", "message": servers}
+            return jsonify(response)
+
+        else:
+            return error("ok", "no_servers_to_list", "No servers yet.")
+    else:
+        return error("error", "not_loggedin", "You are not logged in.")
+
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0") # TODO: remove binding on all interfaces; this is only here for debugging

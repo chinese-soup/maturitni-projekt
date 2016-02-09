@@ -113,6 +113,7 @@ function generateServerHTML(serverID)
                 '<li><a class="join_another_channel_link" href="#" onclick="#">Join another channel&hellip;</a></li>' + /*join_channel_dialog(\'Freenode\',\'ID\' ); */
                 '<li><a class="disconnect_link" href="#" onclick="#">Disconnect</a></li>' + /* disconnect_dialog(\'Freenode\', \'ID\');*/
                 '<li role="separator" class="divider"></li>' +
+                '<li><a href="#" onclick="remove_this_server();">Remove this server</a></li>' +
                 '<li><a href="#" onclick="toggle_center_column(\'edit_server\');">Edit</a></li>' +
             '</ul>' +
         '</div>' +
