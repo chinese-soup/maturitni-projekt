@@ -290,8 +290,6 @@ def get_server_list():
         res = cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s;""", (userID,))
         if res != 0:
             result = cursor.fetchall()
-            db.close()
-            print("RESULT", result)
             servers = dict()
 
             i = 0
@@ -309,12 +307,18 @@ def get_server_list():
                 servers[i] = server_dict_temp
                 i = i+1
 
+            for srvr in servers.items():
+                print(srvr)
+                srvrID = srvr[1]["serverID"]
+                cursor = db.cursor()
+                res = cursor.execute("""SELECT * FROM `IRC_channels` WHERE `IRC_servers_serverID` = %s;""", (srvrID,))
+                print("FETCH ALL", cursor.fetchall())
+
             response = {"status": "ok", "reason": "listing_servers", "message": servers}
             return jsonify(response)
 
         else:
             return error("ok", "no_servers_to_list", "No servers yet.")
-
 
         #return error("error", "debug", result)
     else:

@@ -104,7 +104,7 @@ function checkIfUserIsLoggedInOnStart()
 function generateServerHTML(serverID)
 {
     var html = '<li id="server_' + serverID + '" class="left_channels_flex_item server_item">' +
-        '<a href="#"><span class="networkname">Memes</span> <small class="networkipport">(irc.freenode.org/6667)</small></a>' +
+        '<a href="#"><span class="networkname">Loading..</span> <small class="networkipport">(irc.freenode.org/6667)</small></a>' +
         '<div class="dropdown">' +
             '<button class="btn dropdown-toggle dropdown_server_wheel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
                 '<i class="icon-settingsfour-gearsalt"></i>' +
@@ -206,14 +206,6 @@ function loadSettingsIntoInputs()
             console.log(data["message"][0]);
             settings = data["message"][0];
             console.log(settings);
-            /*for (key in settings)
-            {
-                value = servers[key];
-                /*show_previews, highlight_words, whois_username, whois_realname,
-                global_nickname, Registred_users_userID, autohide_channels,
-                hide_joinpartquit_messages,
-                show_seconds,
-                Registred_users_userID, id*/
 
             $("#global-settings-form #hilight_words_input").val(settings[0]);
             $("#global-settings-form #username").val(settings[1]);
@@ -223,9 +215,6 @@ function loadSettingsIntoInputs()
             $("#global-settings-form #show_seconds_checkbox").prop("checked", Boolean(settings[5]));
             $("#global-settings-form #show_video_previews_checkbox").prop("checked", Boolean(settings[6]));
             $("#global-settings-form #show_image_previews_checkbox").prop("checked", Boolean(settings[7]));
-
-                /*$(".channel_list > #server_3 .networkname")*/
-           // }
         }
 
     });
@@ -260,7 +249,7 @@ function save_global_settings()
         console.log(data);
         //global-settings-form
         if(data["status"] == "ok")
-        {
+        {y
             general_dialog("Global settings", data["message"], data["status"], 2);
             if(data["reason"] == "global_settings_saved")
             {
@@ -276,6 +265,7 @@ function save_global_settings()
         {
             if(data["reason"] == "not_loggedin")
             {
+                general_dialog("Access denied: You are not logged in.")
                 general_dialog("Access denied: You are not logged in.", data["message"], "error", 2)
             }
         }

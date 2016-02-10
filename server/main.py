@@ -1,4 +1,4 @@
-#!/usr/bin/python3.4
+#!/usr/bin/env python3
 # coding=utf-8
 
 import os, sys, argparse, signal
@@ -6,8 +6,8 @@ import os, sys, argparse, signal
 # my stuff
 from server import server
 
+# TODO: parallel connections
 
-# TODO: CHECK FOR USER VALIDATION
 
 if __name__ == "__main__":
     aparser = argparse.ArgumentParser()
