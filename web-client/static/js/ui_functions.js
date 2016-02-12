@@ -32,7 +32,7 @@ function join_channel_dialog(server)
 
 	var dialog = new BootstrapDialog({
 		title: 'Join a channel on ' + server,
-		message: $('<div></div>').load('channel_join.html'),
+		message: $('<div></div>').load('channel_join.html')
 	});
 	$("#channel_to_join_submit_button").on("click", dialog, function(event)
 	{

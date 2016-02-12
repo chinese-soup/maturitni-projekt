@@ -290,7 +290,9 @@ def get_server_list():
         res = cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s;""", (userID,))
         if res != 0:
             result = cursor.fetchall()
+            # horrible hacks to get aronud the fact that jsonify is stupid (imo) follow: #
             servers = dict()
+            channels = dict()
 
             i = 0
             for res in result:
@@ -303,16 +305,31 @@ def get_server_list():
                                     "serverName": res[6],
                                     "serverIP": res[7],
                                     "serverPort": res[8],
-                                    "useSSL": res[9]}
+                                    "useSSL": res[9],
+                                    "channels": None}
                 servers[i] = server_dict_temp
                 i = i+1
 
+            i = 0
             for srvr in servers.items():
                 print(srvr)
                 srvrID = srvr[1]["serverID"]
                 cursor = db.cursor()
                 res = cursor.execute("""SELECT * FROM `IRC_channels` WHERE `IRC_servers_serverID` = %s;""", (srvrID,))
-                print("FETCH ALL", cursor.fetchall())
+                channel_result = cursor.fetchall()
+                print(channel_result)
+
+                for res in channel_result:
+                    channel_dict_temp = {"channelID": res[0],
+                                         "channelName": res[1],
+                                         "channelPassword": res[2],
+                                         "isJoined": res[3],
+                                         "lastOpened": res[4],
+                                         "serverID": res[5]}
+
+                    servers[i]["channels"] = channel_dict_temp
+
+                i = i+1
 
             response = {"status": "ok", "reason": "listing_servers", "message": servers}
             return jsonify(response)
