@@ -347,17 +347,6 @@ def get_messages():
     return "get_messages()"
 
 
-'''server_dict_temp = {"show_previews": res[0],
-                    "highlight_words": res[1],
-                    "whois_username": res[2],
-                    "whois_realname": res[3],
-                    "global_nickname": res[4],
-                    "Registred_users_userID": res[5],
-                    "autohide_channels": res[6],
-                    "hide_joinpartquit_messages": res[7],
-                    "show_seconds": res[8]}'''
-
-
 # routa volaná při zobrazení okna globálních nastavení
 @app.route("/get_global_settings", methods=["POST"])
 def get_global_settings():

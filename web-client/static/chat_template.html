@@ -52,7 +52,7 @@
 		<script src="./bootstrap-3.3.6-dist/jquery-1.11.3.min.js"></script>
 		<script src="./bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
 
-		<script src="./js/chatpage.js"></script>
+		<!--<script src="./js/chatpage.js"></script>-->
 
         <script src="./js/general-dialog.js"></script>
 
@@ -101,7 +101,7 @@
 									<a href="#">Freenode <small>(irc.freenode.org/6667)</small></a>
 									<div class="dropdown">
 										<button class="btn dropdown-toggle dropdown_server_wheel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-											<i class="icon-settingsfour-gearsalt"></i> 
+											<i class="icon-settingsfour-gearsalt"></i>
 										</button>
 										<ul class="dropdown-menu dropdown-menu-right">
 											<li><a href="#" onclick="join_channel_dialog('Freenode');">Join another channel&hellip;</a></li>
@@ -110,16 +110,19 @@
 											<li><a href="#" onclick="toggle_center_column('edit_server');">Edit</a></li>
 										</ul>
 									</div>
+																	<li class="left_channels_flex_item channel_item">
+									<a href="#">#no_new_messages</a>
 								</li>
+
 								<li class="left_channels_flex_item channel_item channel_item_active">
 									<a href="#">#new_messages</a>
-								</li>
-								<li class="left_channels_flex_item channel_item">
-									<a href="#">#no_new_messages</a>
 								</li>
 								<li class="left_channels_flex_item channel_item channel_item_focused">
 									<a href="#">#test123_focused</a>
 								</li>
+
+								</li>
+
 								<li class="left_channels_flex_item server_item server_item_disconnected">
 									<a href="#">ReallyLongNameOfANetwork <small>(irc.really-long-names-are.fun/6667)</small></a>
 										<div class="dropdown">

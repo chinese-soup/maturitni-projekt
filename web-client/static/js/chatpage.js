@@ -110,16 +110,24 @@ function generateServerHTML(serverID)
                 '<i class="icon-settingsfour-gearsalt"></i>' +
             '</button>' +
             '<ul class="dropdown-menu dropdown-menu-right">' +
-                '<li><a class="join_another_channel_link" href="#" onclick="#">Join another channel&hellip;</a></li>' + /*join_channel_dialog(\'Freenode\',\'ID\' ); */
-                '<li><a class="disconnect_link" href="#" onclick="#">Disconnect</a></li>' + /* disconnect_dialog(\'Freenode\', \'ID\');*/
+                '<li><a class="join_another_channel_link" href="#">Join another channel&hellip;</a></li>' + /*join_channel_dialog(\'Freenode\',\'ID\' ); */
+                '<li><a class="disconnect_link" href="#">Disconnect</a></li>' + /* disconnect_dialog(\'Freenode\', \'ID\');*/
                 '<li role="separator" class="divider"></li>' +
-                '<li><a href="#" onclick="remove_this_server();">Remove this server</a></li>' +
-                '<li><a href="#" onclick="toggle_center_column(\'edit_server\');">Edit</a></li>' +
+                '<li><a class="remove_server_link" href="#">Remove this server</a></li>' +
+                '<li><a class="edit_server_link" href="#" onclick="toggle_center_column(\'edit_server\');">Edit</a></li>' +
             '</ul>' +
         '</div>' +
     '</li>';
     return(html);
 }
+
+function generateChannelHTML(channelID)
+{
+    var html =  '<li id="channel' + channelID + '" class="left_channels_flex_item channel_item">' +
+                '   <a href="#">#new_messages</a>' +
+                '</li>';
+}
+
 
 /* function to reload the server and channel list */
 /* called when servers or channels are changed/added/removed */
@@ -154,12 +162,32 @@ function loadServers()
                 serverIP =  servers[key]["serverIP"];
                 serverPort = servers[key]["serverPort"];
                 useSSL = servers[key]["useSSL"];
+                channels = servers[key]["channels"];
 
                 $(".channel_list").append(generateServerHTML(serverID));  // generate a dummy <li> list and append it to the server list
                 $(".left_channels_flex_container .loading-ajax").hide(); // hide the loading servers icon
                 $(".channel_list #server_" + serverID + " .networkname").html(serverName);
 
                 /* TODO: IDS for  onclicks and stuff!!! */
+                /* onclick events: */
+                $(".channel_list #server_" + serverID + " .join_another_channel_link").prop("onclick", "join_channel_dialog('Freenode', " + serverID + ");");
+                $(".channel_list #server_" + serverID + " .disconnect_link").prop("onclick", "disconnect_dialog('Freenode', " + serverID + ");");
+                $(".channel_list #server_" + serverID + " .remove_server_link").prop("onclick", "remove_server_dialog('Freenode', " + serverID + ");");
+                $(".channel_list #server_" + serverID + " .edit_server_link").prop("onclick", "edit_server('Freenode', " + serverID + ");");
+
+                for (chans in channels)
+                {
+                    channelID = channels[chans]["channelID"];
+                    channelName = channels[chans]["channelName"];
+                    isJoined = channels[chans]["isJoined"];
+                    lastOpened = channels[chans]["lastOpened"];
+                    channelServerID = channels[chans]["serverID"];
+
+                    $(".channel_list #server_" + serverID).append(generateChannelHTML(channelID));  // generate a dummy <li> list and append it to the server list
+                    $(".left_channels_flex_container .loading-ajax").hide(); // hide the loading servers icon
+                    $(".channel_list #server_" + serverID + " .networkname").html(serverName);
+                }
+
 
                 if(useSSL == 0)
                     $(".channel_list #server_" + serverID + " .networkipport").html("(" + serverIP + "/" + serverPort + ")");
