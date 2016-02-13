@@ -317,7 +317,8 @@ def get_server_list():
                 cursor = db.cursor()
                 res = cursor.execute("""SELECT * FROM `IRC_channels` WHERE `IRC_servers_serverID` = %s;""", (srvrID,))
                 channel_result = cursor.fetchall()
-                print(channel_result)
+                print("CHANNELS", channel_result)
+                channels_dict = dict()
 
                 for res in channel_result:
                     channel_dict_temp = {"channelID": res[0],
@@ -327,8 +328,8 @@ def get_server_list():
                                          "lastOpened": res[4],
                                          "serverID": res[5]}
 
-                    servers[i]["channels"] = channel_dict_temp
-
+                    channels_dict[i] = channel_dict_temp
+                servers[i]["channels"] = channels_dict
                 i = i+1
 
             response = {"status": "ok", "reason": "listing_servers", "message": servers}

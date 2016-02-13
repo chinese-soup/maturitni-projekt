@@ -117,15 +117,17 @@ function generateServerHTML(serverID)
                 '<li><a class="edit_server_link" href="#" onclick="toggle_center_column(\'edit_server\');">Edit</a></li>' +
             '</ul>' +
         '</div>' +
+        '<ul class="channels_ul"></ul>'
     '</li>';
     return(html);
 }
 
 function generateChannelHTML(channelID)
 {
-    var html =  '<li id="channel' + channelID + '" class="left_channels_flex_item channel_item">' +
-                '   <a href="#">#new_messages</a>' +
+    var html =  '<li id="channel_' + channelID + '" class="left_channels_flex_item channel_item">' +
+                '   <a href="#" class="channelName">#channelName</a>' +
                 '</li>';
+    return(html);
 }
 
 
@@ -182,10 +184,10 @@ function loadServers()
                     isJoined = channels[chans]["isJoined"];
                     lastOpened = channels[chans]["lastOpened"];
                     channelServerID = channels[chans]["serverID"];
+                    console.log(channelName);
+                    $(generateChannelHTML(channelID)).insertAfter($(".channel_list #server_" + channelServerID));  // generate a dummy <li> list and append it to the server list
+                    $(".channel_list #channel_" + channelID + " .channelName").html(channelName);
 
-                    $(".channel_list #server_" + serverID).append(generateChannelHTML(channelID));  // generate a dummy <li> list and append it to the server list
-                    $(".left_channels_flex_container .loading-ajax").hide(); // hide the loading servers icon
-                    $(".channel_list #server_" + serverID + " .networkname").html(serverName);
                 }
 
 
