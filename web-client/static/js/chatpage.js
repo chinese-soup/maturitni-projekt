@@ -172,10 +172,10 @@ function loadServers()
 
                 /* TODO: IDS for  onclicks and stuff!!! */
                 /* onclick events: */
-                $(".channel_list #server_" + serverID + " .join_another_channel_link").prop("onclick", "join_channel_dialog('Freenode', " + serverID + ");");
-                $(".channel_list #server_" + serverID + " .disconnect_link").prop("onclick", "disconnect_dialog('Freenode', " + serverID + ");");
-                $(".channel_list #server_" + serverID + " .remove_server_link").prop("onclick", "remove_server_dialog('Freenode', " + serverID + ");");
-                $(".channel_list #server_" + serverID + " .edit_server_link").prop("onclick", "edit_server('Freenode', " + serverID + ");");
+                $(".channel_list #server_" + serverID + " .dropdown .dropdown-menu .join_another_channel_link").prop("onclick", "join_channel_dialog('Freenode', " + serverID + ");");
+                $(".channel_list #server_" + serverID + " .dropdown .dropdown-menu .disconnect_link").prop("onclick", "disconnect_dialog('Freenode', " + serverID + ");");
+                $(".channel_list #server_" + serverID + " .dropdown .dropdown-menu .remove_server_link").prop("onclick", "remove_server_dialog('Freenode', " + serverID + ");");
+                $(".channel_list #server_" + serverID + " .dropdown .dropdown-menu .edit_server_link").prop("onclick", "edit_server('Freenode', " + serverID + ");");
 
                 for (chans in channels)
                 {
