@@ -10,7 +10,7 @@ import MySQLdb
 from irc import client
 
 class IRCSide(object):
-    def __init__(self):
+    def __init__(self, _userid):
         super(IRCSide, self).__init__()
 
         self.client = client.Reactor()
@@ -24,14 +24,16 @@ class IRCSide(object):
 
         self.client.process_forever()
 
+        self.userID = _userid
+
+        self.db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+        self.cursor = self.db.cursor()
 
     def load_servers_from_db(self):
         db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
         cursor = db.cursor()
         userID = 1
 
-        res = cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s;""", (userID,))
-        if res != 0:
             result = cursor.fetchall()
             db.close()
             print("RESULT", result)
@@ -53,15 +55,15 @@ class IRCSide(object):
         self.server_list_text = servers
 
     def add_handlers(self):
-        self.client.add_global_handler('welcome', self.on_connect)
-        self.client.add_global_handler('disconnect', self.on_disconnect)
-        self.client.add_global_handler('nicknameinuse', self.on_nicknameinuse)
-        self.client.add_global_handler('pubmsg', self.on_pubmsg)
-        self.client.add_global_handler('privmsg', self.on_privmsg)
-        self.client.add_global_handler('join', self.on_join)
-        self.client.add_global_handler('part', self.on_part)
-        self.client.add_global_handler('quit', self.on_quit)
-        self.client.add_global_handler('nick', self.on_nick)
+        self.client.add_global_handler("welcome", self.on_connect)
+        self.client.add_global_handler("disconnect", self.on_disconnect)
+        self.client.add_global_handler("nicknameinuse", self.on_nicknameinuse)
+        self.client.add_global_handler("pubmsg", self.on_pubmsg)
+        self.client.add_global_handler("privmsg", self.on_privmsg)
+        self.client.add_global_handler("join", self.on_join)
+        self.client.add_global_handler("part", self.on_part)
+        self.client.add_global_handler("quit", self.on_quit)
+        self.client.add_global_handler("nick", self.on_nick)
 
 
     def connect_server(self, _server, _port, _nickname):
@@ -85,11 +87,19 @@ class IRCSide(object):
 
     def on_pubmsg(self, connection, event):
         print('[{}] Pubmsg {}' .format(event.type.upper(), event.source))
+        res = self.cursor.execute("""select * from `IRC_servers` where `Registred_users_userID` = 1;""", (self.userID,))
+
+        if res != 0:
+            print("Inserted successfully.")
+            result = res.fetchall()
+            print(result)
+            res2 = self.cursor.execute("""select * from `IRC_channels` where `IRC_servers_serverID` = 1;""", (self.userID,))
+
         connection.privmsg(event.target, str(event.__dict__))
 
     def on_privmsg(self, connection, event):
         print('[{}] Privmsg {}' .format(event.type.upper(), event.source))
-        connection.privmsg(event.target, str(event.__dict__))
+        connection.privmsg(event.target, str(event q.__dict__))
 
     def on_join(self, connection, event):
         print('[{}] Join {}' .format(event.type.upper(), event.source))

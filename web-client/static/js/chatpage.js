@@ -7,33 +7,48 @@ $.ajaxSetup({
 
 var hostname = location.hostname; // maybe temporary(?): get the current hostname so we know where to make api calls (same host, different port)
 
+
+
+/* maybe move to util.js? */
+/* overrides the default string function in javascript */
+String.prototype.format = function() {
+    var formatted = this;
+    for (var i = 0; i < arguments.length; i++) {
+        var regexp = new RegExp('\\{'+i+'\\}', 'gi');
+        formatted = formatted.replace(regexp, arguments[i]);
+    }
+    return formatted;
+};
+
+/* function called upon DOM load */
 function onChatLoad()
 {
     console.log("onChatLoad();");
     checkIfUserIsLoggedInOnStart();
-
 }
 
 
+/* never used (yet?) */
 $body = $("body");
-
 $(document).on({
     ajaxStart: function() { console.log("ajaxStart();"); /* $body.addClass("loading"); */ },
      ajaxStop: function() { console.log("ajaxStop();");  /* $body.removeClass("loading"); */ }
 });
 
 
-/* target element is in jquery style */
+/* target element is in jquery style, TODO: remove? */
 function showLoadingMemeCircleInsteadOfTheElement(target_element)
 {
 
 }
 
+/* function to time a redirect (for log out, etc.) */
 function sendUserAway(url, time)
 {
     setTimeout(sendUserAwayTimeout, time, url);
 }
 
+/* function called upon sendUserAway time period timing out */
 function sendUserAwayTimeout(url)
 {
     window.location.href = url;
@@ -43,7 +58,7 @@ function sendUserAwayTimeout(url)
 /* returns true (loggedin) /false (notloggedin) */
 function isUserLoggedIn()
 {
-    var posting = $.post("http://" + hostname + "/check_session", {}, datatype="text");
+    var posting = $.post("http://{0}/check_session".format(hostname), {}, datatype="text");
     posting.done(function(data)
     {
         console.log("Hello");
@@ -65,7 +80,7 @@ function isUserLoggedIn()
 
 function checkIfUserIsLoggedInOnStart()
 {
-    var posting = $.post("http://" + hostname + ":5000/upon_login",
+    var posting = $.post("http://{0}:5000/upon_login".format(hostname),
     {
     }, dataType="text"
     );
@@ -103,7 +118,7 @@ function checkIfUserIsLoggedInOnStart()
 /* no formatting in js? :( */
 function generateServerHTML(serverID)
 {
-    var html = '<li id="server_' + serverID + '" class="left_channels_flex_item server_item">' +
+    var html = '<li id="server_{0}" class="left_channels_flex_item server_item">'.format(serverID) +
         '<a href="#"><span class="networkname">Loading..</span> <small class="networkipport">(irc.freenode.org/6667)</small></a>' +
         '<div class="dropdown">' +
             '<button class="btn dropdown-toggle dropdown_server_wheel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
@@ -114,7 +129,7 @@ function generateServerHTML(serverID)
                 '<li><a class="disconnect_link" href="#">Disconnect</a></li>' + /* disconnect_dialog(\'Freenode\', \'ID\');*/
                 '<li role="separator" class="divider"></li>' +
                 '<li><a class="remove_server_link" href="#">Remove this server</a></li>' +
-                '<li><a class="edit_server_link" href="#" onclick="toggle_center_column(\'edit_server\');">Edit</a></li>' +
+                '<li><a class="edit_server_link" href="#">Edit</a></li>' +
             '</ul>' +
         '</div>' +
         '<ul class="channels_ul"></ul>'
@@ -124,7 +139,7 @@ function generateServerHTML(serverID)
 
 function generateChannelHTML(channelID)
 {
-    var html =  '<li id="channel_' + channelID + '" class="left_channels_flex_item channel_item">' +
+    var html =  '<li id="channel_{0}" class="left_channels_flex_item channel_item">'.format(channelID) +
                 '   <a href="#" class="channelName">#channelName</a>' +
                 '</li>';
     return(html);
@@ -143,7 +158,7 @@ function loadServers()
 
     $(".channel_list").empty(); // clear the server list so we don't dupe the server entries (beware of element id hazard)
 
-    var posting = $.post("http://" + hostname + ":5000/get_server_list",
+    var posting = $.post("http://{0}:5000/get_server_list".format(hostname),
     {
     }, dataType="text"
     );
@@ -170,12 +185,11 @@ function loadServers()
                 $(".left_channels_flex_container .loading-ajax").hide(); // hide the loading servers icon
                 $(".channel_list #server_" + serverID + " .networkname").html(serverName);
 
-                /* TODO: IDS for  onclicks and stuff!!! */
-                /* onclick events: */
-                $(".channel_list #server_" + serverID + " .dropdown .dropdown-menu .join_another_channel_link").prop("onclick", "join_channel_dialog('Freenode', " + serverID + ");");
-                $(".channel_list #server_" + serverID + " .dropdown .dropdown-menu .disconnect_link").prop("onclick", "disconnect_dialog('Freenode', " + serverID + ");");
-                $(".channel_list #server_" + serverID + " .dropdown .dropdown-menu .remove_server_link").prop("onclick", "remove_server_dialog('Freenode', " + serverID + ");");
-                $(".channel_list #server_" + serverID + " .dropdown .dropdown-menu .edit_server_link").prop("onclick", "edit_server('Freenode', " + serverID + ");");
+                /* onclick definitions, very important, do NOT mess up ARGUMENTS FOR EACH FUNCTION ALWAYS HAVE TO BE (SERVERNAME, SERVERID)*/
+                $(".channel_list #server_{0} .dropdown .dropdown-menu .join_another_channel_link".format(serverID)).prop("onclick", join_channel_dialog(serverName, serverID));
+                $(".channel_list #server_{0} .dropdown .dropdown-menu .disconnect_link".format(serverID)).prop("onclick", disconnect_dialog(serverName, serverID));
+                $(".channel_list #server_{0} .dropdown .dropdown-menu .remove_server_link".format(serverID)).prop("onclick", remove_server_dialog(serverName, serverID));
+                $(".channel_list #server_{0} .dropdown .dropdown-menu .edit_server_link".format(serverID)).prop("onclick", edit_server(serverName, serverID, true));
 
                 for (chans in channels)
                 {
@@ -190,11 +204,10 @@ function loadServers()
 
                 }
 
-
                 if(useSSL == 0)
-                    $(".channel_list #server_" + serverID + " .networkipport").html("(" + serverIP + "/" + serverPort + ")");
+                    $(".channel_list #server_{0} .networkipport".format(serverID)).html("({0}/{1})".format(serverIP, serverPort));
                 else
-                    $(".channel_list #server_" + serverID + " .networkipport").html("(" + serverIP + "/" + serverPort + "/SSL)");
+                    $(".channel_list #server_{0} .networkipport".format(serverID)).html("({0}/{1}/SSL)".format(serverIP, serverPort));
 
             }
         }
@@ -219,12 +232,19 @@ function loadServers()
         console.log("Failed to load servers.")
     })
 }
+/*toggle_center_column(\'edit_server\');*/
+/* isAnEdit  =  a boolean value deciding if we are adding a new server or not */
+function edit_server(serverName, serverID, isAnEdit)
+{
+    console.log("editServerInitialize({0}, {1}, {2})".format(serverName, serverID, isAnEdit));
+
+}
 
 
 function loadSettingsIntoInputs()
 {
     console.log("loadSettingsIntoInputs();")
-    var posting = $.post("http://" + hostname + ":5000/get_global_settings",
+    var posting = $.post("http://{0}:5000/get_global_settings".format(hostname),
     {
     }, dataType="text"
     );
@@ -260,7 +280,7 @@ function loadSettingsIntoInputs()
 function save_global_settings()
 {
     console.log($("#global-settings-form input[id=hilight_words_input]").val());
-    var posting = $.post("http://" + hostname + ":5000/save_global_settings",
+    var posting = $.post("http://{0}:5000/save_global_settings".format(hostname),
     {
        /* WARNING: order and names of the data items here matter for the API as it uses the order to insert it into the database */
        highlight_words: $("#global-settings-form input[id=hilight_words_input]").val(),
@@ -279,7 +299,7 @@ function save_global_settings()
         console.log(data);
         //global-settings-form
         if(data["status"] == "ok")
-        {y
+        {
             general_dialog("Global settings", data["message"], data["status"], 2);
             if(data["reason"] == "global_settings_saved")
             {
@@ -295,8 +315,7 @@ function save_global_settings()
         {
             if(data["reason"] == "not_loggedin")
             {
-                general_dialog("Access denied: You are not logged in.")
-                general_dialog("Access denied: You are not logged in.", data["message"], "error", 2)
+                general_dialog("Access denied: You are not logged in.", data["message"], "error", 2);
             }
         }
     })
@@ -310,7 +329,7 @@ function save_global_settings()
 
 function logout()
 {
-   var posting = $.post("http://" + hostname + ":5000/logout",
+   var posting = $.post("http://{0}:5000/logout".format(hostname),
     {
     }, dataType="text"
     );
@@ -331,7 +350,7 @@ function logout()
            if(data["reason"] == "loggedout")
            {
                 general_dialog("Logged out successfully.", data["message"], data["status"]);
-                sendUserAway("login.html", 1000);
+                sendUserAway("login.html", 500);
            }
         }
 

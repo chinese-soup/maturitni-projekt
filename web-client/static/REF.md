@@ -4,3 +4,4 @@
 * [https://realfavicongenerator.net](https://realfavicongenerator.net/)
 * [http://www.cssmatic.com/box-shadow](http://www.cssmatic.com/box-shadow)
 * [http://www.webhostinghub.com/glyphs/](http://www.webhostinghub.com/glyphs/)
+* [http://stackoverflow.com/posts/4256130/revisions](http://stackoverflow.com/posts/4256130/revisions)

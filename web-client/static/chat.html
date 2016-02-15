@@ -115,7 +115,7 @@
                                 <i class="icon-settingsthree-gears"></i>
                             </button>
                             <ul class="dropdown-menu pull-right dropdown_menu_main_ul" aria-labelledby="dropdownAccount">
-                                <li><a href="#" onclick="toggle_center_column('edit_server');">Join another server&hellip;</a></li>
+                                <li><a href="#" onclick="edit_server('', -1, false);">Join another server&hellip;</a></li>
                                 <li><a href="#setings" onclick="toggle_center_column('global_settings');">Settings&hellip;</a></li>
                                 <li role="separator" class="divider"></li>
                                 <li><a href="#">Help</a></li>
@@ -258,6 +258,10 @@
             </div>
             <div class="center_content_item center_settings_container">
                 <form role="form" name="server-edit" id="server-edit-form" action="#" method="post">
+                     <div class="form-group col-sm-6">
+                        <label for="server_edit_label">Server label: </label>
+                        <input type="text" class="form-control" id="server_edit_label" placeholder="serverlabel">
+                    </div>
                     <div class="form-group col-sm-6">
                         <label for="nickname">Nickname <small>(leave empty to use the global setting)</small>:</label>
                         <input type="text" class="form-control" id="server_edit_nickname" placeholder="nickname">
@@ -288,9 +292,9 @@
                     </div>
             </div>
             <div class="form-group col-sm-12">
-                <button class="btn btn-primary" type="button" id="save_global_settings_button" onclick="save_settings('global');"><i class="icon-check"></i> Save settings and close</button>
+                <button class="btn btn-primary" type="button" id="save_server_settings" onclick="save_settings('global');"><i class="icon-check"></i> Save settings and close</button>
                 <!--<button class="btn btn-primary" type="button" id="save_global_settings_button" onclick="delete_server('asdf');"><i class="icon-circledelete"></i> Delete this server</button>-->
-                <button class="btn btn-primary" type="button" id="close_global_settings_button" onclick="toggle_center_column('messages');">Close without saving changes</button>
+                <button class="btn btn-primary" type="button" id="close_server_settings" onclick="toggle_center_column('messages');">Close without saving changes</button>
             </div>
             </form>
         </div>
