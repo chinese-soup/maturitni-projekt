@@ -115,7 +115,7 @@
                                 <i class="icon-settingsthree-gears"></i>
                             </button>
                             <ul class="dropdown-menu pull-right dropdown_menu_main_ul" aria-labelledby="dropdownAccount">
-                                <li><a href="#" onclick="edit_server('', -1, false);">Join another server&hellip;</a></li>
+                                <li><a href="#" onclick="edit_server(-1);">Join another server&hellip;</a></li>
                                 <li><a href="#setings" onclick="toggle_center_column('global_settings');">Settings&hellip;</a></li>
                                 <li role="separator" class="divider"></li>
                                 <li><a href="#">Help</a></li>
@@ -263,28 +263,20 @@
                         <input type="text" class="form-control" id="server_edit_label" placeholder="serverlabel">
                     </div>
                     <div class="form-group col-sm-6">
-                        <label for="nickname">Nickname <small>(leave empty to use the global setting)</small>:</label>
-                        <input type="text" class="form-control" id="server_edit_nickname" placeholder="nickname">
+                        <label for="server_edit_nickname">Nickname <small>(leave empty to use the global setting)</small>:</label>
+                        <input type="text" class="form-control" id="server_edit_nickname" placeholder="">
                     </div>
                     <div class="form-group col-sm-6">
-                        <label for="nickname">Username <small>(leave empty to use the global setting)</small>:</label>
-                        <input type="text" class="form-control" id="server_edit_username" placeholder="username">
+                        <label for="server_edit_password">Password <small>(leave empty if not required)</small>:</label>
+                        <input type="password" class="form-control" id="server_edit_password" placeholder="">
                     </div>
                     <div class="form-group col-sm-6">
-                        <label for="nickname">Realname <small>(leave empty to use the global setting)</small>:</label>
-                        <input type="text" class="form-control" id="server_edit_realname" placeholder="realname">
+                        <label for="server_edit_ip">Server IP/Hostname:</label>
+                        <input type="text" class="form-control" id="server_edit_ip" placeholder="">
                     </div>
                     <div class="form-group col-sm-6">
-                        <label for="nickname">Password <small>(leave empty if not required)</small>:</label>
-                        <input type="password" class="form-control" id="server_edit_password" placeholder="nickname">
-                    </div>
-                    <div class="form-group col-sm-6">
-                        <label for="nickname">Server IP/Hostname:</label>
-                        <input type="text" class="form-control" id="server_edit_ip" placeholder="irc.freenode.org">
-                    </div>
-                    <div class="form-group col-sm-6">
-                        <label for="nickname">Port number:</label>
-                        <input type="number" class="form-control" id="server_edit_portno" placeholder="6667">
+                        <label for="server_edit_portno">Port number:</label>
+                        <input type="number" class="form-control" id="server_edit_portno" placeholder="">
                     </div>
                     <div class="form-group col-sm-6">
                         <label for="use_tls_ssl_checkbox">Use SSL/TLS:</label>
@@ -292,7 +284,7 @@
                     </div>
             </div>
             <div class="form-group col-sm-12">
-                <button class="btn btn-primary" type="button" id="save_server_settings" onclick="save_settings('global');"><i class="icon-check"></i> Save settings and close</button>
+                <button class="btn btn-primary" type="button" id="save_server_settings" onclick="save_server();"><i class="icon-check"></i> Save settings and close</button>
                 <!--<button class="btn btn-primary" type="button" id="save_global_settings_button" onclick="delete_server('asdf');"><i class="icon-circledelete"></i> Delete this server</button>-->
                 <button class="btn btn-primary" type="button" id="close_server_settings" onclick="toggle_center_column('messages');">Close without saving changes</button>
             </div>

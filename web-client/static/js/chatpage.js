@@ -126,10 +126,10 @@ function generateServerHTML(serverID)
             '</button>' +
             '<ul class="dropdown-menu dropdown-menu-right">' +
                 '<li><a class="join_another_channel_link" href="#">Join another channel&hellip;</a></li>' + /*join_channel_dialog(\'Freenode\',\'ID\' ); */
-                '<li><a class="disconnect_link" href="#">Disconnect</a></li>' + /* disconnect_dialog(\'Freenode\', \'ID\');*/
+                '<li><a class="disconnect_link">Disconnect</a></li>' + /* disconnect_dialog(\'Freenode\', \'ID\');*/
                 '<li role="separator" class="divider"></li>' +
-                '<li><a class="remove_server_link" href="#">Remove this server</a></li>' +
-                '<li><a class="edit_server_link" href="#">Edit</a></li>' +
+                '<li><a class="remove_server_link">Remove this server</a></li>' +
+                '<li><a class="edit_server_link">Edit</a></li>' +
             '</ul>' +
         '</div>' +
         '<ul class="channels_ul"></ul>'
@@ -186,10 +186,12 @@ function loadServers()
                 $(".channel_list #server_" + serverID + " .networkname").html(serverName);
 
                 /* onclick definitions, very important, do NOT mess up ARGUMENTS FOR EACH FUNCTION ALWAYS HAVE TO BE (SERVERNAME, SERVERID)*/
-                $(".channel_list #server_{0} .dropdown .dropdown-menu .join_another_channel_link".format(serverID)).prop("onclick", join_channel_dialog(serverName, serverID));
-                $(".channel_list #server_{0} .dropdown .dropdown-menu .disconnect_link".format(serverID)).prop("onclick", disconnect_dialog(serverName, serverID));
-                $(".channel_list #server_{0} .dropdown .dropdown-menu .remove_server_link".format(serverID)).prop("onclick", remove_server_dialog(serverName, serverID));
-                $(".channel_list #server_{0} .dropdown .dropdown-menu .edit_server_link".format(serverID)).prop("onclick", edit_server(serverName, serverID, true));
+                console.log(serverID);
+
+                //$(".channel_list #server_{0} .dropdown .dropdown-menu .join_another_channel_link".format(serverID)).on("click", {serverName: serverName, serverID}, join_channel_dialog);
+                //$(".channel_list #server_{0} .dropdown .dropdown-menu .disconnect_link".format(serverID)).on("click", {serverName: serverName, serverID: serverID,  });
+                //$(".channel_list #server_{0} .dropdown .dropdown-menu .remove_server_link".format(serverID)).on("click", remove_server_dialog(serverName, serverID));
+                $(".channel_list #server_{0} .dropdown .dropdown-menu .edit_server_link".format(serverID)).click({serverName:serverName, serverID:serverID, isAnEdit: true}, edit_server);
 
                 for (chans in channels)
                 {
@@ -198,9 +200,9 @@ function loadServers()
                     isJoined = channels[chans]["isJoined"];
                     lastOpened = channels[chans]["lastOpened"];
                     channelServerID = channels[chans]["serverID"];
-                    console.log(channelName);
-                    $(generateChannelHTML(channelID)).insertAfter($(".channel_list #server_" + channelServerID));  // generate a dummy <li> list and append it to the server list
-                    $(".channel_list #channel_" + channelID + " .channelName").html(channelName);
+
+                    $(generateChannelHTML(channelID)).insertAfter($(".channel_list #server_{0}".format(channelServerID)));  // generate a dummy <li> list and append it to the server list
+                    $(".channel_list #channel_{0} .channelName".format(channelID)).html(channelName);
 
                 }
 
@@ -208,7 +210,6 @@ function loadServers()
                     $(".channel_list #server_{0} .networkipport".format(serverID)).html("({0}/{1})".format(serverIP, serverPort));
                 else
                     $(".channel_list #server_{0} .networkipport".format(serverID)).html("({0}/{1}/SSL)".format(serverIP, serverPort));
-
             }
         }
         else if(data["reason"] == "no_servers_to_list")
@@ -234,9 +235,67 @@ function loadServers()
 }
 /*toggle_center_column(\'edit_server\');*/
 /* isAnEdit  =  a boolean value deciding if we are adding a new server or not */
-function edit_server(serverName, serverID, isAnEdit)
+function edit_server(event)
 {
+    serverName = event.data.serverName;
+    serverID = event.data.serverID;
+    isAnEdit = event.data.isAnEdit;
+
     console.log("editServerInitialize({0}, {1}, {2})".format(serverName, serverID, isAnEdit));
+    toggle_center_column("edit_server");
+
+    $("#save_server_settings").html("<i class='icon-check'></i> Save changes");
+
+    var posting = $.post("http://{0}:5000/get_server_settings".format(hostname),
+    {
+        serverID: serverID
+    },  dataType="text"
+    );
+
+    posting.done(function(data)
+    {
+        if(data["reason"] == "listing_server_info")
+        {
+            console.log(data["message"][0]);
+            settings = data["message"];
+            console.log(settings);
+
+            $("#server-edit-form #server_edit_nickname").val(settings[2]);
+            $("#server-edit-form #server_edit_label").val(settings[6]);
+            $("#server-edit-form #server_edit_ip").val(settings[7]);
+            $("#server-edit-form #server_edit_portno").val(settings[8]);
+            $("#server-edit-form #use_tls_ssl_checkbox").prop("checked", Boolean(settings[9]));
+            $("#server-edit-form #server_edit_password").val(settings[10]);
+        }
+
+    });
+
+    posting.fail(function()
+    {
+        general_dialog("API endpoint error.", "An error occurred while trying to retrieve this server's global settings.", "error", 2);
+        toggle_center_column("messages"); // show the messages window instead of global settings, because we can't load user's settings
+        console.log("Failed to load servers.");
+    })
+
+}
+
+function save_server()
+{
+
+}
+
+
+function add_server()
+{
+    $("#save_server_settings").html("<i class='icon-check'></i> Add a new server");
+    /* clear the fields cuz they could be set to some stuff becasue of editing a server before */
+    $("#server-edit-form #server_edit_nickname").val("");
+    $("#server-edit-form #server_edit_password").val("");
+    $("#server-edit-form #server_edit_label").val("");
+    $("#server-edit-form #server_edit_ip").val("");
+    $("#server-edit-form #server_edit_portno").val("");
+    $("#server-edit-form #use_tls_ssl_checkbox").prop("checked", Boolean(false));
+    toggle_center_column("edit_server");
 
 }
 
@@ -341,7 +400,7 @@ function logout()
         {
             if(data["reason"] == "not_loggedin")
             {
-                general_dialog("Couldn't log you out.", data["message"], data["status"]);
+                general_dialog("Couldn't log you out. I don't think you are logged in.", data["message"], data["status"]);
                 sendUserAway("login.html", 4000);
             }
         }

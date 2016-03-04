@@ -464,7 +464,7 @@ def set_global_settings():
 # routa volaná při načtení chat.html
 # routa volaná při přidání / odstranění serveru
 # split with get_channel_list?
-@app.route("/get_channel_list", methods=["GET", "POST"])
+@app.route("/get_channel_list", methods=["POST"])
 def get_channel_list():
     userID = get_userID_if_loggedin(request)
     print("UserID = ", userID)
@@ -501,6 +501,62 @@ def get_channel_list():
             return error("ok", "no_servers_to_list", "No servers yet.")
     else:
         return error("error", "not_loggedin", "You are not logged in.")
+
+
+# called to prefill the inputs when user edits a server
+@app.route("/get_server_settings", methods=["POST"])
+def get_server_settings():
+    userID = get_userID_if_loggedin(request)
+    serverID = request.form.get("serverID") # gets the serverID of the server the user wants to edit from the ajax request
+
+    print("UserID = ", userID)
+
+    if userID is not False:
+        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+        cursor = db.cursor()
+        res = cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s AND `serverID` = %s;""", (userID, serverID))
+        #res = cursor.execute("""SHOW COLUMNS FROM `IRC_servers`;""")
+        result = cursor.fetchone()
+        response = {"status": "ok", "reason": "listing_server_info", "message": result}
+        db.close()
+        return jsonify(response)
+    else:
+        return error("error", "not_loggedin", "You are not logged in.")
+
+
+
+# called to prefill the inputs when user edits a server
+@app.route("/edit_server_settings", methods=["POST"])
+def edit_server_settings():
+    userID = get_userID_if_loggedin(request)
+    serverID = request.form.get("serverID") # gets the serverID of the server the user wants to edit from the ajax request
+    klice = {"serverName":"", "nickname":"", "serverPassword":"", "serverIP":"", "serverPort":"", "useSSL":""}
+    for a in klice.keys():
+        klice[a] = request.form.get()
+
+    print("UserID = ", userID)
+
+    if userID is not False:
+        db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+        cursor = db.cursor()
+        # zjitíme, zda server, který se uživatel snaží editovat je opravdu jeho
+        res = cursor.execute("""SELECT (Registred_users_userID, serverID) FROM `IRC_servers` WHERE `Registred_users_userID` = %s AND `serverID` = %s;""", (userID, serverID))
+        result = cursor.fetchone()
+        if int(result[0]) == int(userID) and int(result[1]) == int(serverID):
+            print("This is userID's server. yeah boy.")
+            res = cursor.execute("""UPDATE `IRC_servers` SET serverName=%s,
+                                 nickname=%s,
+                                 serverPassword=%s,
+                                 serverIP=%s,
+                                 serverPort=%s,
+                                 useSSL=%s WHERE `serverID` = %s;""", (serverName, nickname, serverPassword, serverIP, serverPort, useSSL))
+            response = {"status": "ok", "reason": "listing_server_info", "message": result}
+
+        db.close()
+        return jsonify(response)
+    else:
+        return error("error", "not_loggedin", "You are not logged in.")
+
 
 
 if __name__ == '__main__':
