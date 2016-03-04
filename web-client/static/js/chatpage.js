@@ -291,6 +291,7 @@ function save_server(event)
     useSSL = Boolean($("#server-edit-form #use_tls_ssl_checkbox").prop("checked"));
 
     serverID = event.data.serverID;
+    console.log("SERVERID=" + serverID);
 
     var posting = $.post("http://{0}:5000/edit_server_settings".format(hostname),
     {
@@ -310,13 +311,22 @@ function save_server(event)
         console.log(data);
         if(data["status"] == "error")
         {
-
+            general_dialog("Server settings", data["message"], "error", 2);
         }
         else if(data["status"] == "ok")
         {
            if(data["reason"] == "server_settings_edited_successfully")
            {
-                console.log("Super meme");
+                general_dialog("Server settings", data["message"], "ok", 2);
+                /* TODO: CALL RECONNECT from HERE */
+                /* TODO: CALL RECONNECT from HERE */
+                toggle_center_column("edit_server");
+           }
+           else if(data["reason"] == "server_settings_not_edited")
+           {
+                general_dialog("Server settings", data["message"], "ok", 2);
+
+                toggle_center_column("edit_server");
            }
         }
 

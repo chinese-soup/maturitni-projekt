@@ -542,7 +542,7 @@ def edit_server_settings():
         db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
         cursor = db.cursor()
         # zjitíme, zda server, který se uživatel snaží editovat je opravdu jeho
-        res = cursor.execute("""SELECT (Registred_users_userID, serverID) FROM `IRC_servers` WHERE `Registred_users_userID` = %s AND `serverID` = %s;""", (userID, serverID))
+        res = cursor.execute("""SELECT Registred_users_userID,serverID FROM `IRC_servers` WHERE `Registred_users_userID` = %s AND `serverID` = %s;""", (userID, serverID))
         result = cursor.fetchone()
         if int(result[0]) == int(userID) and int(result[1]) == int(serverID):
             print("This is userID's server. yeah boy.")
@@ -551,8 +551,13 @@ def edit_server_settings():
                                  serverPassword=%s,
                                  serverIP=%s,
                                  serverPort=%s,
-                                 useSSL=%s WHERE `serverID` = %s;""", (klice["serverName"], klice["nickname"], klice["serverPassword"], klice["serverIP"], klice["serverPort"], klice["useSSL"]))
-            response = {"status": "ok", "reason": "server_settings_edited_successfully", "message": result}
+                                 useSSL=%s WHERE `serverID` = %s;""", (klice["serverName"], klice["nickname"], klice["serverPassword"], klice["serverIP"], klice["serverPort"], klice["useSSL"], serverID))
+
+            db.commit()
+            if res == 1:
+                response = {"status": "ok", "reason": "server_settings_edited_successfully", "message": "Server settings edited successfully.<br>Sending reconnect request."}
+            else:
+                response = {"status": "ok", "reason": "server_settings_not_edited", "message": "Server settings were not updated."} # error?
 
 
         db.close()
