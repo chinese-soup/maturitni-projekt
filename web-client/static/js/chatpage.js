@@ -8,9 +8,8 @@ $.ajaxSetup({
 var hostname = location.hostname; // maybe temporary(?): get the current hostname so we know where to make api calls (same host, different port)
 
 
-
 /* maybe move to util.js? */
-/* overrides the default string function in javascript */
+/* overrides the default string function in javascript to include formatting support */
 String.prototype.format = function() {
     var formatted = this;
     for (var i = 0; i < arguments.length; i++) {
@@ -26,7 +25,6 @@ function onChatLoad()
     console.log("onChatLoad();");
     checkIfUserIsLoggedInOnStart();
 }
-
 
 /* never used (yet?) */
 $body = $("body");
@@ -78,6 +76,7 @@ function isUserLoggedIn()
     return false;
 }
 
+/* called upon loading the page, because the way this shit works is disgusting */
 function checkIfUserIsLoggedInOnStart()
 {
     var posting = $.post("http://{0}:5000/upon_login".format(hostname),
@@ -115,7 +114,8 @@ function checkIfUserIsLoggedInOnStart()
     });
 }
 
-/* no formatting in js? :( */
+
+
 function generateServerHTML(serverID)
 {
     var html = '<li id="server_{0}" class="left_channels_flex_item server_item">'.format(serverID) +
@@ -244,8 +244,10 @@ function edit_server(event)
     console.log("edit_server({0}, {1}, {2})".format(serverName, serverID, isAnEdit));
     toggle_center_column("edit_server");
 
-    $("#save_server_settings").html("<i class='icon-check'></i> Save changes LOL");
-    $("#save_server_settings").click({serverID:serverID}, save_server);
+    $("#save_server_settings").html("<i class='icon-check'></i> Save changes"); /* just to be sure, as it could be Add server from before */
+    $("#save_server_settings").click({serverID:serverID}, save_server); /* change onClick event for the save button so that we know what server we are editing */
+
+    $(".header_room_topic .header_room_topic_server_label").html(serverName);
 
     var posting = $.post("http://{0}:5000/get_server_settings".format(hostname),
     {
@@ -277,8 +279,80 @@ function edit_server(event)
         toggle_center_column("messages"); // show the messages window instead of global settings, because we can't load user's settings
         console.log("Failed to load servers.");
     })
-
 }
+
+
+
+function add_server()
+{
+    $("#save_server_settings").html("<i class='icon-check'></i> Add a new server");
+    /* clear the fields cuz they could be set to some stuff becasue of editing a server before */
+    $("#server-edit-form #server_edit_nickname").val("");
+    $("#server-edit-form #server_edit_password").val("");
+    $("#server-edit-form #server_edit_label").val("");
+    $("#server-edit-form #server_edit_ip").val("");
+    $("#server-edit-form #server_edit_portno").val("6667");
+    $("#server-edit-form #use_tls_ssl_checkbox").prop("checked", Boolean(false));
+    toggle_center_column("edit_server");
+    $("#save_server_settings").click(save_new_server);
+}
+
+function save_new_server()
+{
+    serverName = $("#server-edit-form #server_edit_label").val();
+    nickname = $("#server-edit-form #server_edit_nickname").val();
+    serverPassword = $("#server-edit-form #server_edit_password").val();
+    serverIP = $("#server-edit-form #server_edit_ip").val();
+    serverPort = $("#server-edit-form #server_edit_portno").val();
+    useSSL = Boolean($("#server-edit-form #use_tls_ssl_checkbox").prop("checked"));
+
+    var posting = $.post("http://{0}:5000/add_new_server_settings".format(hostname),
+    {
+        serverName: serverName,
+        nickname: nickname,
+        serverPassword: serverPassword,
+        serverIP: serverIP,
+        serverPort: serverPort,
+        useSSL: useSSL
+
+    }, dataType="text"
+    );
+
+    posting.done(function(data)
+    {
+        console.log(data);
+        if(data["status"] == "error")
+        {
+            general_dialog("Server settings", data["message"], "error", 2);
+        }
+        else if(data["status"] == "ok")
+        {
+           if(data["reason"] == "server_settings_edited_successfully")
+           {
+                console.log("Why2");
+                general_dialog("Server settings", data["message"], "ok", 2);
+                /* TODO: CALL RECONNECT from HERE */
+                /* TODO: CALL RECONNECT from HERE */
+                toggle_center_column("messages");
+                loadServers();
+           }
+           else if(data["reason"] == "server_settings_not_edited")
+           {
+                console.log("Why");
+                general_dialog("Server settings", data["message"], "ok", 2);
+
+                toggle_center_column("messages");
+           }
+        }
+
+    });
+
+    posting.fail(function()
+    {
+         general_dialog("API endpoint error.", "An error occurred while trying to contact the API server.", "error", 2);
+    });
+}
+
 
 function save_server(event)
 {
@@ -317,17 +391,13 @@ function save_server(event)
         {
            if(data["reason"] == "server_settings_edited_successfully")
            {
+                loadServers();
                 general_dialog("Server settings", data["message"], "ok", 2);
                 /* TODO: CALL RECONNECT from HERE */
                 /* TODO: CALL RECONNECT from HERE */
-                toggle_center_column("edit_server");
+                toggle_center_column("messages");
            }
-           else if(data["reason"] == "server_settings_not_edited")
-           {
-                general_dialog("Server settings", data["message"], "ok", 2);
 
-                toggle_center_column("edit_server");
-           }
         }
 
     });
@@ -336,20 +406,6 @@ function save_server(event)
     {
          general_dialog("API endpoint error.", "An error occurred while trying to contact the API server.", "error", 2);
     });
-}
-
-function add_server()
-{
-    $("#save_server_settings").html("<i class='icon-check'></i> Add a new server");
-    /* clear the fields cuz they could be set to some stuff becasue of editing a server before */
-    $("#server-edit-form #server_edit_nickname").val("");
-    $("#server-edit-form #server_edit_password").val("");
-    $("#server-edit-form #server_edit_label").val("");
-    $("#server-edit-form #server_edit_ip").val("");
-    $("#server-edit-form #server_edit_portno").val("");
-    $("#server-edit-form #use_tls_ssl_checkbox").prop("checked", Boolean(false));
-    toggle_center_column("edit_server");
-
 }
 
 

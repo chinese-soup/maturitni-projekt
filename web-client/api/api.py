@@ -541,6 +541,7 @@ def edit_server_settings():
     if userID is not False:
         db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
         cursor = db.cursor()
+
         # zjitíme, zda server, který se uživatel snaží editovat je opravdu jeho
         res = cursor.execute("""SELECT Registred_users_userID,serverID FROM `IRC_servers` WHERE `Registred_users_userID` = %s AND `serverID` = %s;""", (userID, serverID))
         result = cursor.fetchone()
@@ -561,6 +562,29 @@ def edit_server_settings():
 
 
         db.close()
+        return jsonify(response)
+    else:
+        return error("error", "not_loggedin", "You are not logged in.")
+
+@app.route("/add_new_server_settings", methods=["POST"])
+def add_new_server_settings():
+    userID = get_userID_if_loggedin(request)
+
+    if userID is not False:
+        db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+        cursor = db.cursor()
+        klice = {"serverName":"", "nickname":"", "serverPassword":"", "serverIP":"", "serverPort":"", "useSSL":""}
+        for a in klice:
+            klice[a] = request.form.get(a)
+        # přidáme server
+        res = cursor.execute("""INSERT INTO `IRC_servers` (Registred_users_userID, serverName, nickname, serverPassword, serverIP, serverPort, useSSL, serverSessionID, isAway, isConnected)
+        values(%s, %s, %s, %s, %s, %s, %s, -1, 0, 0);""", (userID, klice["serverName"], klice["nickname"], klice["serverPassword"], klice["serverIP"], klice["serverPort"], klice["useSSL"]))
+        db.commit()
+        if res == 1:
+            response = {"status": "ok", "reason": "server_settings_edited_successfully", "message": "Server settings edited successfully.<br>Sending reconnect request."}
+        else:
+            response = {"status": "ok", "reason": "server_settings_not_edited", "message": "Server settings were not updated."} # error?
+
         return jsonify(response)
     else:
         return error("error", "not_loggedin", "You are not logged in.")

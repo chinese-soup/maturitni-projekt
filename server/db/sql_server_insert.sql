@@ -10,11 +10,13 @@ select * from `IRC_servers`;
 
 #delete from `IRC_servers` where `serverID` = 1;
 
-UPDATE `IRC_servers` SET serverName="asdf", nickname="", serverPassword="", serverIP="irc.freenode.org", serverPort=6997, useSSL=true)
-WHERE `serverID` = 3;
+#UPDATE `IRC_servers` SET serverName="asdf", nickname="", serverPassword="", serverIP="irc.freenode.org", serverPort=6997, useSSL=true
+#WHERE `serverID` = 3;
 
 
-v
+delete * from `IRC_servers`;
+select * from `IRC_servers`;
+
 #delete from `User_settings` where `Registred_users_userID` = 1;
 #INSERT INTO `User_settings` (show_previews, highlight_words, whois_username, whois_realname, global_nickname, autohide_channels, hide_joinpartquit_messages) VALUES(1, "A", 19)
 #ON DUPLICATE KEY UPDATE show_previews="A", highlight_words=19, whois_username, whois_realname
