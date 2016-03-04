@@ -530,9 +530,11 @@ def get_server_settings():
 def edit_server_settings():
     userID = get_userID_if_loggedin(request)
     serverID = request.form.get("serverID") # gets the serverID of the server the user wants to edit from the ajax request
+    print("DO PÍČE", serverID)
+
     klice = {"serverName":"", "nickname":"", "serverPassword":"", "serverIP":"", "serverPort":"", "useSSL":""}
-    for a in klice.keys():
-        klice[a] = request.form.get()
+    for a in klice:
+        klice[a] = request.form.get(a)
 
     print("UserID = ", userID)
 
@@ -549,8 +551,9 @@ def edit_server_settings():
                                  serverPassword=%s,
                                  serverIP=%s,
                                  serverPort=%s,
-                                 useSSL=%s WHERE `serverID` = %s;""", (serverName, nickname, serverPassword, serverIP, serverPort, useSSL))
-            response = {"status": "ok", "reason": "listing_server_info", "message": result}
+                                 useSSL=%s WHERE `serverID` = %s;""", (klice["serverName"], klice["nickname"], klice["serverPassword"], klice["serverIP"], klice["serverPort"], klice["useSSL"]))
+            response = {"status": "ok", "reason": "server_settings_edited_successfully", "message": result}
+
 
         db.close()
         return jsonify(response)

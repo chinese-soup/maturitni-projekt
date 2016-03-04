@@ -241,10 +241,11 @@ function edit_server(event)
     serverID = event.data.serverID;
     isAnEdit = event.data.isAnEdit;
 
-    console.log("editServerInitialize({0}, {1}, {2})".format(serverName, serverID, isAnEdit));
+    console.log("edit_server({0}, {1}, {2})".format(serverName, serverID, isAnEdit));
     toggle_center_column("edit_server");
 
-    $("#save_server_settings").html("<i class='icon-check'></i> Save changes");
+    $("#save_server_settings").html("<i class='icon-check'></i> Save changes LOL");
+    $("#save_server_settings").click({serverID:serverID}, save_server);
 
     var posting = $.post("http://{0}:5000/get_server_settings".format(hostname),
     {
@@ -279,11 +280,53 @@ function edit_server(event)
 
 }
 
-function save_server()
+function save_server(event)
 {
+    /*{"serverName":"", "nickname":"", "serverPassword":"", "serverIP":"", "serverPort":"", "useSSL":""*/
+    serverName = $("#server-edit-form #server_edit_label").val();
+    nickname = $("#server-edit-form #server_edit_nickname").val();
+    serverPassword = $("#server-edit-form #server_edit_password").val();
+    serverIP = $("#server-edit-form #server_edit_ip").val();
+    serverPort = $("#server-edit-form #server_edit_portno").val();
+    useSSL = Boolean($("#server-edit-form #use_tls_ssl_checkbox").prop("checked"));
 
+    serverID = event.data.serverID;
+
+    var posting = $.post("http://{0}:5000/edit_server_settings".format(hostname),
+    {
+        serverID: serverID,
+        serverName: serverName,
+        nickname: nickname,
+        serverPassword: serverPassword,
+        serverIP: serverIP,
+        serverPort: serverPort,
+        useSSL: useSSL
+
+    }, dataType="text"
+    );
+
+    posting.done(function(data)
+    {
+        console.log(data);
+        if(data["status"] == "error")
+        {
+
+        }
+        else if(data["status"] == "ok")
+        {
+           if(data["reason"] == "server_settings_edited_successfully")
+           {
+                console.log("Super meme");
+           }
+        }
+
+    });
+
+    posting.fail(function()
+    {
+         general_dialog("API endpoint error.", "An error occurred while trying to contact the API server.", "error", 2);
+    });
 }
-
 
 function add_server()
 {

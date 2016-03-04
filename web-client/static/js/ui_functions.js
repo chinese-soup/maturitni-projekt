@@ -50,7 +50,7 @@ function on_load()
 	$(".dropdown_server_wheel").css("display", "none");
 }
 
-function save_settings(didSuccess)
+/*function save_settings(didSuccess)
 {
     var dialog = new BootstrapDialog({
         title: 'Global settings',
@@ -79,7 +79,7 @@ function save_settings(didSuccess)
     {
         dialog.setMessage("<span style='color: red;'>Settings failed to save. Reason: %s</span>");
     }
-}
+}*/
 
 
 function disconnect_dialog(what_server) /* make api calls from here as well??? */
