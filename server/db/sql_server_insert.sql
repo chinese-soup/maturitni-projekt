@@ -14,8 +14,9 @@ select * from `IRC_servers`;
 #WHERE `serverID` = 3;
 
 
-delete * from `IRC_servers`;
+delete from `IRC_servers` where `serverID` LIKE '%%';
 select * from `IRC_servers`;
+
 
 #delete from `User_settings` where `Registred_users_userID` = 1;
 #INSERT INTO `User_settings` (show_previews, highlight_words, whois_username, whois_realname, global_nickname, autohide_channels, hide_joinpartquit_messages) VALUES(1, "A", 19)

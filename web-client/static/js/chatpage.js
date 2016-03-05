@@ -245,7 +245,7 @@ function edit_server(event)
     toggle_center_column("edit_server");
 
     $("#save_server_settings").html("<i class='icon-check'></i> Save changes"); /* just to be sure, as it could be Add server from before */
-    $("#save_server_settings").click({serverID:serverID}, save_server); /* change onClick event for the save button so that we know what server we are editing */
+    $("#save_server_settings").one("click", {serverID:serverID}, save_server); /* change onClick event for the save button so that we know what server we are editing */
 
     $(".header_room_topic .header_room_topic_server_label").html(serverName);
 
@@ -275,9 +275,9 @@ function edit_server(event)
 
     posting.fail(function()
     {
-        general_dialog("API endpoint error.", "An error occurred while trying to retrieve this server's global settings.", "error", 2);
+        general_dialog("API endpoint error.", "An error occurred while trying to retrieve this server's settings.", "error", 2);
         toggle_center_column("messages"); // show the messages window instead of global settings, because we can't load user's settings
-        console.log("Failed to load servers.");
+        console.log("Failed to load server info.");
     })
 }
 
@@ -294,7 +294,7 @@ function add_server()
     $("#server-edit-form #server_edit_portno").val("6667");
     $("#server-edit-form #use_tls_ssl_checkbox").prop("checked", Boolean(false));
     toggle_center_column("edit_server");
-    $("#save_server_settings").click(save_new_server);
+    $("#save_server_settings").one("click", save_new_server);
 }
 
 function save_new_server()

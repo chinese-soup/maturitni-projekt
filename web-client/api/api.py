@@ -560,7 +560,6 @@ def edit_server_settings():
             else:
                 response = {"status": "ok", "reason": "server_settings_not_edited", "message": "Server settings were not updated."} # error?
 
-
         db.close()
         return jsonify(response)
     else:
