@@ -9,6 +9,10 @@ import MySQLdb
 #irc library
 from irc import client
 
+import threading # :))))) lol
+
+
+
 """IRCSide main class"""
 class IRCSide(object):
     def __init__(self, _userid):

@@ -174,14 +174,14 @@ function generateServerHTML(serverID)
                  '<i class="icon-settingsfour-gearsalt"></i>' +
             '</button>' +
             '<ul class="dropdown-menu dropdown-menu-right">' +
-                '<li><a class="join_another_channel_link" href="#">Join another channel&hellip;</a></li>' + /*join_channel_dialog(\'Freenode\',\'ID\' ); */
+                '<li><a class="join_another_channel_link" href="#">Join another channel&hellip;</a></li>' + /* join_channel_dialog(\'Freenode\',\'ID\' ); */
                 '<li><a class="disconnect_link">Disconnect</a></li>' + /* disconnect_dialog(\'Freenode\', \'ID\');*/
                 '<li role="separator" class="divider"></li>' +
                 '<li><a class="remove_server_link">Remove this server</a></li>' +
                 '<li><a class="edit_server_link">Edit</a></li>' +
             '</ul>' +
         '</div>' +
-        '<ul class="channels_ul"></ul>'
+        '<ul class="channels_ul"></ul>' +
     '</li>';
     return(html);
 }
@@ -195,21 +195,30 @@ function generateChannelHTML(channelID)
 }
 
 
-function join_channel_dialog(server)
+function join_channel_dialog(event)
 {
+    if(!event)
+    {
+        log("join_channel_dialog(noEvent);", "error");
+    }
+    else
+    {
+        serverID = event.data.serverID;
+        serverName = event.data.serverName;
 
-	var dialog = new BootstrapDialog({
-		title: 'Join a channel on ' + server,
-		message: $('<div></div>').load('channel_join.html')
-	});
-	$("#channel_to_join_submit_button").on("click", dialog, function(event)
-	{
-		dialog.close();
-	})
-	dialog.realize();
-	dialog.setSize(BootstrapDialog.SIZE_SMALL);
-    dialog.getModalFooter().hide();
-	dialog.open();
+        var dialog = new BootstrapDialog({
+            title: 'Join a channel on {0}'.format(serverName),
+            message: $('<div></div>').load('channel_join.html')
+        });
+        $("#channel_to_join_submit_button").on("click", dialog, function(event)
+        {
+            dialog.close();
+        })
+        dialog.realize();
+        dialog.setSize(BootstrapDialog.SIZE_SMALL);
+        dialog.getModalFooter().hide();
+        dialog.open();
+	}
 }
 
 
@@ -256,11 +265,13 @@ function loadServers()
 
                 /* onclick definitions, very important, do NOT mess up ARGUMENTS FOR EACH FUNCTION ALWAYS HAVE TO BE (SERVERNAME, SERVERID)*/
                 console.log(serverID);
+                log(serverID, "ok");
 
                 //$(".channel_list #server_{0} .dropdown .dropdown-menu .join_another_channel_link".format(serverID)).on("click", {serverName: serverName, serverID}, join_channel_dialog);
                 //$(".channel_list #server_{0} .dropdown .dropdown-menu .disconnect_link".format(serverID)).on("click", {serverName: serverName, serverID: serverID,  });
                 //$(".channel_list #server_{0} .dropdown .dropdown-menu .remove_server_link".format(serverID)).on("click", remove_server_dialog(serverName, serverID));
                 $(".channel_list #server_{0} .dropdown .dropdown-menu .edit_server_link".format(serverID)).click({serverName:serverName, serverID:serverID, isAnEdit: true}, edit_server);
+                $(".channel_list #server_{0} .dropdown .dropdown-menu .join_another_channel_link".format(serverID)).click({serverName:serverName, serverID:serverID}, join_channel_dialog);
 
                 for (chans in channels)
                 {
