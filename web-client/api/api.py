@@ -71,9 +71,10 @@ def _make_login_response(data_to_send, generated_sessionID):
     return response
 
 
-# this function checks for a sessionID in the database and joins it with the userID of a user #
-# this is used to check if the user is allowed to request the data he's requesting #
-# aka if he's not trying to access data of a user with a different ID #
+""" this function checks for a sessionID in the database and joins it with the userID of a user
+this is used to check if the user is allowed to request the data he's requesting
+aka if he's not trying to access data of a user with a different ID
+"""
 
 def get_userID_if_loggedin(request):
     if "sessionid" in request.cookies:
@@ -97,18 +98,18 @@ def get_userID_if_loggedin(request):
         return False
 
 
-def get_serverID_belongs_to_userID(userID, serverID):
+def check_if_serverID_belongs_to_userID(userID, serverID):
     db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
 
     cursor = db.cursor()
-    result_code = cursor.execute("""SELECT (serverID, Registred_users_userID) FROM `IRC_servers` WHERE `serverID` = %s AND `Registred_users_userID` = %s""", (serverID, userID,))
+    result_code = cursor.execute("""SELECT * FROM `IRC_servers` WHERE `serverID` = %s AND `Registred_users_userID` = %s""", (serverID, userID,))
     if result_code is not 0:
         result = cursor.fetchone()
 
         serverID_result = result[0]
-        userID_result = result[1]
+        userID_result = result[5]
 
-        if serverID_result == serverID and userID_result == userID:
+        if serverID_result == serverID and userID_result == userID: # redundant check, but whatever, this app is already slow af, anyway
             return True
         else:
             return False
@@ -359,31 +360,6 @@ def get_server_list():
     else:
         return error("error", "not_loggedin", "You are not logged in.")
 
-# routa volaná při volbě kanálu ze seznamu, routa volaná při scrollnutí nahoru v chatovacím okénku pro získání více zpráv z minulosti
-@app.route("/get_messages", methods=["GET"])
-def get_messages():
-    userID = get_userID_if_loggedin(request)
-    print("UserID = ", userID)
-
-    backlog = bool(request.form.get("backlog"))
-    channelID = request.form.get("channelID")
-
-    if userID is not False:
-        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
-        cursor = db.cursor()
-
-        res = cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s;""", (userID,))
-        if res != 0:
-            db.close()
-            result = cursor.fetchall()
-
-            return error("ok")
-        else:
-            return error("ok", "no_servers_to_list", "Error loading your current settings, please try again later.")
-    else:
-         return error("error", "not_loggedin", "You are not logged in.")
-
-
 # routa volaná při zobrazení okna globálních nastavení
 @app.route("/get_global_settings", methods=["POST"])
 def get_global_settings():
@@ -625,6 +601,68 @@ def add_new_server_settings():
 
 
 
+# routa volaná při volbě kanálu ze seznamu, routa volaná při scrollnutí nahoru v chatovacím okénku pro získání více zpráv z minulosti
+# TODO: fix sql?
+@app.route("/get_messages", methods=["POST"])
+def get_messages():
+    userID = get_userID_if_loggedin(request)
+    print("UserID = ", userID)
+
+    backlog = bool(request.form.get("backlog"))
+    channelID = request.form.get("channelID")
+
+    if userID is not False:
+        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+        cursor = db.cursor()
+
+        res = cursor.execute("""SELECT * FROM `IRC_channels` WHERE `channelID` = %s;""", (channelID,)) #query to find the serverID so we can check if the user owns this serverID and is not trying to read something that is not his
+        if res != 0:
+            result = cursor.fetchone()
+            serverID_result = int(result[5]) # 5 = IRC_servers_serverID
+
+            if check_if_serverID_belongs_to_userID(userID, serverID_result) is True:
+                print("THIS IS YOUR CHANNEL LOL")
+                if backlog is True: # if we want to load messages for a channel we are opening for the first time this session
+
+                    res = cursor.execute("""(SELECT *
+                    FROM `IRC_channel_messages`
+                    WHERE `IRC_channels_channelID` = %s
+                    ORDER BY `messageID` DESC LIMIT 5)
+                    ORDER BY `messageID` ASC;""", (channelID,)) #query to find the serverID so we can check if the user owns this serverID and is not trying to read something that is not his
+                    if res != 0:
+                        result = cursor.fetchall()
+                        print(result)
+                        messages = list()
+
+                        for res in result:
+                            print(res)
+                            server_dict_temp = {"messageID": res[0],
+                                "fromHostmask": res[1],
+                                "messageBody": res[2],
+                                "commandType": res[3],
+                                "timeReceived": res[4],
+                                "seen": res[5],
+                                "IRC_channels_channelID": res[6]}
+                            messages.append(server_dict_temp)
+
+                        response = {"status": "ok", "reason": "listing_messages", "message": messages}
+                        return jsonify(response)
+
+                else:
+                    return error("error", "not_yet_implemented", "This feature has not been implemented yet.")
+            else:
+                return error("error", "channel_is_not_yours", "A channel with this channelID does not belong to your account.")
+
+
+        else:
+            return error("error", "channelid_does_not_exist", "A channel with the requested channelID does not exist .")
+    else:
+         return error("error", "not_loggedin", "You are not logged in.")
+
+
+
+
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0") # TODO: remove binding on all interfaces; this is only here for debugging
+
 
