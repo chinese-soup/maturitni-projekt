@@ -117,7 +117,6 @@ function addMessageToChanenel(timestamp, sender, senderColor, message, channelID
     var element = $("#channel_window_{0}".format(channelID));
     element.append(html);
     element.scrollTop(element.scrollHeight); // scrollneme dolů, protože máme nové
-
 }
 
 
@@ -207,13 +206,17 @@ function join_channel_dialog(event)
         serverName = event.data.serverName;
 
         var dialog = new BootstrapDialog({
+            closable: true,
+            closeByBackdrop: true,
+            closeByKeyboard: true,
             title: 'Join a channel on {0}'.format(serverName),
-            message: $('<div></div>').load('channel_join.html')
+            message: $('<div class="meme"></div>').load('channel_join.html')
         });
-        $("#channel_to_join_submit_button").on("click", dialog, function(event)
+
+        $(".meme #channel_to_join_submit_button").on("click", dialog, function(event)
         {
             dialog.close();
-        })
+        });
         dialog.realize();
         dialog.setSize(BootstrapDialog.SIZE_SMALL);
         dialog.getModalFooter().hide();

@@ -8,8 +8,9 @@ import MySQLdb
 
 #irc library
 from irc import client
+from irc import features
 
-import threading # :))))) lol
+import threading # :)))))
 
 
 
@@ -22,17 +23,20 @@ class IRCSide(object):
         self.add_handlers()
 
         self.server_list_instances = list()
+        self.server_list_server_objects = list()
 
         self.load_servers_from_db()
 
         self.connect_servers()
 
-        self.client.process_forever()
-
         self.userID = _userid
 
         self.db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
         self.cursor = self.db.cursor()
+
+
+        self.client.process_forever()
+
 
     """Loads user's servers from the database"""
     def load_servers_from_db(self):
@@ -40,23 +44,25 @@ class IRCSide(object):
         cursor = db.cursor()
         userID = 1
 
-            result = cursor.fetchall()
-            db.close()
-            print("RESULT", result)
-            servers = list()
+        res = cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s;""", (userID,))
 
-            for res in result:
-                server_dict_temp = {"serverID": res[0],
-                                    "serverSessionID": res[1],
-                                    "nickname": res[2],
-                                    "isAway": res[3],
-                                    "isConnected": res[4],
-                                    "Registred_users_userID": res[5],
-                                    "serverName": res[6],
-                                    "serverIP": res[7],
-                                    "serverPort": res[8],
-                                    "useSSL": res[9]}
-                servers.append(server_dict_temp)
+        result = cursor.fetchall()
+        db.close()
+        print("RESULT", result)
+        servers = list()
+
+        for res in result:
+            server_dict_temp = {"serverID": res[0],
+                                "serverSessionID": res[1],
+                                "nickname": res[2],
+                                "isAway": res[3],
+                                "isConnected": res[4],
+                                "Registred_users_userID": res[5],
+                                "serverName": res[6],
+                                "serverIP": res[7],
+                                "serverPort": res[8],
+                                "useSSL": res[9]}
+            servers.append(server_dict_temp)
         self.server_list_text = servers
 
     """Adds IRC handlers"""
@@ -71,41 +77,59 @@ class IRCSide(object):
         self.client.add_global_handler("quit", self.on_quit)
         self.client.add_global_handler("nick", self.on_nick)
 
+    """Called to connect to a specified server"""
+    def connect_server(self, _serverID, _server, _port, _nickname):
+        temp_server_connection_object = self.client.server()
 
-    def connect_server(self, _server, _port, _nickname):
-        self.server_list_instances.append(self.client.server().connect(server=_server, port=_port, nickname=_nickname, password=None, username=None, ircname=None))
+        temp_server_connection_object.serverID = _serverID # důležité: přidává serverID z databáze jako atribut do connection, které se používá při každém global_handleru definovaném o pář řádků výše
 
+        print(temp_server_connection_object.serverID)
+        #temp_server_connection_object.setServerID(_serverID)
+
+        self.server_list_server_objects.append(temp_server_connection_object)
+        self.server_list_instances.append(temp_server_connection_object.connect(server=_server, port=_port, nickname=_nickname, password=None, username=None, ircname=None))
+
+    """Called upon starting the instance"""
     def connect_servers(self):
         for srvr in self.server_list_text:
-            self.connect_server(srvr["serverIP"], int(srvr["serverPort"]), srvr["nickname"])
+            try:
+                self.connect_server(srvr["serverID"], srvr["serverIP"], int(srvr["serverPort"]), srvr["nickname"])
+            except Exception as exp:
+                print("Error occurred.\nWhy: {0}".format(exp)) # TOOD: send errors like these to the client!!!
 
+    """Called: never?"""
     def start(self):
         pass
 
+    """Fired when any client successfully connects to an IRC server"""
     def on_connect(self, connection, event):
         print('[{}] Connected to {}' .format(event.type.upper(), event.source))
         if client.is_channel("#test.cz"):
             connection.join("#test.cz")
 
+    """Fired when any client is disconnected from an IRC server"""
     def on_disconnect(self, connection, event):
         print('[{}] Disconnected to {}' .format(event.type.upper(), event.source))
         pass
 
+    """Fired when any client receives a message from a channel"""
     def on_pubmsg(self, connection, event):
-        print('[{}] Pubmsg {}' .format(event.type.upper(), event.source))
-        res = self.cursor.execute("""select * from `IRC_servers` where `Registred_users_userID` = 1;""", (self.userID,))
+        print("CONNECTION = {}\n\n".format(connection.__dict__))
+        print('[{}] Pubmsg {} {}\n' .format(event.type.upper(), event.source, str(event.__dict__)))
+
+        res = self.cursor.execute("""select * from `IRC_servers` where `Registred_users_userID` = %s AND `serverID` = %s;""", (self.userID, connection.serverID))
 
         if res != 0:
-            print("Inserted successfully.")
-            result = res.fetchall()
+            result = self.cursor.fetchall()
             print(result)
-            res2 = self.cursor.execute("""select * from `IRC_channels` where `IRC_servers_serverID` = 1;""", (self.userID,))
+            #print("Servers??? {0}".format(result))
+            #res2 = self.cursor.execute("""select * from `IRC_channels` where `IRC_servers_serverID` = 1;""", (self.userID,))
 
-        connection.privmsg(event.target, str(event.__dict__))
+        #connection.privmsg(event.target, str(event.__dict__))
 
     def on_privmsg(self, connection, event):
         print('[{}] Privmsg {}' .format(event.type.upper(), event.source))
-        connection.privmsg(event.target, str(event q.__dict__))
+        connection.privmsg(event.target, str(event.__dict__))
 
     def on_join(self, connection, event):
         print('[{}] Join {}' .format(event.type.upper(), event.source))
