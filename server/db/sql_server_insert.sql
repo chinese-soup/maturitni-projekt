@@ -15,8 +15,7 @@ select * from `IRC_channel_messages` where `IRC_channels_channelID` = 1;
 
 	
 
-INSERT INTO `IRC_channels` (channelName, channelPassword, isJoined, lastOpened, IRC_servers_serverID) 
-values ("#test.cz", "", 0, CURRENT_TIMESTAMP, 15);
+#INSERT INTO `IRC_channels` (channelName, channelPassword, isJoined, lastOpened, IRC_servers_serverID) values ("#test.cz", "", 0, CURRENT_TIMESTAMP, 15);
 
 SET SQL_SAFE_UPDATES=0;
 #delete from `IRC_servers`;

@@ -9,6 +9,7 @@ import MySQLdb
 #irc library
 from irc import client
 
+import time
 import datetime
 
 import threading # :)))))
@@ -140,7 +141,7 @@ class IRCSide(object):
                     messageBody,
                     commandType,
                     timeReceived)
-                    values (%s, %s, %s, %s, %s)""", (channelID_res, event.source, message, event.type.upper(), ))
+                    values (%s, %s, %s, %s, %s)""", (channelID_res, event.source, message, event.type.upper(), datetime.datetime.utcnow()))
 
                     self.db.commit()
 

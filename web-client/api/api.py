@@ -97,6 +97,24 @@ def get_userID_if_loggedin(request):
         return False
 
 
+def get_serverID_belongs_to_userID(userID, serverID):
+    db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+
+    cursor = db.cursor()
+    result_code = cursor.execute("""SELECT (serverID, Registred_users_userID) FROM `IRC_servers` WHERE `serverID` = %s AND `Registred_users_userID` = %s""", (serverID, userID,))
+    if result_code is not 0:
+        result = cursor.fetchone()
+
+        serverID_result = result[0]
+        userID_result = result[1]
+
+        if serverID_result == serverID and userID_result == userID:
+            return True
+        else:
+            return False
+    return False
+
+
 @app.after_request
 def after_request(response):
   response.headers.add("Access-Control-Allow-Origin", "http://localhost")
@@ -342,11 +360,28 @@ def get_server_list():
         return error("error", "not_loggedin", "You are not logged in.")
 
 # routa volaná při volbě kanálu ze seznamu, routa volaná při scrollnutí nahoru v chatovacím okénku pro získání více zpráv z minulosti
-@app.route("/get_messages")
+@app.route("/get_messages", methods=["GET"])
 def get_messages():
-    print("hi")
-    return "get_messages()"
+    userID = get_userID_if_loggedin(request)
+    print("UserID = ", userID)
 
+    backlog = bool(request.form.get("backlog"))
+    channelID = request.form.get("channelID")
+
+    if userID is not False:
+        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+        cursor = db.cursor()
+
+        res = cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s;""", (userID,))
+        if res != 0:
+            db.close()
+            result = cursor.fetchall()
+
+            return error("ok")
+        else:
+            return error("ok", "no_servers_to_list", "Error loading your current settings, please try again later.")
+    else:
+         return error("error", "not_loggedin", "You are not logged in.")
 
 
 # routa volaná při zobrazení okna globálních nastavení
