@@ -9,6 +9,7 @@ import MySQLdb
 #irc library
 from irc import client
 
+"""IRCSide main class"""
 class IRCSide(object):
     def __init__(self, _userid):
         super(IRCSide, self).__init__()
@@ -29,6 +30,7 @@ class IRCSide(object):
         self.db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
         self.cursor = self.db.cursor()
 
+    """Loads user's servers from the database"""
     def load_servers_from_db(self):
         db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
         cursor = db.cursor()
@@ -51,9 +53,9 @@ class IRCSide(object):
                                     "serverPort": res[8],
                                     "useSSL": res[9]}
                 servers.append(server_dict_temp)
-        print("mrdka")
         self.server_list_text = servers
 
+    """Adds IRC handlers"""
     def add_handlers(self):
         self.client.add_global_handler("welcome", self.on_connect)
         self.client.add_global_handler("disconnect", self.on_disconnect)

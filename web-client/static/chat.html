@@ -141,47 +141,17 @@
         <!-- CENTER_CONTENT = CHANNEL_VIEW, others: settings, some other shit? -->
         <div class="center_content_container" id="center_content_message">
             <div class="center_header center_content_item header_shadows"> <!-- topic -->
-                <span class="header_room_name">#test123_focused <small>(nickname @ Freenode)</small></span>
+                <span class="header_room_name">Status window <small>(status @ status)</small></span>
                 <span class="header_room_topic"><b>Topic</b>: Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet. Lorem ipsum dot sir amet.</span>
             </div>
             <div class="center_messages_container center_content_item"> <!-- log container -->
-                <div class="log_message log_message_even">
-                    <span class="timestamp">00:59:12</span>
-                    <span class="message-body"><span class="message-sender message-sender-1">@Marii</span>: お後がまたよろしくて</span>
-                </div>
-                <div class="log_message log_message_odd">
-                    <span class="timestamp">00:59:16</span>
-                    <span class="message-body"><span class="message-sender message-sender-1">@Marii</span>: お先も前もよろしくね</span>
-                </div>
-                <div class="log_message log_message_even">
-                    <span class="timestamp">00:59:20</span>
-                    <span class="message-body"><span class="message-sender message-sender-1">@Marii</span>: 謎解きドキドキ指南</span>
-                </div>
-                <div class="log_message log_message_odd">
-                    <span class="timestamp">00:59:24</span>
-                    <span class="message-body"><span class="message-sender message-sender-2">@Tetora</span>: 仕掛けがアリアリです</span>
-                </div>
-                <div class="log_message log_message_even">
-                    <span class="timestamp">00:59:27</span>
-                    <span class="message-body"><span class="message-sender message-sender-3">@Kigu</span>: じょし的お悩みは双六? 賽を振って!</span>
-                </div>
-                <div class="log_message log_message_odd">
-                    <span class="timestamp">00:59:29</span>
-                    <span class="message-body"><span class="message-sender message-sender-1">@Marii</span>: はいはい！</span>
-                </div>
-                <div class="log_message log_message_even">
-                    <span class="timestamp">00:59:29</span>
-                    <span class="message-body"><span class="message-sender message-sender-2">@Tetora</span>: はいはい！</span>
-                </div>
-                <div class="log_message log_message_odd">
-                    <span class="timestamp">00:59:29</span>
-                    <span class="message-body"><span class="message-sender message-sender-4">@Gan</span>: はいはい！</span>
-                </div>
-                <div class="log_message log_message_even">
-                    <span class="timestamp">01:00:34</span>
-                    <span class="message-body"><span class="message-sender message-sender-5">MamRadObrazky</span>: <a href="http://i.imgur.com/8SkOwxA.png">http://i.imgur.com/8SkOwxA.png</a></span>
-                    <span class="message-image-preview"><a href="#" onclick="preview_images('http://i.imgur.com/8SkOwxA.png');"><img alt="Image preview" title="Image" src="http://i.imgur.com/8SkOwxA.png" target="_blank"></a></span>
-                </div>
+                <span class="message_window" id="channel_window_-1">
+                    <div class="log_message log_message_even">
+                        <span class="timestamp">??:??:??</span>
+                        <span class="message-body"><span class="message-sender message-sender-2">status</span>: HTML&CSS loaded.</span>
+                    </div>
+                </span>
+                <!-- -->
             </div>
             <div class="input-group center_content_item" id="input-group-msgline">
                 <input type="text" class="form-control dark_input" placeholder="Chat in #test123_focused&hellip;">
@@ -193,9 +163,9 @@
                                 <i class="icon-settingsfour-gearsalt"></i>
                             </button>
 							<ul class="dropdown-menu pull-right dropdown_menu_main_ul" aria-labelledby="dropdownMenuChannel">
-                                <li><a href="#">Don't show image previews for this channel</a></li>
-                                <li><a href="#">Don't show video previews for this channel</a></li>
-                                <li><a href="#">Upload and send an image</a></li>
+                                <!--<li><a href="#">Don't show image previews for this channel</a></li>-->
+                                <!--<li><a href="#">Don't show video previews for this channel</a></li>-->
+                                <!--<li><a href="#">Upload and send an image</a></li>-->
                                 <li role="separator" class="divider"></li>
                                 <li><a href="#">Leave this channel</a></li>
                             </ul>

@@ -86,7 +86,6 @@ def get_userID_if_loggedin(request):
             result = cursor.fetchone()
             session_id = result[0]
             userID = result[3]
-            print("MRDKY: ")
             print(session_id, userID)
             if session_id == session_id_cookie:
                 return userID
@@ -530,7 +529,6 @@ def get_server_settings():
 def edit_server_settings():
     userID = get_userID_if_loggedin(request)
     serverID = request.form.get("serverID") # gets the serverID of the server the user wants to edit from the ajax request
-    print("DO PÍČE", serverID)
 
     klice = {"serverName":"", "nickname":"", "serverPassword":"", "serverIP":"", "serverPort":"", "useSSL":""}
     for a in klice:

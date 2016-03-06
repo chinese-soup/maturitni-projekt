@@ -22,4 +22,3 @@ if __name__ == "__main__":
         irc_side.start()
     else:
         print("This should never happen.")
-

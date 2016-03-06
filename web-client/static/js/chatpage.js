@@ -76,6 +76,52 @@ function isUserLoggedIn()
     return false;
 }
 
+
+function switchCurrentChannel(toChannelID)
+{
+    $(".message_window").hide();
+    $("#channel_window_{0}".format(toChannelID)).show();
+}
+
+// used for the status log window, not for actual IRC messages
+// src: http://stackoverflow.com/questions/18229022/how-to-show-current-time-in-javascript-in-the-format-hhmmss
+function getCurrentTimestamp()
+{
+    var time = new Date();
+    return (("0" + time.getHours()).slice(-2)   + ":" +
+    ("0" + time.getMinutes()).slice(-2) + ":" +
+    ("0" + time.getSeconds()).slice(-2));
+
+}
+
+function log(message, status)
+{
+    var color = 2;
+    if(status == "error")
+    {
+        color = 3;
+    }
+    addMessageToChanenel(getCurrentTimestamp(), "status", color, message, -1);
+
+
+}
+
+function addMessageToChanenel(timestamp, sender, senderColor, message, channelID)
+{
+    var html =
+    '<div class="log_message log_message_even">' +
+    '    <span class="timestamp">{0}</span>'.format(timestamp) +
+    '    <span class="message-body"><span class="message-sender message-sender-{0}">{1}</span>: {2}</span>'.format(senderColor, sender, message) +
+    '</div>';
+
+    var element = $("#channel_window_{0}".format(channelID));
+    element.append(html);
+    element.scrollTop(element.scrollHeight); // scrollneme dolů, protože máme nové
+
+}
+
+
+
 /* called upon loading the page, because the way this shit works is disgusting */
 function checkIfUserIsLoggedInOnStart()
 {
@@ -102,6 +148,7 @@ function checkIfUserIsLoggedInOnStart()
            {
                 //general_dialog("OK", "OK", "success");
                 $("#loggedin_email_status").text(data["message"]);
+                log("You are logged in, loading server list.", "ok");
                 loadServers();
            }
         }
@@ -110,7 +157,9 @@ function checkIfUserIsLoggedInOnStart()
 
     posting.fail(function()
     {
-         general_dialog("API endpoint error.", "An error occurred while trying to contact the API server.", "error", 2);
+         general_dialog("API endpoint error.", "An error occurred while trying to contact the API server. Try reloading the page.", "error", 3);
+         log("An error occurred while trying to contact the API server. Try reloading the page.", "error");
+         sendUserAway("login.html", 5000);
     });
 }
 
@@ -122,7 +171,7 @@ function generateServerHTML(serverID)
         '<a href="#"><span class="networkname">Loading..</span> <small class="networkipport">(irc.freenode.org/6667)</small></a>' +
         '<div class="dropdown">' +
             '<button class="btn dropdown-toggle dropdown_server_wheel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
-                '<i class="icon-settingsfour-gearsalt"></i>' +
+                 '<i class="icon-settingsfour-gearsalt"></i>' +
             '</button>' +
             '<ul class="dropdown-menu dropdown-menu-right">' +
                 '<li><a class="join_another_channel_link" href="#">Join another channel&hellip;</a></li>' + /*join_channel_dialog(\'Freenode\',\'ID\' ); */
@@ -146,6 +195,25 @@ function generateChannelHTML(channelID)
 }
 
 
+function join_channel_dialog(server)
+{
+
+	var dialog = new BootstrapDialog({
+		title: 'Join a channel on ' + server,
+		message: $('<div></div>').load('channel_join.html')
+	});
+	$("#channel_to_join_submit_button").on("click", dialog, function(event)
+	{
+		dialog.close();
+	})
+	dialog.realize();
+	dialog.setSize(BootstrapDialog.SIZE_SMALL);
+    dialog.getModalFooter().hide();
+	dialog.open();
+}
+
+
+
 /* function to reload the server and channel list */
 /* called when servers or channels are changed/added/removed */
 /* called when user first loads chat.html */
@@ -153,6 +221,7 @@ function generateChannelHTML(channelID)
 function loadServers()
 {
     console.log("loadServers();");
+    log("loadServers();")
     $(".left_channels_flex_container .loading-ajax").show(); // hide the loading servers icon
     $(".left_channels_flex_container .loading-ajax-message").hide();
 
@@ -230,7 +299,8 @@ function loadServers()
 
     posting.fail(function()
     {
-        console.log("Failed to load servers.")
+        console.log("Failed to load servers.");
+        log("Failed to load servers.");
     })
 }
 /*toggle_center_column(\'edit_server\');*/
@@ -241,7 +311,8 @@ function edit_server(event)
     serverID = event.data.serverID;
     isAnEdit = event.data.isAnEdit;
 
-    console.log("edit_server({0}, {1}, {2})".format(serverName, serverID, isAnEdit));
+    console.log("edit_server({0}, {1}, {2});".format(serverName, serverID, isAnEdit));
+    log("edit_server({0}, {1}, {2});".format(serverName, serverID, isAnEdit));
     toggle_center_column("edit_server");
 
     $("#save_server_settings").html("<i class='icon-check'></i> Save changes"); /* just to be sure, as it could be Add server from before */
@@ -276,8 +347,11 @@ function edit_server(event)
     posting.fail(function()
     {
         general_dialog("API endpoint error.", "An error occurred while trying to retrieve this server's settings.", "error", 2);
+        log("An error occurred while trying to contact the API server. Try reloading the page.", "error");
+
         toggle_center_column("messages"); // show the messages window instead of global settings, because we can't load user's settings
         console.log("Failed to load server info.");
+        log("Failed to load server info.");
     })
 }
 
@@ -293,6 +367,8 @@ function add_server()
     $("#server-edit-form #server_edit_ip").val("");
     $("#server-edit-form #server_edit_portno").val("6667");
     $("#server-edit-form #use_tls_ssl_checkbox").prop("checked", Boolean(false));
+    log("toggle_center_column(edit_server);");
+
     toggle_center_column("edit_server");
     $("#save_server_settings").one("click", save_new_server);
 }
@@ -350,6 +426,7 @@ function save_new_server()
     posting.fail(function()
     {
          general_dialog("API endpoint error.", "An error occurred while trying to contact the API server.", "error", 2);
+         log("An error occurred while trying to contact the API server. Try reloading the page.", "error");
     });
 }
 
@@ -405,6 +482,7 @@ function save_server(event)
     posting.fail(function()
     {
          general_dialog("API endpoint error.", "An error occurred while trying to contact the API server.", "error", 2);
+         log("An error occurred while trying to contact the API server. Try reloading the page.", "error");
     });
 }
 
@@ -442,6 +520,7 @@ function loadSettingsIntoInputs()
         general_dialog("API endpoint error.", "An error occurred while trying to retrieve your account's global settings.", "error", 2);
         toggle_center_column("messages"); // show the messages window instead of global settings, because we can't load user's settings
         console.log("Failed to load servers.");
+        log("An error occurred while trying to contact the API server. Try reloading the page.", "error");
     })
 }
 
@@ -491,6 +570,7 @@ function save_global_settings()
     posting.fail(function(data)
     {
         general_dialog("API endpoint error.", "An error occurred while trying to contact the API server.", "error", 2)
+        log("An error occurred while trying to contact the API server. Try reloading the page.", "error");
     })
 }
 
@@ -518,6 +598,7 @@ function logout()
            if(data["reason"] == "loggedout")
            {
                 general_dialog("Logged out successfully.", data["message"], data["status"]);
+                log("Logged out successfully.", "error");
                 sendUserAway("login.html", 500);
            }
         }
@@ -527,6 +608,7 @@ function logout()
     posting.fail(function()
     {
          general_dialog("API endpoint error.", "An error occurred while trying to contact the API server.", "error", 2);
+         log("An error occurred while trying to contact the API server. Try reloading the page.", "error");
     });
 }
 

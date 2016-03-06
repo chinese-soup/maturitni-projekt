@@ -13,8 +13,10 @@ select * from `IRC_servers`;
 #UPDATE `IRC_servers` SET serverName="asdf", nickname="", serverPassword="", serverIP="irc.freenode.org", serverPort=6997, useSSL=true
 #WHERE `serverID` = 3;
 
+	
 
-delete from `IRC_servers` where `serverID` LIKE '%%';
+SET SQL_SAFE_UPDATES=0;
+delete from `IRC_servers`;
 select * from `IRC_servers`;
 
 

@@ -27,22 +27,6 @@ function toggle_center_column(what_to_show)
 	}
 }
 
-function join_channel_dialog(server)
-{
-
-	var dialog = new BootstrapDialog({
-		title: 'Join a channel on ' + server,
-		message: $('<div></div>').load('channel_join.html')
-	});
-	$("#channel_to_join_submit_button").on("click", dialog, function(event)
-	{
-		dialog.close();
-	})
-	dialog.realize();		
-	dialog.setSize(BootstrapDialog.SIZE_SMALL);
-    dialog.getModalFooter().hide();
-	dialog.open();
-}
 
 function on_load()
 {
