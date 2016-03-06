@@ -344,7 +344,9 @@ def get_server_list():
 # routa volaná při volbě kanálu ze seznamu, routa volaná při scrollnutí nahoru v chatovacím okénku pro získání více zpráv z minulosti
 @app.route("/get_messages")
 def get_messages():
+    print("hi")
     return "get_messages()"
+
 
 
 # routa volaná při zobrazení okna globálních nastavení
