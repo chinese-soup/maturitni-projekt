@@ -97,6 +97,62 @@ function switchCurrentChannel(toChannelID)
     $("#channel_window_{0}".format(toChannelID)).show();
 }
 
+function switchCurrentChannelEventStyle(event)
+{
+    toChannelID = event.data.channelID;
+    toChannelName = event.data.channelName;
+    log("Switching channel window to {0} ({1})".format(toChannelID, toChannelName));
+
+    $(".message_window").hide();
+    $("#channel_window_{0}".format(toChannelID)).show();
+    $(".channel_item".format(toChannelID)).toggleClass("channel_item_focused", false); // defocus any previously focused window
+    $("#channel_{0}".format(toChannelID)).toggleClass("channel_item_focused", true);
+    getBacklogForChannel(toChannelID);
+    
+}
+
+
+function getBacklogForChannel(channelID)
+{
+    var posting = $.post("http://{0}:5000/upon_login".format(hostname),
+    {
+       channelID: channelID,
+       backlog: true
+    }, dataType="text"
+    );
+
+    posting.done(function(data)
+    {
+        console.log(data);
+        log(data["reason"], data["status"]);
+
+        if(data["status"] == "error")
+        {
+            if(data["reason"] == "not_loggedin")
+            {
+
+            }
+        }
+        else if(data["status"] == "ok")
+        {
+           if(data["reason"] == "listing_messages")
+           {
+                log(data["message"]);
+                console.log(data["message"]);
+           }
+        }
+
+    });
+
+    posting.fail(function()
+    {
+         general_dialog("API endpoint error.", "An error occurred while trying to contact the API server. Try reloading the page.", "error", 3);
+         log("An error occurred while trying to contact the API server. Try reloading the page.", "error");
+    });
+}
+
+
+
 // used for the status log window, not for actual IRC messages
 // src: http://stackoverflow.com/questions/18229022/how-to-show-current-time-in-javascript-in-the-format-hhmmss
 function getCurrentTimestamp()
@@ -180,7 +236,7 @@ function removeChannelWindow(channelID)
 function generateServerHTML(serverID)
 {
     var html = '<li id="server_{0}" class="left_channels_flex_item server_item">'.format(serverID) +
-        '<a href="#"><span class="networkname">Loading..</span> <small class="networkipport">(irc.freenode.org/6667)</small></a>' +
+        '<a class="network_name_link" href="#"><span class="networkname">Loading..</span> <small class="networkipport">(irc.freenode.org/6667)</small></a>' +
         '<div class="dropdown">' +
             '<button class="btn dropdown-toggle dropdown_server_wheel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
                  '<i class="icon-settingsfour-gearsalt"></i>' +
@@ -259,6 +315,7 @@ function loadServers()
 
     posting.done(function(data)
     {
+        log(data["reason"], data["status"]);
         if(data["reason"] == "listing_servers")
         {
             console.log(data["message"][0]);
@@ -279,15 +336,13 @@ function loadServers()
                 $(".left_channels_flex_container .loading-ajax").hide(); // hide the loading servers icon
                 $(".channel_list #server_" + serverID + " .networkname").html(serverName);
 
-                /* onclick definitions, very important, do NOT mess up ARGUMENTS FOR EACH FUNCTION ALWAYS HAVE TO BE (SERVERNAME, SERVERID)*/
-                console.log(serverID);
                 log(serverID, "ok");
 
-                //$(".channel_list #server_{0} .dropdown .dropdown-menu .join_another_channel_link".format(serverID)).on("click", {serverName: serverName, serverID}, join_channel_dialog);
                 //$(".channel_list #server_{0} .dropdown .dropdown-menu .disconnect_link".format(serverID)).on("click", {serverName: serverName, serverID: serverID,  });
                 //$(".channel_list #server_{0} .dropdown .dropdown-menu .remove_server_link".format(serverID)).on("click", remove_server_dialog(serverName, serverID));
                 $(".channel_list #server_{0} .dropdown .dropdown-menu .edit_server_link".format(serverID)).click({serverName:serverName, serverID:serverID, isAnEdit: true}, edit_server);
                 $(".channel_list #server_{0} .dropdown .dropdown-menu .join_another_channel_link".format(serverID)).click({serverName:serverName, serverID:serverID}, join_channel_dialog);
+                $(".channel_list #server_{0} .network_name_link".format(serverID)).click({channelID:-1, channelName:"Status window"}, switchCurrentChannelEventStyle); // causes the server headers to link to the main status window
 
                 for (chans in channels)
                 {
@@ -302,12 +357,12 @@ function loadServers()
 
                     $(generateChannelWindow(channelID)).insertAfter($(".message_window".format(channelServerID)));
 
-                    addMessageToChannel(getCurrentTimestamp(), "TEST", "ok", "TEST MESSAGE", channelID);
+                    addMessageToChannel(getCurrentTimestamp(), "TEST", "ok", "TEST MESSAGE", channelID); // TODO: delete this
 
                     /* bind a click event to a channel in teh channel list*/
                     $(".channel_list #channel_{0} .channelName".format(channelID)).click(
                     {channelID:channelID, channelName:channelName, lastOpened: lastOpened, channelServerID:channelServerID},
-                    switchCurrentChannel)
+                    switchCurrentChannelEventStyle)
 
                 }
 
@@ -329,12 +384,11 @@ function loadServers()
             $(".left_channels_flex_container .loading-ajax-message").show();// show the div with the message below
             $(".left_channels_flex_container .loading-ajax-message").html("You are not logged in.");
         }
-
-
     });
 
     posting.fail(function()
     {
+
         console.log("Failed to load servers.");
         log("Failed to load servers.");
     })
@@ -364,6 +418,7 @@ function edit_server(event)
 
     posting.done(function(data)
     {
+        log(data["reason"], data["status"]);
         if(data["reason"] == "listing_server_info")
         {
             console.log(data["message"][0]);
