@@ -120,5 +120,8 @@ function preview_images(url)
 	dialog.realize();
 	dialog.setSize(BootstrapDialog.SIZE_WIDE);
 	dialog.setMessage("<img class='img-responsive' src=" + url + ">")
+    dialog.getModalBody().css("padding", "0");
+	dialog.getModalHeader().hide();
+	dialog.getModalFooter().css("background-color", "transparent");
 	dialog.open();
 }

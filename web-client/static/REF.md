@@ -7,3 +7,4 @@
 * [http://stackoverflow.com/posts/4256130/revisions](http://stackoverflow.com/posts/4256130/revisions)
 * [https://api.jquery.com/scrollTop/](https://api.jquery.com/scrollTop/)
 * [http://stackoverflow.com/questions/18229022/how-to-show-current-time-in-javascript-in-the-format-hhmmss](http://stackoverflow.com/questions/18229022/how-to-show-current-time-in-javascript-in-the-format-hhmmss)
+* [https://mathiasbynens.be/demo/url-regex](https://mathiasbynens.be/demo/url-regex)

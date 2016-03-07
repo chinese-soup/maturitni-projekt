@@ -100,6 +100,16 @@ function switchCurrentChannel(toChannelID)
     $("#channel_window_{0}".format(toChannelID)).show();
 }
 
+function linkifyMessage(messageBody)
+{
+    var regexp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+
+    return messageBody.replace(regexp, function(url)
+    {
+        return("<span class=\"message-image-preview\"><a href=\"#\" onclick=\"preview_images('{0}');\"><img alt=\"Image preview\" title=\"Image\" src=\"{0}\" target=\"_blank\"></a></span>".format(url));
+    });
+}
+
 function switchCurrentChannelEventStyle(event)
 {
     toChannelID = event.data.channelID;
@@ -116,9 +126,16 @@ function switchCurrentChannelEventStyle(event)
 
 function convertDBTimeToLocalTime(dbUTCtime)
 {
-    return(dbUTCtime);
+    var date = new Date(dbUTCtime);
+    var local_date = date.toLocaleString();
+    return(local_date);
 }
 
+function getNicknameFromHostmask(hostmask)
+{
+    var regexp = /(.*)\!(~{0,1}.*)\@(.*)/;
+    return(hostmask.match(regexp)[1]);
+}
 
 function getBacklogForChannel(channelID)
 {
@@ -148,13 +165,19 @@ function getBacklogForChannel(channelID)
                 log(data["message"]);
                 console.log(data["message"]);
 
-                messages = data["message"];
+                var messages = data["message"];
 
                	for (var i=0; i < messages.length; i++)
                 {
                     log(i);
 
-                    addMessageToChannel(convertDBTimeToLocalTime(messages[i]["timeReceived"]), messages[i]["fromHostmask"], "ok", messages[i]["messageBody"], messages[i]["IRC_channels_channelID"]); // TODO: FIX
+                    addMessageToChannel(
+                        convertDBTimeToLocalTime(messages[i]["timeReceived"]),
+                        getNicknameFromHostmask(messages[i]["fromHostmask"]),
+                        "ok",
+                        linkifyMessage(messages[i]["messageBody"]),
+                        messages[i]["IRC_channels_channelID"]
+                    );
                 }
            }
         }
@@ -280,6 +303,8 @@ function generateChannelHTML(channelID)
 }
 
 
+
+// TODO: FIX
 function join_channel_dialog(event)
 {
     if(!event)
@@ -296,17 +321,16 @@ function join_channel_dialog(event)
             closeByBackdrop: true,
             closeByKeyboard: true,
             title: 'Join a channel on {0}'.format(serverName),
-            message: $('<div class="meme"></div>').load('channel_join.html')
+            message: $('<div></div>').load('channel_join.html')
         });
 
-        $(".meme #channel_to_join_submit_button").on("click", dialog, function(event)
-        {
-            dialog.close();
-        });
         dialog.realize();
         dialog.setSize(BootstrapDialog.SIZE_SMALL);
         dialog.getModalFooter().hide();
+        console.log(dialog.getModalBody().find('#channel_to_join_submit_button').val());
+
         dialog.open();
+
 	}
 }
 

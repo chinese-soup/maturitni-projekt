@@ -40,6 +40,8 @@ import re
 from os import urandom
 from base64 import b64encode
 from time import time
+import datetime
+
 
 from flask import Flask, request, jsonify, redirect
 app = Flask(__name__)
@@ -636,14 +638,19 @@ def get_messages():
 
                         for res in result:
                             print(res)
+                            dateTime = res[4]
+                            import time
+                            utc_time = time.mktime(dateTime.timetuple()) * 1000
+
                             server_dict_temp = {"messageID": res[0],
                                 "fromHostmask": res[1],
                                 "messageBody": res[2],
                                 "commandType": res[3],
-                                "timeReceived": res[4],
+                                "timeReceived": utc_time,
                                 "seen": res[5],
                                 "IRC_channels_channelID": res[6]}
                             messages.append(server_dict_temp)
+                            print(type(res[4]))
 
                         response = {"status": "ok", "reason": "listing_messages", "message": messages}
                         return jsonify(response)
@@ -658,8 +665,6 @@ def get_messages():
             return error("error", "channelid_does_not_exist", "A channel with the requested channelID does not exist .")
     else:
          return error("error", "not_loggedin", "You are not logged in.")
-
-
 
 
 if __name__ == '__main__':

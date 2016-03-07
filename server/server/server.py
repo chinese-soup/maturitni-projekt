@@ -119,16 +119,37 @@ class IRCSide(object):
             result = self.cursor.fetchall()
             print(result)
             serverID_res = int(result[0][0])
+
+            res = self.cursor.execute("""UPDATE `IRC_servers` SET `isConnected` = %s WHERE `serverID` = %s;""", (1, serverID_res))
+            print("RES: ",res)
+
             print("serverID = {}".format(serverID_res))
 
             if serverID_res == int(connection.serverID): # pokud se získané ID z databáze rovná tomu, které v sobě uchovává connection, redundantní check, ale JTS
                 res = self.cursor.execute("""SELECT * FROM `IRC_channels` WHERE `IRC_servers_serverID` = %s;""", (serverID_res,))
                 if res != 0:
                     result = self.cursor.fetchall()
-                    print("Channels: {}".format(result))
+                    print("Channels for serverID={}: {}".format(serverID_res, result))
 
-        if client.is_channel("#test.cz"):
-            connection.join("#test.cz")
+                    channels = list()
+
+                    for res in result:
+                        channelID = res[0]
+                        channelName = res[1]
+                        channelPassword = res[2]
+                        lastOpened = res[3]
+                        channel_serverID = res[4]
+                        temp_dict = {"channelName": channelName, "channelPassword": channelPassword}
+                        channels.append(temp_dict)
+
+
+                    for channel in channels:
+                        if client.is_channel("#test.cz"):
+                            connection.join(channel["channelName"], key=channel["channelPassword"])
+                        else:
+                            print("The channel in database is not a channel.")
+                else:
+                    print("[WARNING on_connect]: No channels to join on this server (serverID = {})".format(serverID_res))
 
     """Fired when any client is disconnected from an IRC server"""
     def on_disconnect(self, connection, event):
