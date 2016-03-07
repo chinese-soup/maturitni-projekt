@@ -19,6 +19,13 @@ html, body
     font-weight: bold;
 }
 
+
+.channelName
+{
+    display: block; /* override li being inline  so we can make the whole <li> clickable in the channel list*/
+    width: 100%;
+}
+
 .big-container
 {
 	background-color: orange;

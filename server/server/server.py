@@ -106,6 +106,20 @@ class IRCSide(object):
     """Fired when any client successfully connects to an IRC server"""
     def on_connect(self, connection, event):
         print('[{}] Connected to {}' .format(event.type.upper(), event.source))
+        res = self.cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s AND `serverID` = %s;""", (self.userID, connection.serverID))
+        if res != 0:
+            result = self.cursor.fetchall()
+            print(result)
+            serverID_res = int(result[0][0])
+            print("serverID = {}".format(serverID_res))
+
+            if serverID_res == int(connection.serverID): # pokud se získané ID z databáze rovná tomu, které v sobě uchovává connection, redundantní check, ale JTS
+                res = self.cursor.execute("""SELECT * FROM `IRC_channels` WHERE `IRC_servers_serverID` = %s AND `channelName` = %s;""", (serverID_res, event.target))
+                if res != 0:
+                    result = self.cursor.fetchall()
+                    print("Channels: {}".format(result))
+                    channelID_res = int(result[0][0])
+
         if client.is_channel("#test.cz"):
             connection.join("#test.cz")
 
@@ -119,7 +133,6 @@ class IRCSide(object):
         print("CONNECTION = {}\n\n".format(connection.__dict__))
         print('[{}] Pubmsg {} {}\n' .format(event.type.upper(), event.source, str(event.__dict__)))
         message = event.arguments[0]
-
 
         res = self.cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s AND `serverID` = %s;""", (self.userID, connection.serverID))
 

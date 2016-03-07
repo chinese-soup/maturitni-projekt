@@ -85,9 +85,12 @@ function addMessageToChannel(timestamp, sender, senderColor, message, channelID)
     '    <span class="message-body"><span class="message-sender message-sender-{0}">{1}</span>: {2}</span>'.format(senderColor, sender, message) +
     '</div>';
 
+
     var element = $("#channel_window_{0}".format(channelID));
     element.append(html);
-    element.scrollTop(element.scrollHeight); // scrollneme dolů, protože máme nové
+
+    var element2 = $(".center_messages_container");
+    element.scrollTop(element2.scrollHeight); // scrollneme dolů, protože máme nové
 }
 
 
@@ -108,13 +111,18 @@ function switchCurrentChannelEventStyle(event)
     $(".channel_item".format(toChannelID)).toggleClass("channel_item_focused", false); // defocus any previously focused window
     $("#channel_{0}".format(toChannelID)).toggleClass("channel_item_focused", true);
     getBacklogForChannel(toChannelID);
-    
+
+}
+
+function convertDBTimeToLocalTime(dbUTCtime)
+{
+    return(dbUTCtime);
 }
 
 
 function getBacklogForChannel(channelID)
 {
-    var posting = $.post("http://{0}:5000/upon_login".format(hostname),
+    var posting = $.post("http://{0}:5000/get_messages".format(hostname),
     {
        channelID: channelID,
        backlog: true
@@ -139,6 +147,15 @@ function getBacklogForChannel(channelID)
            {
                 log(data["message"]);
                 console.log(data["message"]);
+
+                messages = data["message"];
+
+               	for (var i=0; i < messages.length; i++)
+                {
+                    log(i);
+
+                    addMessageToChannel(convertDBTimeToLocalTime(messages[i]["timeReceived"]), messages[i]["fromHostmask"], "ok", messages[i]["messageBody"], messages[i]["IRC_channels_channelID"]); // TODO: FIX
+                }
            }
         }
 
@@ -323,7 +340,7 @@ function loadServers()
 
             for (key in servers)
             {
-                value = servers[key];
+                //value = servers[key];
                 serverID = servers[key]["serverID"];
                 serversessionID = servers[key]["serversessionID"];
                 serverName = servers[key]["serverName"];
