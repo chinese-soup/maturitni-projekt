@@ -167,7 +167,7 @@ class IRCSide(object):
 
                 else:
                     print("WOAH")
-                    
+
             #print("Servers??? {0}".format(result))
             #res2 = self.cursor.execute("""select * from `IRC_channels` where `IRC_servers_serverID` = 1;""", (self.userID,))
 
