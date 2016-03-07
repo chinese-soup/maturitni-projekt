@@ -77,6 +77,20 @@ function isUserLoggedIn()
 }
 
 
+function addMessageToChannel(timestamp, sender, senderColor, message, channelID)
+{
+    var html =
+    '<div class="log_message log_message_even">' +
+    '    <span class="timestamp">{0}</span>'.format(timestamp) +
+    '    <span class="message-body"><span class="message-sender message-sender-{0}">{1}</span>: {2}</span>'.format(senderColor, sender, message) +
+    '</div>';
+
+    var element = $("#channel_window_{0}".format(channelID));
+    element.append(html);
+    element.scrollTop(element.scrollHeight); // scrollneme dolů, protože máme nové
+}
+
+
 function switchCurrentChannel(toChannelID)
 {
     $(".message_window").hide();
@@ -101,24 +115,8 @@ function log(message, status)
     {
         color = 3;
     }
-    addMessageToChanenel(getCurrentTimestamp(), "status", color, message, -1);
-
-
+    addMessageToChannel(getCurrentTimestamp(), "status", color, message, -1);
 }
-
-function addMessageToChanenel(timestamp, sender, senderColor, message, channelID)
-{
-    var html =
-    '<div class="log_message log_message_even">' +
-    '    <span class="timestamp">{0}</span>'.format(timestamp) +
-    '    <span class="message-body"><span class="message-sender message-sender-{0}">{1}</span>: {2}</span>'.format(senderColor, sender, message) +
-    '</div>';
-
-    var element = $("#channel_window_{0}".format(channelID));
-    element.append(html);
-    element.scrollTop(element.scrollHeight); // scrollneme dolů, protože máme nové
-}
-
 
 
 /* called upon loading the page, because the way this shit works is disgusting */
@@ -160,6 +158,21 @@ function checkIfUserIsLoggedInOnStart()
          log("An error occurred while trying to contact the API server. Try reloading the page.", "error");
          sendUserAway("login.html", 5000);
     });
+}
+
+
+
+/* generates HTML for a hidden window for a channel */
+function generateChannelWindow(channelID)
+{
+    var html = '<span class="message_window" id="channel_window_{0}" style="display: none;"></span>'.format(channelID);
+    return(html);
+}
+
+function removeChannelWindow(channelID)
+{
+    switchCurrentChannel(-1); // switch to the status window before removing current channel
+    $("#channel_window_{0}".format(channelID)).remove();
 }
 
 
@@ -286,6 +299,15 @@ function loadServers()
 
                     $(generateChannelHTML(channelID)).insertAfter($(".channel_list #server_{0}".format(channelServerID)));  // generate a dummy <li> list and append it to the server list
                     $(".channel_list #channel_{0} .channelName".format(channelID)).html(channelName);
+
+                    $(generateChannelWindow(channelID)).insertAfter($(".message_window".format(channelServerID)));
+
+                    addMessageToChannel(getCurrentTimestamp(), "TEST", "ok", "TEST MESSAGE", channelID);
+
+                    /* bind a click event to a channel in teh channel list*/
+                    $(".channel_list #channel_{0} .channelName".format(channelID)).click(
+                    {channelID:channelID, channelName:channelName, lastOpened: lastOpened, channelServerID:channelServerID},
+                    switchCurrentChannel)
 
                 }
 
