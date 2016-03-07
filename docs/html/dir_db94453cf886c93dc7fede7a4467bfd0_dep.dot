@@ -1,0 +1,10 @@
+digraph "/home/unko/code/maturitni-projekt/web-client" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_db94453cf886c93dc7fede7a4467bfd0 {
+    graph [ bgcolor="#eeeeff", pencolor="black", label="" URL="dir_db94453cf886c93dc7fede7a4467bfd0.html"];
+    dir_db94453cf886c93dc7fede7a4467bfd0 [shape=plaintext label="web-client"];
+    dir_b5ff89c9d7235ef7b0fa006377ccb97e [shape=box label="api" color="black" fillcolor="white" style="filled" URL="dir_b5ff89c9d7235ef7b0fa006377ccb97e.html"];
+  }
+}

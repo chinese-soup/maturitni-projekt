@@ -1,0 +1,6 @@
+digraph "/home/unko/code/maturitni-projekt/server" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  dir_c98d2b5c0a490cfc42f0692e7fe0f810 [shape=box, label="server", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_c98d2b5c0a490cfc42f0692e7fe0f810.html"];
+}

@@ -67,7 +67,9 @@ class IRCSide(object):
             servers.append(server_dict_temp)
         self.server_list_text = servers
 
-    """Adds IRC handlers"""
+    """
+        Adds IRC handlers
+    """
     def add_handlers(self):
         self.client.add_global_handler("welcome", self.on_connect)
         self.client.add_global_handler("disconnect", self.on_disconnect)
@@ -79,7 +81,9 @@ class IRCSide(object):
         self.client.add_global_handler("quit", self.on_quit)
         self.client.add_global_handler("nick", self.on_nick)
 
-    """Called to connect to a specified server"""
+    """
+        Called to connect to a specified server
+    """
     def connect_server(self, _serverID, _server, _port, _nickname):
         temp_server_connection_object = self.client.server()
 
@@ -91,7 +95,9 @@ class IRCSide(object):
         self.server_list_server_objects.append(temp_server_connection_object)
         self.server_list_instances.append(temp_server_connection_object.connect(server=_server, port=_port, nickname=_nickname, password=None, username=None, ircname=None))
 
-    """Called upon starting the instance"""
+    """
+        Called upon starting the instance
+    """
     def connect_servers(self):
         for srvr in self.server_list_text:
             try:
@@ -103,7 +109,9 @@ class IRCSide(object):
     def start(self):
         pass
 
-    """Fired when any client successfully connects to an IRC server"""
+    """
+        Fired when any client successfully connects to an IRC server
+    """
     def on_connect(self, connection, event):
         print('[{}] Connected to {}' .format(event.type.upper(), event.source))
         res = self.cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s AND `serverID` = %s;""", (self.userID, connection.serverID))
@@ -114,11 +122,10 @@ class IRCSide(object):
             print("serverID = {}".format(serverID_res))
 
             if serverID_res == int(connection.serverID): # pokud se získané ID z databáze rovná tomu, které v sobě uchovává connection, redundantní check, ale JTS
-                res = self.cursor.execute("""SELECT * FROM `IRC_channels` WHERE `IRC_servers_serverID` = %s AND `channelName` = %s;""", (serverID_res, event.target))
+                res = self.cursor.execute("""SELECT * FROM `IRC_channels` WHERE `IRC_servers_serverID` = %s;""", (serverID_res,))
                 if res != 0:
                     result = self.cursor.fetchall()
                     print("Channels: {}".format(result))
-                    channelID_res = int(result[0][0])
 
         if client.is_channel("#test.cz"):
             connection.join("#test.cz")
@@ -158,7 +165,9 @@ class IRCSide(object):
 
                     self.db.commit()
 
-
+                else:
+                    print("WOAH")
+                    
             #print("Servers??? {0}".format(result))
             #res2 = self.cursor.execute("""select * from `IRC_channels` where `IRC_servers_serverID` = 1;""", (self.userID,))
 

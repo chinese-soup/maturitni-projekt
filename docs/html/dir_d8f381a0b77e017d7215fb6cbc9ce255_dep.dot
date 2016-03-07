@@ -1,0 +1,13 @@
+digraph "/home/unko/code/maturitni-projekt/web-client/static" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_d8f381a0b77e017d7215fb6cbc9ce255 {
+    graph [ bgcolor="#eeeeff", pencolor="black", label="" URL="dir_d8f381a0b77e017d7215fb6cbc9ce255.html"];
+    dir_d8f381a0b77e017d7215fb6cbc9ce255 [shape=plaintext label="static"];
+    dir_3fc6c9d0d6622472eb853eb170cbeacc [shape=box label="bootstrap-3.3.6-dist" color="red" fillcolor="white" style="filled" URL="dir_3fc6c9d0d6622472eb853eb170cbeacc.html"];
+    dir_ab2ae804b66b299a991d436ec61917df [shape=box label="bootstrap3-dialog" color="black" fillcolor="white" style="filled" URL="dir_ab2ae804b66b299a991d436ec61917df.html"];
+    dir_1ac9d1e47c2b614c738ebeb359c27d12 [shape=box label="fonts" color="red" fillcolor="white" style="filled" URL="dir_1ac9d1e47c2b614c738ebeb359c27d12.html"];
+    dir_073688f57d2d132e7b60ebe3741ad61a [shape=box label="js" color="black" fillcolor="white" style="filled" URL="dir_073688f57d2d132e7b60ebe3741ad61a.html"];
+  }
+}
