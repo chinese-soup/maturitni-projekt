@@ -133,10 +133,12 @@ function switchCurrentChannelEventStyle(event)
     /* load backlog if it has not been loaded yet */
     if($.inArray(channelID, already_loaded_backlog) == -1)
     {
-        getBacklogForChannel(toChannelID, 15);
+        console.log("Getting backlog");
+        getBacklogForChannel(toChannelID, 50);
     }
     else
     {
+        console.log("NOT getting backlog");
 
     }
 
@@ -145,8 +147,19 @@ function switchCurrentChannelEventStyle(event)
 function convertDBTimeToLocalTime(dbUTCtime)
 {
     var date = new Date(dbUTCtime);
-    console.log(date);
-    var local_date = date.toLocaleString();
+    var date_now = new Date();
+
+
+    if(date.toLocaleDateString() ==  date_now.toLocaleDateString()) // zkontrolujeme, jestli daný čas je dnes, pokud ne, vrátíme i datum
+    {
+        var local_date = date.toLocaleTimeString();
+    }
+    else
+    {
+        var local_date = date.toLocaleString();
+    }
+
+
     return(local_date);
 }
 
@@ -203,11 +216,11 @@ function getBacklogForChannel(channelID, limit)
 
                 if($.inArray(channelID, already_loaded_backlog) == -1)
                 {
-                    log("not adding to the meme array (that is only temporary and needs a proper fix) because it already is in there");
+                    already_loaded_backlog.push(channelID);
                 }
                 else
                 {
-                    already_loaded_backlog.push(channelID);
+                    log("not adding to the meme array (that is only temporary and needs a proper fix) because it already is in there");
                 }
            }
         }
@@ -333,12 +346,27 @@ function generateChannelHTML(channelID)
 }
 
 
-// TODO: FIX
+// initialiaze the join channel form and stuff
 function join_channel_dialog(event)
 {
     serverID = event.data.serverID;
     serverName = event.data.serverName;
     toggle_center_column("join_channel");
+
+    // empty fields
+    $("#channel-join-form channel_to_join_input_channel").val("");
+    $("#channel-join-form channel_to_join_input_password").val("");
+    $("#channel-join-form close_join_channel_button").one("click", {serverName:serverName, serverID:serverID}, join_channel);
+}
+
+
+/* actually call to join the channel */
+function join_channel(event)
+{
+    console.log("join_channel();")
+    serverID = event.data.serverID;
+    serverName = event.data.serverName;
+    toggle_center_column("messages");
 
     // empty fields
     $("#channel-join-form channel_to_join_input_channel").val("");
@@ -633,6 +661,8 @@ function save_server(event)
 function loadSettingsIntoInputs()
 {
     console.log("loadSettingsIntoInputs();")
+    $(".center_settings_container .loading-ajax").show();
+
     var posting = $.post("http://{0}:5000/get_global_settings".format(hostname),
     {
     }, dataType="text"
@@ -654,6 +684,9 @@ function loadSettingsIntoInputs()
             $("#global-settings-form #show_seconds_checkbox").prop("checked", Boolean(settings[5]));
             $("#global-settings-form #show_video_previews_checkbox").prop("checked", Boolean(settings[6]));
             $("#global-settings-form #show_image_previews_checkbox").prop("checked", Boolean(settings[7]));
+
+            $(".center_settings_container .loading-ajax").hide();
+
         }
         else if(data["reason"] == "not_loggedin")
         {
