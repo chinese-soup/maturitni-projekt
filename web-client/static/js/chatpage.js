@@ -24,29 +24,22 @@ function onChatLoad()
 {
     console.log("onChatLoad();");
     checkIfUserIsLoggedInOnStart();
-    setTimeout(ping, 1000);
+    //setTimeout(ping, 1000);
 }
 
-function ping()
+/*function ping()
 {
     log(isUserLoggedIn);
     setTimeout(ping, 1000);
-}
+}*/
 
 /* never used (yet?) */
 $body = $("body");
 
 $(document).on({
-    ajaxStart: function() { console.log("ajaxStart();"); /* $body.addClass("loading"); */ },
-     ajaxStop: function() { console.log("ajaxStop();");  /* $body.removeClass("loading"); */ }
+    ajaxStart: function() { /*console.log("ajaxStart();"); */ /* $body.addClass("loading"); */ },
+     ajaxStop: function() { /*console.log("ajaxStop();");  */ /* $body.removeClass("loading"); */ }
 });
-
-
-/* target element is in jquery style, TODO: remove? */
-function showLoadingMemeCircleInsteadOfTheElement(target_element)
-{
-
-}
 
 /* function to time a redirect (for log out, etc.) */
 function sendUserAway(url, time)
@@ -91,7 +84,7 @@ function isUserLoggedIn()
 }
 
 
-function addMessageToChannel(timestamp, sender, senderColor, message, channelID)
+function addMessageToChannel(messageID, timestamp, sender, senderColor, message, channelID)
 {
     var html =
     '<div class="log_message log_message_even">' +
@@ -136,6 +129,7 @@ function switchCurrentChannelEventStyle(event)
     $("#channel_{0}".format(toChannelID)).toggleClass("channel_item_focused", true);
     $(".header_room_name").html("{0} <small>({1} @ {2})</small>".format(toChannelName, "FIXME", "FIXME"))
 
+
     /* load backlog if it has not been loaded yet */
     if($.inArray(channelID, already_loaded_backlog) == -1)
     {
@@ -151,6 +145,7 @@ function switchCurrentChannelEventStyle(event)
 function convertDBTimeToLocalTime(dbUTCtime)
 {
     var date = new Date(dbUTCtime);
+    console.log(date);
     var local_date = date.toLocaleString();
     return(local_date);
 }
@@ -197,6 +192,7 @@ function getBacklogForChannel(channelID, limit)
                     log(i);
 
                     addMessageToChannel(
+                        messages[i]["messageID"],
                         convertDBTimeToLocalTime(messages[i]["timeReceived"]),
                         getNicknameFromHostmask(messages[i]["fromHostmask"]),
                         "ok",
@@ -204,7 +200,15 @@ function getBacklogForChannel(channelID, limit)
                         messages[i]["IRC_channels_channelID"]
                     );
                 }
-                already_loaded_backlog.push(channelID);
+
+                if($.inArray(channelID, already_loaded_backlog) == -1)
+                {
+                    log("not adding to the meme array (that is only temporary and needs a proper fix) because it already is in there");
+                }
+                else
+                {
+                    already_loaded_backlog.push(channelID);
+                }
            }
         }
 
@@ -237,7 +241,7 @@ function log(message, status)
     {
         color = 3;
     }
-    addMessageToChannel(getCurrentTimestamp(), "status", color, message, -1);
+    addMessageToChannel(-1, getCurrentTimestamp(), "CloudChat", color, message, -1);
 }
 
 
@@ -334,8 +338,11 @@ function join_channel_dialog(event)
 {
     serverID = event.data.serverID;
     serverName = event.data.serverName;
+    toggle_center_column("join_channel");
 
-
+    // empty fields
+    $("#channel-join-form channel_to_join_input_channel").val("");
+    $("#channel-join-form channel_to_join_input_password").val("");
 }
 
 
@@ -348,7 +355,7 @@ function loadServers()
     console.log("loadServers();");
     log("loadServers();")
     $(".left_channels_flex_container .loading-ajax").show(); // hide the loading servers icon
-    $(".left_channels_flex_container .loading-ajax-message").hide();
+    $(".left_channels_flex_container .loading-ajax-message").hide(); // hide the "you have no servers" message
 
     $(".channel_list").empty(); // clear the server list so we don't dupe the server entries (beware of element id hazard)
 
@@ -375,10 +382,11 @@ function loadServers()
                 serverPort = servers[key]["serverPort"];
                 useSSL = servers[key]["useSSL"];
                 channels = servers[key]["channels"];
+                // TODO: IMPLEMENT iSCONNECTED
 
                 $(".channel_list").append(generateServerHTML(serverID));  // generate a dummy <li> list and append it to the server list
                 $(".left_channels_flex_container .loading-ajax").hide(); // hide the loading servers icon
-                $(".channel_list #server_" + serverID + " .networkname").html(serverName);
+                $(".channel_list #server_{0} .networkname".format(serverID)).html(serverName); // set the network name of the server
 
                 log(serverID, "ok");
 
@@ -401,13 +409,10 @@ function loadServers()
 
                     $(generateChannelWindow(channelID)).insertAfter($(".message_window".format(channelServerID)));
 
-                    addMessageToChannel(getCurrentTimestamp(), "TEST", "ok", "TEST MESSAGE", channelID); // TODO: delete this
-
                     /* bind a click event to a channel in teh channel list*/
                     $(".channel_list #channel_{0} .channelName".format(channelID)).click(
                     {channelID:channelID, channelName:channelName, lastOpened: lastOpened, channelServerID:channelServerID},
                     switchCurrentChannelEventStyle)
-
                 }
 
                 if(useSSL == 0)
@@ -415,12 +420,15 @@ function loadServers()
                 else
                     $(".channel_list #server_{0} .networkipport".format(serverID)).html("({0}/{1}/SSL)".format(serverIP, serverPort));
             }
+            $(".dropdown_server_wheel").css("display", "flex");
+
+            $(".dropdown_server_wheel").css("width", "10px");
         }
         else if(data["reason"] == "no_servers_to_list")
         {
             $(".left_channels_flex_container .loading-ajax").hide(); // hide the spinning wheel
             $(".left_channels_flex_container .loading-ajax-message").show(); // show the div with the message below
-            $(".left_channels_flex_container .loading-ajax-message").html("No servers to be listed (yet).<br>Use the <strong>Join another server</strong> option.");
+            $(".left_channels_flex_container .loading-ajax-message").html("No servers to be listed at the moment.<br>Use the <strong>Join another server</strong> option.");
         }
         else if(data["reason"] == "not_loggedin")
         {
@@ -647,7 +655,10 @@ function loadSettingsIntoInputs()
             $("#global-settings-form #show_video_previews_checkbox").prop("checked", Boolean(settings[6]));
             $("#global-settings-form #show_image_previews_checkbox").prop("checked", Boolean(settings[7]));
         }
-
+        else if(data["reason"] == "not_loggedin")
+        {
+            general_dialog("Access denied: You are not logged in.", data["message"], "error", -1);
+        }
     });
 
     posting.fail(function()

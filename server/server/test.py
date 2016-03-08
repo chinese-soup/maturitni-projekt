@@ -1,4 +1,7 @@
-from SimpleWebSocketServer import SimpleWebSocketServer, WebSocket
+#!/usr/bin/env python3
+# coding=utf-8
+from SimpleWebSocketServer import SimpleWebSocketServer
+from SimpleWebSocketServer import WebSocket
 
 class SimpleEcho(WebSocket):
 
@@ -7,10 +10,10 @@ class SimpleEcho(WebSocket):
         self.sendMessage(self.data)
 
     def handleConnected(self):
-        print self.address, 'connected'
+        print(self.address, 'connected')
 
     def handleClose(self):
-        print self.address, 'closed'
+        print(self.address, 'closed')
 
 server = SimpleWebSocketServer('', 8000, SimpleEcho)
 server.serveforever()

@@ -622,6 +622,7 @@ def get_messages():
 
     backlog = bool(request.form.get("backlog"))
     channelID = request.form.get("channelID")
+    messageLimit = int(request.form.get("limit")) or 20 # if no limit is specified
 
     if userID is not False:
         db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
@@ -639,8 +640,9 @@ def get_messages():
                     res = cursor.execute("""(SELECT *
                     FROM `IRC_channel_messages`
                     WHERE `IRC_channels_channelID` = %s
-                    ORDER BY `messageID` DESC LIMIT 5)
-                    ORDER BY `messageID` ASC;""", (channelID,)) #query to find the serverID so we can check if the user owns this serverID and is not trying to read something that is not his
+                    ORDER BY `messageID` DESC LIMIT %s)
+                    ORDER BY `messageID` ASC;""", (channelID, messageLimit)
+                                         ) #query to find the serverID so we can check if the user owns this serverID and is not trying to read something that is not his
                     if res != 0:
                         result = cursor.fetchall()
                         print(result)

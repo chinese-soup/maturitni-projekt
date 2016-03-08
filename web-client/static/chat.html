@@ -258,17 +258,24 @@
         </div>
 
         <div class="center_content_container" id="center_content_join_channel" style="display: none;">
-            <form role="form">
-                <div class="form-group">
-                    <label for="channel_to_join_input_text">Channel name:</label>
-                    <input type="text" class="form-control" id="channel_to_join_input_text" placeholder="#welcome">
-                </div>
-                <div class="form-group">
-                    <label for="channel_to_join_input_text">Channel password (if required, leave empty for none):</label>
-                    <input type="password" class="form-control" id="channel_to_join_input_password">
-                </div>
-                <button id="channel_to_join_submit_button" type="submit" class="btn btn-default btn-block">Join</button>
-            </form>
+             <div class="center_header center_content_item header_shadows">
+                <span class="header_room_name">Edit server settings</span>
+                <span class="header_room_topic">Here you can edit server settings for <span class="header_room_topic_server_label">%s</span>.</span>
+            </div>
+            <div class="center_content_item center_joinchannel_container">
+                <form role="form" name="channel-join" id="channel-join-form" action="#" method=""post>
+                    <div class="form-group">
+                        <label for="channel_to_join_input_channel">Channel name:</label>
+                        <input type="text" class="form-control" id="channel_to_join_input_channel" placeholder="e.g. #news">
+                    </div>
+                    <div class="form-group">
+                        <label for="channel_to_join_input_password">Channel password (only if required, leave empty for none):</label>
+                        <input type="password" class="form-control" id="channel_to_join_input_password">
+                    </div>
+                    <button id="channel_to_join_submit_button" type="button" class="btn btn-primary">Add & join</button>
+                    <button class="btn btn-primary" type="button" id="close_join_channel_button" onclick="toggle_center_column('messages');">Cancel</button>
+                </form>
+            </div>
         </div>
 
     </div>

@@ -7,26 +7,35 @@ function toggle_center_column(what_to_show)
 		$("#center_content_message").hide();
 		$("#center_content_edit_server").hide();
 		$("#center_content_global_settings").show();
-		console.log("global_setting");
+		$("#center_content_join_channel").hide();
+		console.log("what_to_show = global_setting done");
 		loadSettingsIntoInputs();
-		
 	}
 	else if(what_to_show == "edit_server")
 	{
 		$("#center_content_message").hide();
 		$("#center_content_global_settings").hide();
 		$("#center_content_edit_server").show();
-		console.log("edit_server");
+		$("#center_content_join_channel").hide();
+		console.log("what_to_show = edit_server done");
+	}
+	else if(what_to_show == "join_channel")
+	{
+	    $("#center_content_message").hide();
+		$("#center_content_global_settings").hide();
+		$("#center_content_edit_server").hide();
+        $("#center_content_join_channel").show();
+        console.log("what_to_show = join_channel done");
 	}
 	else
 	{
 		$("#center_content_message").show();
 		$("#center_content_edit_server").hide();
 		$("#center_content_global_settings").hide();
-		console.log("messages");
+		$("#center_content_join_channel").hide();
+		console.log("what_to_show = messages done");
 	}
 }
-
 
 function on_load()
 {
@@ -64,7 +73,6 @@ function on_load()
         dialog.setMessage("<span style='color: red;'>Settings failed to save. Reason: %s</span>");
     }
 }*/
-
 
 function disconnect_dialog(what_server) /* make api calls from here as well??? */
 {
