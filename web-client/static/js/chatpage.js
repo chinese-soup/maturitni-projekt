@@ -6,7 +6,7 @@ $.ajaxSetup({
 });
 
 var hostname = location.hostname; // maybe temporary(?): get the current hostname so we know where to make api calls (same host, different port)
-
+var already_loaded_backlog = [];
 
 /* maybe move to util.js? */
 /* overrides the default string function in javascript to include formatting support */
@@ -24,10 +24,18 @@ function onChatLoad()
 {
     console.log("onChatLoad();");
     checkIfUserIsLoggedInOnStart();
+    setTimeout(ping, 1000);
+}
+
+function ping()
+{
+    log(isUserLoggedIn);
+    setTimeout(ping, 1000);
 }
 
 /* never used (yet?) */
 $body = $("body");
+
 $(document).on({
     ajaxStart: function() { console.log("ajaxStart();"); /* $body.addClass("loading"); */ },
      ajaxStop: function() { console.log("ajaxStop();");  /* $body.removeClass("loading"); */ }
@@ -56,13 +64,18 @@ function sendUserAwayTimeout(url)
 /* returns true (loggedin) /false (notloggedin) */
 function isUserLoggedIn()
 {
-    var posting = $.post("http://{0}/check_session".format(hostname), {}, datatype="text");
+    var posting = $.get("http://{0}:5000/check_session".format(hostname), {}, datatype="text");
+    var result = false;
+
     posting.done(function(data)
     {
-        console.log("Hello");
-        if(data["status"] == "ok" && data["reason"])
+        if(data["status"] == "ok" && data["reason"] == "alive_loggedin")
         {
-            return true;
+            result = true;
+        }
+        else if(data["status"] == "error" && data["reason"] == "alive_not_loggedin")
+        {
+            result = false;
         }
 
     })
@@ -70,10 +83,11 @@ function isUserLoggedIn()
     posting.fail(function(data)
     {
         console.log("Checking user's session failed.");
-        return false;
+        result = false;
     })
 
-    return false;
+    return(result);
+
 }
 
 
@@ -120,7 +134,17 @@ function switchCurrentChannelEventStyle(event)
     $("#channel_window_{0}".format(toChannelID)).show();
     $(".channel_item".format(toChannelID)).toggleClass("channel_item_focused", false); // defocus any previously focused window
     $("#channel_{0}".format(toChannelID)).toggleClass("channel_item_focused", true);
-    getBacklogForChannel(toChannelID);
+    $(".header_room_name").html("{0} <small>({1} @ {2})</small>".format(toChannelName, "FIXME", "FIXME"))
+
+    /* load backlog if it has not been loaded yet */
+    if($.inArray(channelID, already_loaded_backlog) == -1)
+    {
+        getBacklogForChannel(toChannelID, 15);
+    }
+    else
+    {
+
+    }
 
 }
 
@@ -137,11 +161,12 @@ function getNicknameFromHostmask(hostmask)
     return(hostmask.match(regexp)[1]);
 }
 
-function getBacklogForChannel(channelID)
+function getBacklogForChannel(channelID, limit)
 {
     var posting = $.post("http://{0}:5000/get_messages".format(hostname),
     {
        channelID: channelID,
+       limit: limit,
        backlog: true
     }, dataType="text"
     );
@@ -155,7 +180,7 @@ function getBacklogForChannel(channelID)
         {
             if(data["reason"] == "not_loggedin")
             {
-
+                log(data["reason"]);
             }
         }
         else if(data["status"] == "ok")
@@ -179,6 +204,7 @@ function getBacklogForChannel(channelID)
                         messages[i]["IRC_channels_channelID"]
                     );
                 }
+                already_loaded_backlog.push(channelID);
            }
         }
 
@@ -303,37 +329,14 @@ function generateChannelHTML(channelID)
 }
 
 
-
 // TODO: FIX
 function join_channel_dialog(event)
 {
-    if(!event)
-    {
-        log("join_channel_dialog(noEvent);", "error");
-    }
-    else
-    {
-        serverID = event.data.serverID;
-        serverName = event.data.serverName;
+    serverID = event.data.serverID;
+    serverName = event.data.serverName;
 
-        var dialog = new BootstrapDialog({
-            closable: true,
-            closeByBackdrop: true,
-            closeByKeyboard: true,
-            title: 'Join a channel on {0}'.format(serverName),
-            message: $('<div></div>').load('channel_join.html')
-        });
 
-        dialog.realize();
-        dialog.setSize(BootstrapDialog.SIZE_SMALL);
-        dialog.getModalFooter().hide();
-        console.log(dialog.getModalBody().find('#channel_to_join_submit_button').val());
-
-        dialog.open();
-
-	}
 }
-
 
 
 /* function to reload the server and channel list */

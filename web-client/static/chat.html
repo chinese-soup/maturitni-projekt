@@ -133,10 +133,6 @@
 
     <!-- main content -->
     <div id="column_toplevel_center" class="col-xs-9 main-column">
-        <!-- TODO: vyresit zpravy v ramci message containeru -->
-        <!-- TODO: vyresit prekryvani nastaveni/etc./ -->
-        <!-- TODO: vyresit zmensovani leveho panelu -->
-        <!-- TODO: vyresit togglovani leveho panelu -->
 
         <!-- CENTER_CONTENT = CHANNEL_VIEW, others: settings, some other shit? -->
         <div class="center_content_container" id="center_content_message">
@@ -258,14 +254,31 @@
                 <!--<button class="btn btn-primary" type="button" id="save_global_settings_button" onclick="delete_server('asdf');"><i class="icon-circledelete"></i> Delete this server</button>-->
                 <button class="btn btn-primary" type="button" id="close_server_settings" onclick="toggle_center_column('messages');">Close without saving changes</button>
             </div>
+                </form>
+        </div>
+
+        <div class="center_content_container" id="center_content_join_channel" style="display: none;">
+            <form role="form">
+                <div class="form-group">
+                    <label for="channel_to_join_input_text">Channel name:</label>
+                    <input type="text" class="form-control" id="channel_to_join_input_text" placeholder="#welcome">
+                </div>
+                <div class="form-group">
+                    <label for="channel_to_join_input_text">Channel password (if required, leave empty for none):</label>
+                    <input type="password" class="form-control" id="channel_to_join_input_password">
+                </div>
+                <button id="channel_to_join_submit_button" type="submit" class="btn btn-default btn-block">Join</button>
             </form>
         </div>
+
     </div>
 
 
 
 </div><!--/column_toplevel_center-->
 </div><!--/big-container-->
+
+
 
 </body>
 </html>

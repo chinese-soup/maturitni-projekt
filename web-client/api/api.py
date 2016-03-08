@@ -195,6 +195,16 @@ def upon_login():
     else:
         return jsonify(status="error", reason="not_loggedin", message="You are not logged in.")
 
+# routa volaná při načtení chat.html pro ověření, zda je uživatel přihlášen
+@app.route("/check_session", methods=["GET"])
+def check_session():
+    userID = get_userID_if_loggedin(request)
+    print("UserID = ", userID)
+    if userID is not False:
+        return jsonify(status="ok", reason="alive_loggedin", message=True)
+    else:
+        return jsonify(status="error", reason="alive_not_loggedin", message="You are not logged in.")
+
 # routa volaná při přihlášení na login.html
 @app.route("/login", methods=["POST"])
 def login():
