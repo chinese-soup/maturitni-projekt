@@ -1,7 +1,9 @@
 show databases;
+#drop database `cloudchatdb`;
 use `cloudchatdb`;
 #select * from `IRC_servers` INNER JOIN `IRC_channels` ON `Registred_users_userID`;
-#select * from `IRC_channels` where `IRC_servers_serverID` = 1;
+select * from `Registered_users`;
+select * from `IRC_channels`;
 select * from `IRC_channel_messages` where `IRC_channels_channelID` = 1;
 #select * from `IRC_servers`;
 
@@ -23,7 +25,11 @@ SET SQL_SAFE_UPDATES=0;
 
 select * from `IRC_channels` where `IRC_servers_serverID` = 15;
 select * from `IRC_channel_messages`;
-SELECT * FROM `IRC_channels` WHERE `channelID` = -1;
+SELECT * FROM `IRC_channels` WHERE `channelID` = 1;
+
+
+
+
 #delete from `User_settings` where `Registred_users_userID` = 1;
 #INSERT INTO `User_settings` (show_previews, highlight_words, whois_username, whois_realname, global_nickname, autohide_channels, hide_joinpartquit_messages) VALUES(1, "A", 19)
 #ON DUPLICATE KEY UPDATE show_previews="A", highlight_words=19, whois_username, whois_realname

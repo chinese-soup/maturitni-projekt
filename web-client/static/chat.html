@@ -248,13 +248,14 @@
                         <label for="use_tls_ssl_checkbox">Use SSL/TLS:</label>
                         <input type="checkbox" id="use_tls_ssl_checkbox" value="true">
                     </div>
-            </div>
+
             <div class="form-group col-sm-12">
                 <button class="btn btn-primary" type="button" id="save_server_settings"><i class="icon-check"></i> Save settings and close</button>
                 <!--<button class="btn btn-primary" type="button" id="save_global_settings_button" onclick="delete_server('asdf');"><i class="icon-circledelete"></i> Delete this server</button>-->
                 <button class="btn btn-primary" type="button" id="close_server_settings" onclick="toggle_center_column('messages');">Close without saving changes</button>
             </div>
                 </form>
+                 </div>
         </div>
 
         <div class="center_content_container" id="center_content_join_channel" style="display: none;">
@@ -262,8 +263,8 @@
                 <span class="header_room_name">Edit server settings</span>
                 <span class="header_room_topic">Here you can edit server settings for <span class="header_room_topic_server_label">%s</span>.</span>
             </div>
-            <div class="center_content_item center_joinchannel_container">
-                <form role="form" name="channel-join" id="channel-join-form" action="#" method=""post>
+            <div class="center_content_item center_join_channel_container">
+                <form role="form" name="channel-join" id="channel-join-form" action="#" method="post">
                     <div class="form-group">
                         <label for="channel_to_join_input_channel">Channel name:</label>
                         <input type="text" class="form-control" id="channel_to_join_input_channel" placeholder="e.g. #news">
@@ -273,7 +274,7 @@
                         <input type="password" class="form-control" id="channel_to_join_input_password">
                     </div>
                     <button id="channel_to_join_submit_button" type="button" class="btn btn-primary">Add & join</button>
-                    <button class="btn btn-primary" type="button" id="close_join_channel_button" onclick="toggle_center_column('messages');">Cancel</button>
+                    <button id="close_join_channel_button" type="button" class="btn btn-primary" onclick="toggle_center_column('messages');">Cancel</button>
                 </form>
             </div>
         </div>

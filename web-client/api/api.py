@@ -343,7 +343,7 @@ def get_server_list():
             i = 0
             for srvr in servers.items():
                 print(srvr)
-                srvrID = srvr[1]["serverID"]
+                srvrID = int(srvr[1]["serverID"])
                 cursor = db.cursor()
                 res = cursor.execute("""SELECT * FROM `IRC_channels` WHERE `IRC_servers_serverID` = %s;""", (srvrID,))
                 channel_result = cursor.fetchall()
@@ -357,11 +357,11 @@ def get_server_list():
                                          "isJoined": res[3],
                                          "lastOpened": res[4],
                                          "serverID": res[5]}
-
                     channels_dict[i] = channel_dict_temp
+
                 servers[i]["channels"] = channels_dict
                 i = i+1
-
+            print("SERVERS!!!!", servers)
             response = {"status": "ok", "reason": "listing_servers", "message": servers}
             return jsonify(response)
 
@@ -371,6 +371,31 @@ def get_server_list():
         #return error("error", "debug", result)
     else:
         return error("error", "not_loggedin", "You are not logged in.")
+
+@app.route("/add_channel", methods=["POST"])
+def add_channel():
+    userID = get_userID_if_loggedin(request)
+    channelName = request.form.get("channelName") or None
+    channelPassword = request.form.get("channelPassword") or ""
+    serverID = request.form.get("serverID") or ""
+
+    if userID is not False and channelName is not None:
+        db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+        cursor = db.cursor()
+
+        # přidáme server
+        res = cursor.execute("""INSERT INTO `IRC_channels` (channelName, channelPassword, IRC_servers_serverID, isJoined, lastOpened)
+        values(%s, %s, %s, %s, CURRENT_TIMESTAMP);""", (channelName, channelPassword, serverID, False))
+        db.commit()
+        if res == 1:
+            response = {"status": "ok", "reason": "channel_added_sucessfully", "message": "Channel added successfully."}
+        else:
+            response = {"status": "ok", "reason": "channel_was_not_added", "message": "Channel cannot be added at this time."} # error?
+
+        return jsonify(response)
+    else:
+        return error("error", "not_loggedin", "You are not logged in.")
+
 
 # routa volaná při zobrazení okna globálních nastavení
 @app.route("/get_global_settings", methods=["POST"])
@@ -635,6 +660,7 @@ def get_messages():
 
             if check_if_serverID_belongs_to_userID(userID, serverID_result) is True:
                 print("THIS IS YOUR CHANNEL LOL")
+
                 if backlog is True: # if we want to load messages for a channel we are opening for the first time this session
 
                     res = cursor.execute("""(SELECT *
@@ -645,7 +671,7 @@ def get_messages():
                                          ) #query to find the serverID so we can check if the user owns this serverID and is not trying to read something that is not his
                     if res != 0:
                         result = cursor.fetchall()
-                        print(result)
+                        print("\n\MRDKY\n\n", result)
                         messages = list()
 
                         for res in result:
@@ -674,7 +700,7 @@ def get_messages():
 
 
         else:
-            return error("error", "channelid_does_not_exist", "A channel with the requested channelID does not exist .")
+            return error("error", "channelid_does_not_exist", "A channel with the requested channelID does not exist.")
     else:
          return error("error", "not_loggedin", "You are not logged in.")
 

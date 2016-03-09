@@ -127,7 +127,7 @@ function switchCurrentChannelEventStyle(event)
     $("#channel_window_{0}".format(toChannelID)).show();
     $(".channel_item".format(toChannelID)).toggleClass("channel_item_focused", false); // defocus any previously focused window
     $("#channel_{0}".format(toChannelID)).toggleClass("channel_item_focused", true);
-    $(".header_room_name").html("{0} <small>({1} @ {2})</small>".format(toChannelName, "FIXME", "FIXME"))
+    $(".header_room_name").html("{0} <small>({1} @ {2})</small>".format(toChannelName, toChannelID, "FIXME"))
 
 
     /* load backlog if it has not been loaded yet */
@@ -166,7 +166,16 @@ function convertDBTimeToLocalTime(dbUTCtime)
 function getNicknameFromHostmask(hostmask)
 {
     var regexp = /(.*)\!(~{0,1}.*)\@(.*)/;
-    return(hostmask.match(regexp)[1]);
+    var asdf = hostmask.match(regexp)[1];
+    if(asdf == null)
+    {
+        return("null");
+    }
+    else
+    {
+        return(asdf);
+    }
+
 }
 
 function getBacklogForChannel(channelID, limit)
@@ -315,7 +324,6 @@ function removeChannelWindow(channelID)
 }
 
 
-
 function generateServerHTML(serverID)
 {
     var html = '<li id="server_{0}" class="left_channels_flex_item server_item">'.format(serverID) +
@@ -354,23 +362,69 @@ function join_channel_dialog(event)
     toggle_center_column("join_channel");
 
     // empty fields
-    $("#channel-join-form channel_to_join_input_channel").val("");
-    $("#channel-join-form channel_to_join_input_password").val("");
-    $("#channel-join-form close_join_channel_button").one("click", {serverName:serverName, serverID:serverID}, join_channel);
+    $("#channel-join-form #channel_to_join_input_channel").val("");
+    $("#channel-join-form #channel_to_join_input_password").val("");
+    $("#channel-join-form #channel_to_join_submit_button").one("click", {serverName:serverName, serverID:serverID}, join_channel);
+    console.log("join_channel_dialog();");
 }
 
 
 /* actually call to join the channel */
 function join_channel(event)
 {
-    console.log("join_channel();")
+    console.log("join_channel();");
     serverID = event.data.serverID;
     serverName = event.data.serverName;
+    channelName = $("#channel-join-form #channel_to_join_input_channel").val();
+    channelPassword = $("#channel-join-form #channel_to_join_input_password").val();
+
     toggle_center_column("messages");
 
+    var posting = $.post("http://{0}:5000/add_channel".format(hostname),
+    {
+        serverID: serverID,
+        channelName: channelName,
+        channelPassword: channelPassword
+
+    }, dataType="text"
+    );
+
+    posting.done(function(data)
+    {
+        console.log(data);
+        if(data["status"] == "error")
+        {
+            general_dialog("Server settings", data["message"], "error", 2);
+        }
+        else if(data["status"] == "ok")
+        {
+           if(data["reason"] == "channel_added_sucessfully")
+           {
+                general_dialog("Server settings", data["message"], "ok", 2);
+                /* TODO: call join from here */
+                /* TODO: call join from here */
+                toggle_center_column("messages");
+                loadServers();
+           }
+           else if(data["reason"] == "channel_was_not_added")
+           {
+                general_dialog("Channel added", data["message"], "ok", 2);
+                toggle_center_column("messages");
+           }
+        }
+
+    });
+
+    posting.fail(function()
+    {
+         general_dialog("API endpoint error.", "An error occurred while trying to contact the API server.", "error", 2);
+         log("An error occurred while trying to contact the API server. Try reloading the page.", "error");
+    });
+
+
     // empty fields
-    $("#channel-join-form channel_to_join_input_channel").val("");
-    $("#channel-join-form channel_to_join_input_password").val("");
+
+
 }
 
 
@@ -403,13 +457,15 @@ function loadServers()
             for (key in servers)
             {
                 //value = servers[key];
-                serverID = servers[key]["serverID"];
-                serversessionID = servers[key]["serversessionID"];
-                serverName = servers[key]["serverName"];
-                serverIP =  servers[key]["serverIP"];
-                serverPort = servers[key]["serverPort"];
-                useSSL = servers[key]["useSSL"];
-                channels = servers[key]["channels"];
+
+                var serverID = servers[key]["serverID"];
+                console.log("Jsem dement? {0}".format(serverID));
+                var serversessionID = servers[key]["serversessionID"];
+                var serverName = servers[key]["serverName"];
+                var serverIP =  servers[key]["serverIP"];
+                var serverPort = servers[key]["serverPort"];
+                var useSSL = servers[key]["useSSL"];
+                var channels = servers[key]["channels"];
                 // TODO: IMPLEMENT iSCONNECTED
 
                 $(".channel_list").append(generateServerHTML(serverID));  // generate a dummy <li> list and append it to the server list
@@ -424,13 +480,22 @@ function loadServers()
                 $(".channel_list #server_{0} .dropdown .dropdown-menu .join_another_channel_link".format(serverID)).click({serverName:serverName, serverID:serverID}, join_channel_dialog);
                 $(".channel_list #server_{0} .network_name_link".format(serverID)).click({channelID:-1, channelName:"Status window"}, switchCurrentChannelEventStyle); // causes the server headers to link to the main status window
 
-                for (chans in channels)
+
+                if(useSSL == 0)
+                    $(".channel_list #server_{0} .networkipport".format(serverID)).html("({0}/{1})".format(serverIP, serverPort));
+                else
+                    $(".channel_list #server_{0} .networkipport".format(serverID)).html("({0}/{1}/SSL)".format(serverIP, serverPort));
+                for (var chans = 0; chans < channels.length; chans++)
                 {
-                    channelID = channels[chans]["channelID"];
-                    channelName = channels[chans]["channelName"];
-                    isJoined = channels[chans]["isJoined"];
-                    lastOpened = channels[chans]["lastOpened"];
-                    channelServerID = channels[chans]["serverID"];
+                    var channelID = channels[chans]["channelID"];
+                    log(channelID);
+                    var channelName = channels[chans]["channelName"];
+                    var isJoined = channels[chans]["isJoined"];
+                    var lastOpened = channels[chans]["lastOpened"];
+                    var channelServerID = channels[chans]["serverID"];
+
+                    console.log("Channel");
+                    console.log(chans);
 
                     $(generateChannelHTML(channelID)).insertAfter($(".channel_list #server_{0}".format(channelServerID)));  // generate a dummy <li> list and append it to the server list
                     $(".channel_list #channel_{0} .channelName".format(channelID)).html(channelName);
@@ -442,11 +507,6 @@ function loadServers()
                     {channelID:channelID, channelName:channelName, lastOpened: lastOpened, channelServerID:channelServerID},
                     switchCurrentChannelEventStyle)
                 }
-
-                if(useSSL == 0)
-                    $(".channel_list #server_{0} .networkipport".format(serverID)).html("({0}/{1})".format(serverIP, serverPort));
-                else
-                    $(".channel_list #server_{0} .networkipport".format(serverID)).html("({0}/{1}/SSL)".format(serverIP, serverPort));
             }
             $(".dropdown_server_wheel").css("display", "flex");
 

@@ -32,6 +32,7 @@ class IRCSide(object):
         self.connect_servers()
 
         self.userID = _userid
+        self.cau_ne = "cau"
 
         self.db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
         self.cursor = self.db.cursor()
@@ -39,9 +40,8 @@ class IRCSide(object):
         self.func_to_be_threaded()
 
         while(True):
-            time.sleep(2)
-            print("2 SECONDS MEME")
-
+            time.sleep(5)
+            print("Sleep 5")
 
     def _func_to_be_threaded(self):
         self.client.process_forever()
@@ -124,7 +124,6 @@ class IRCSide(object):
     """Called: never?"""
     def start(self):
         pass
-
     """
         Fired when any client successfully connects to an IRC server
     """
@@ -174,7 +173,9 @@ class IRCSide(object):
 
     """Fired when any client receives a message from a channel"""
     def on_pubmsg(self, connection, event):
+        print("IRC THREAD: {0}".format(self.cau_ne))
         print("CONNECTION = {}\n\n".format(connection.__dict__))
+
         print('[{}] Pubmsg {} {}\n' .format(event.type.upper(), event.source, str(event.__dict__)))
         message = event.arguments[0]
 
@@ -199,7 +200,6 @@ class IRCSide(object):
                     commandType,
                     timeReceived)
                     values (%s, %s, %s, %s, %s)""", (channelID_res, event.source, message, event.type.upper(), datetime.datetime.utcnow()))
-
                     self.db.commit()
 
                 else:
