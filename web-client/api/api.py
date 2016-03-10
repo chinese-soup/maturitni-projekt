@@ -322,7 +322,6 @@ def get_server_list():
             result = cursor.fetchall()
             # horrible hacks to get aronud the fact that jsonify is stupid (imo) follow: #
             servers = dict()
-            channels = dict()
 
             i = 0
             for res in result:
@@ -348,7 +347,7 @@ def get_server_list():
                 res = cursor.execute("""SELECT * FROM `IRC_channels` WHERE `IRC_servers_serverID` = %s;""", (srvrID,))
                 channel_result = cursor.fetchall()
                 print("CHANNELS", channel_result)
-                channels_dict = dict()
+                channels_list = list()
 
                 for res in channel_result:
                     channel_dict_temp = {"channelID": res[0],
@@ -357,9 +356,10 @@ def get_server_list():
                                          "isJoined": res[3],
                                          "lastOpened": res[4],
                                          "serverID": res[5]}
-                    channels_dict[i] = channel_dict_temp
+                    channels_list.append(channel_dict_temp)
 
-                servers[i]["channels"] = channels_dict
+                servers[i]["channels"] = channels_list
+
                 i = i+1
             print("SERVERS!!!!", servers)
             response = {"status": "ok", "reason": "listing_servers", "message": servers}

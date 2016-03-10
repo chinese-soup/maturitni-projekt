@@ -17,9 +17,10 @@ import threading # :)))))
 
 
 """IRCSide main class"""
-class IRCSide(object):
+class IRCSide(threading.Thread):
     def __init__(self, _userid):
-        super(IRCSide, self).__init__()
+        #super(IRCSide, self).__init__()
+        threading.Thread.__init__(self)
 
         self.client = client.Reactor()
         self.add_handlers()
@@ -41,7 +42,7 @@ class IRCSide(object):
 
         while(True):
             time.sleep(5)
-            print("Sleep 5")
+            print("Sleep 5: ", self.userID)
 
     def _func_to_be_threaded(self):
         self.client.process_forever()
@@ -95,8 +96,6 @@ class IRCSide(object):
     def on_your_host(self, connection, event):
         print("test")
 
-
-
     """
         Called to connect to a specified server
     """
@@ -144,7 +143,7 @@ class IRCSide(object):
                 res = self.cursor.execute("""SELECT * FROM `IRC_channels` WHERE `IRC_servers_serverID` = %s;""", (serverID_res,))
                 if res != 0:
                     result = self.cursor.fetchall()
-                    print("Channels for serverID={}: {}".format(serverID_res, result))
+                    print("Channmessage_windowels for serverID={}: {}".format(serverID_res, result))
 
                     channels = list()
 

@@ -121,6 +121,9 @@ function switchCurrentChannelEventStyle(event)
 {
     toChannelID = event.data.channelID;
     toChannelName = event.data.channelName;
+    console.log("Orange juice: ");
+    console.log(toChannelID);
+
     log("Switching channel window to {0} ({1})".format(toChannelID, toChannelName));
 
     $(".message_window").hide();
@@ -131,7 +134,7 @@ function switchCurrentChannelEventStyle(event)
 
 
     /* load backlog if it has not been loaded yet */
-    if($.inArray(channelID, already_loaded_backlog) == -1)
+    if($.inArray(toChannelID, already_loaded_backlog) == -1)
     {
         console.log("Getting backlog");
         getBacklogForChannel(toChannelID, 50);
@@ -456,16 +459,18 @@ function loadServers()
 
             for (key in servers)
             {
-                //value = servers[key];
-
                 var serverID = servers[key]["serverID"];
-                console.log("Jsem dement? {0}".format(serverID));
+
                 var serversessionID = servers[key]["serversessionID"];
                 var serverName = servers[key]["serverName"];
                 var serverIP =  servers[key]["serverIP"];
                 var serverPort = servers[key]["serverPort"];
                 var useSSL = servers[key]["useSSL"];
                 var channels = servers[key]["channels"];
+                console.log("Channels:");
+                console.log(channels);
+                console.log(channels.length);
+
                 // TODO: IMPLEMENT iSCONNECTED
 
                 $(".channel_list").append(generateServerHTML(serverID));  // generate a dummy <li> list and append it to the server list
@@ -485,8 +490,12 @@ function loadServers()
                     $(".channel_list #server_{0} .networkipport".format(serverID)).html("({0}/{1})".format(serverIP, serverPort));
                 else
                     $(".channel_list #server_{0} .networkipport".format(serverID)).html("({0}/{1}/SSL)".format(serverIP, serverPort));
+
+
                 for (var chans = 0; chans < channels.length; chans++)
                 {
+                    console.log("CHEN");
+                    console.log(channels["chan"]);
                     var channelID = channels[chans]["channelID"];
                     log(channelID);
                     var channelName = channels[chans]["channelName"];
@@ -501,6 +510,7 @@ function loadServers()
                     $(".channel_list #channel_{0} .channelName".format(channelID)).html(channelName);
 
                     $(generateChannelWindow(channelID)).insertAfter($(".message_window".format(channelServerID)));
+                    already_loaded_backlog = []; // CLEAR ALL MEMES
 
                     /* bind a click event to a channel in teh channel list*/
                     $(".channel_list #channel_{0} .channelName".format(channelID)).click(
