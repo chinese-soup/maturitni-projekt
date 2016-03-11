@@ -37,15 +37,16 @@ class IRCSide(threading.Thread):
 
         self.db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
         self.cursor = self.db.cursor()
-
         self.func_to_be_threaded()
+        self.client.process_forever()
 
+
+
+    def _func_to_be_threaded(self):
         while(True):
             time.sleep(5)
             print("Sleep 5: ", self.userID)
 
-    def _func_to_be_threaded(self):
-        self.client.process_forever()
 
     def func_to_be_threaded(self):
         threading.Thread(target=self._func_to_be_threaded).start()
@@ -83,15 +84,29 @@ class IRCSide(threading.Thread):
     """
     def add_handlers(self):
         self.client.add_global_handler("welcome", self.on_connect)
+        """self.client.add_global_handler("yourhost", self.on_connect)
+        self.client.add_global_handler("created", self.on_connect)
+        self.client.add_global_handler("myinfo", self.on_connect)
+
+        self.client.add_global_handler("nosuchnick", self.on_connect)
+        self.client.add_global_handler("nosuchcannel", self.on_connect)
+        self.client.add_global_handler("unknowncommand", self.on_connect)
+        self.client.add_global_handler("nonicknamegiven", self.on_connect)
+        self.client.add_global_handler("nicknameinuse", self.on_connect)
+        self.client.add_global_handler("nickcollison", self.on_connect)
+        self.client.add_global_handler("notonchannel", self.on_connect)
+        self.client.add_global_handler("useronchannel", self.on_connect)"""
+
         self.client.add_global_handler("yourhost", self.on_your_host)
         self.client.add_global_handler("disconnect", self.on_disconnect)
         self.client.add_global_handler("nicknameinuse", self.on_nicknameinuse)
         self.client.add_global_handler("pubmsg", self.on_pubmsg)
         self.client.add_global_handler("privmsg", self.on_privmsg)
-        self.client.add_global_handler("join", self.on_join)
-        self.client.add_global_handler("part", self.on_part)
-        self.client.add_global_handler("quit", self.on_quit)
+        """self.client.add_global_handler("join", self.on_pubmsg)
+        self.client.add_global_handler("part", self.on_pubmsg)
+        self.client.add_global_handler("quit", self.on_pubmsg)"""
         self.client.add_global_handler("nick", self.on_nick)
+        self.client.add_global_handler("action", self.on_action)
 
     def on_your_host(self, connection, event):
         print("test")
@@ -128,15 +143,18 @@ class IRCSide(threading.Thread):
     """
     def on_connect(self, connection, event):
         print('[{}] Connected to {}' .format(event.type.upper(), event.source))
+        print("{}".format(event.arguments))
+
         res = self.cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s AND `serverID` = %s;""", (self.userID, connection.serverID))
         if res != 0:
             result = self.cursor.fetchall()
             print(result)
-            serverID_res = int(result[0][0])
+
+            serverID_res = int(result[i][0])
 
             res = self.cursor.execute("""UPDATE `IRC_servers` SET `isConnected` = %s WHERE `serverID` = %s;""", (1, serverID_res))
-            print("RES: ",res)
 
+            print("RES: ",res)
             print("serverID = {}".format(serverID_res))
 
             if serverID_res == int(connection.serverID): # pokud se získané ID z databáze rovná tomu, které v sobě uchovává connection, redundantní check, ale JTS
@@ -158,7 +176,7 @@ class IRCSide(threading.Thread):
 
 
                     for channel in channels:
-                        if client.is_channel("#test.cz"):
+                        if client.is_channel(channel["channelName"]):
                             connection.join(channel["channelName"], key=channel["channelPassword"])
                         else:
                             print("The channel in database is not a channel.")
@@ -167,8 +185,13 @@ class IRCSide(threading.Thread):
 
     """Fired when any client is disconnected from an IRC server"""
     def on_disconnect(self, connection, event):
-        print('[{}] Disconnected to {}' .format(event.type.upper(), event.source))
+        print('[{}] Disconnected from {}' .format(event.type.upper(), event.source))
         pass
+
+    """Fired when any client gets a /ME message from any channel or query"""
+    def on_action(self, connection, event):
+        print('[{}] OnAction from {}' .format(event.type.upper(), event.source))
+
 
     """Fired when any client receives a message from a channel"""
     def on_pubmsg(self, connection, event):
@@ -191,7 +214,7 @@ class IRCSide(threading.Thread):
                 if res != 0:
                     result = self.cursor.fetchall()
                     print("Channels: {}".format(result))
-                    channelID_res = int(result[0][0])
+                    channelID_res = int(result[i][0])
 
                     res = self.cursor.execute("""INSERT INTO `IRC_channel_messages` (IRC_channels_channelID,
                     fromHostmask,
@@ -220,10 +243,8 @@ class IRCSide(threading.Thread):
     def on_part(self, connection, event):
         print('[{}] Part {}' .format(event.type.upper(), event.source))
 
-
     def on_quit(self, connection, event):
         print('[{}] Quit {}' .format(event.type.upper(), event.source))
-
 
     def on_nick(self, connection, event):
         print('[{}] NickChange {}' .format(event.type.upper(), event.source))
@@ -351,7 +372,7 @@ numeric = {
     "394": "endofusers",
     "395": "nousers",
     "401": "nosuchnick",
-    "402": "nosuchserver",
+    "402": "nosuchserver", #nosuchnick, nosuchcannel, unknowncommand, nonicknamegiven, nicknameinuse, nickcollison, notonchannel, useronchannel
     "403": "nosuchchannel",
     "404": "cannotsendtochan",
     "405": "toomanychannels",

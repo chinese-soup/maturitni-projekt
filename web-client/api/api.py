@@ -393,6 +393,7 @@ def add_channel():
             response = {"status": "ok", "reason": "channel_was_not_added", "message": "Channel cannot be added at this time."} # error?
 
         return jsonify(response)
+        db.close()
     else:
         return error("error", "not_loggedin", "You are not logged in.")
 

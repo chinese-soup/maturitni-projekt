@@ -5,8 +5,12 @@ $.ajaxSetup({
     }
 });
 
+
+// Global variables
 var hostname = location.hostname; // maybe temporary(?): get the current hostname so we know where to make api calls (same host, different port)
 var already_loaded_backlog = [];
+var global_settings = {"hilight_words": null, "username": null, "realname": null, "nickname": null, "show_joinpartquit_messages": null, "show_seconds": null, "show_video_previews": null, "show_image_previews": null};
+
 
 /* maybe move to util.js? */
 /* overrides the default string function in javascript to include formatting support */
@@ -24,14 +28,57 @@ function onChatLoad()
 {
     console.log("onChatLoad();");
     checkIfUserIsLoggedInOnStart();
+    loadSettingsIntoVariable();
     //setTimeout(ping, 1000);
 }
 
-/*function ping()
+function loadSettingsIntoVariable()
+{
+    console.log("loadSettingsIntoInputs();")
+
+    var posting = $.post("http://{0}:5000/get_global_settings".format(hostname),
+    {
+    }, dataType="text"
+    );
+
+    posting.done(function(data)
+    {
+        if(data["reason"] == "listing_settings")
+        {
+            console.log(data["message"][0]);
+            settings = data["message"][0];
+            console.log(settings);
+
+
+            global_settings["hilight_words"] = settings[0];
+            global_settings["username"] = settings[1];
+            global_settings["realname"] = settings[2];
+            global_settings["nickname"] = settings[3];
+            global_settings["show_joinpartquit_messages"] = Boolean(settings[4]);
+            global_settings["show_seconds"] = Boolean(settings[5]);
+            global_settings["show_video_previews"] = Boolean(settings[6]);
+            global_settings["show_image_previews"] = Boolean(settings[7]);
+
+        }
+        else if(data["reason"] == "not_loggedin")
+        {
+            general_dialog("Access denied: You are not logged in.", data["message"], "error", -1);
+        }
+    });
+
+    posting.fail(function()
+    {
+        //general_dialog("API endpoint error.", "An error occurred while trying to retrieve your account's global settings.", "error", 2);
+        toggle_center_column("messages"); // show the messages window instead of global settings, because we can't load user's settings
+        log("Could not load global settings.")
+    })
+}
+
+function ping()
 {
     log(isUserLoggedIn);
     setTimeout(ping, 1000);
-}*/
+}
 
 /* never used (yet?) */
 $body = $("body");
@@ -83,6 +130,14 @@ function isUserLoggedIn()
 
 }
 
+function addJoinPartQuitToChannel(messageID, timestamp, messageType, sender, message, channelID)
+{
+    if(show_joinpartquit_messages == true)
+    {
+        log("hello", messageID, timestamp, messageType, sender, message, channelID);
+    }
+}
+
 
 function addMessageToChannel(messageID, timestamp, sender, senderColor, message, channelID)
 {
@@ -113,9 +168,18 @@ function linkifyMessage(messageBody)
 
     return messageBody.replace(regexp, function(url)
     {
-        return("<span class=\"message-image-preview\"><a href=\"#\" onclick=\"preview_images('{0}');\"><img alt=\"Image preview\" title=\"Image\" src=\"{0}\" target=\"_blank\"></a></span>".format(url));
+        if(global_settings["show_image_previews"])
+        {
+            return("<span class=\"message-image-preview\"><a href=\"#\" onclick=\"preview_images('{0}');\"><img alt=\"Image preview\" title=\"Image\" src=\"{0}\" target=\"_blank\"></a></span>".format(url));
+        }
+        else if(global_settings[""])
+        {
+
+        }
     });
 }
+
+
 
 function switchCurrentChannelEventStyle(event)
 {
@@ -215,15 +279,29 @@ function getBacklogForChannel(channelID, limit)
                	for (var i=0; i < messages.length; i++)
                 {
                     log(i);
-
-                    addMessageToChannel(
-                        messages[i]["messageID"],
-                        convertDBTimeToLocalTime(messages[i]["timeReceived"]),
-                        getNicknameFromHostmask(messages[i]["fromHostmask"]),
-                        "ok",
-                        linkifyMessage(messages[i]["messageBody"]),
-                        messages[i]["IRC_channels_channelID"]
-                    );
+                    if(messages[i]["commandType"] == "PRIVMSG" || messages[i]["commandType"] == "PUBMSG")
+                    {
+                        addMessageToChannel(
+                            messages[i]["messageID"],
+                            convertDBTimeToLocalTime(messages[i]["timeReceived"]),
+                            getNicknameFromHostmask(messages[i]["fromHostmask"]),
+                            "ok",
+                            linkifyMessage(messages[i]["messageBody"]),
+                            messages[i]["IRC_channels_channelID"]
+                        );
+                    }
+                    else if(messages[i]["commandType"] == "JOIN" || messages[i]["commandType"] == "QUIT" || messages[i]["commandType"] == "JOIN")
+                    {
+                        // messageID, timestamp, messageType, sender, message, channelID)
+                        addJoinPartQuitToChannel(
+                            messages[i]["messageID"],
+                            convertDBTimeToLocalTime(messages[i]["timeReceived"]),
+                            messages[i]["commandType"],
+                            messages[i]["fromHostmask"],
+                            messages[i]["messageBody"],
+                            messages[i]["IRC_channels_channelID"]
+                        );
+                    }
                 }
 
                 if($.inArray(channelID, already_loaded_backlog) == -1)
@@ -768,7 +846,7 @@ function loadSettingsIntoInputs()
     {
         general_dialog("API endpoint error.", "An error occurred while trying to retrieve your account's global settings.", "error", 2);
         toggle_center_column("messages"); // show the messages window instead of global settings, because we can't load user's settings
-        console.log("Failed to load servers.");
+        console.log("Failed to global settings.");
         log("An error occurred while trying to contact the API server. Try reloading the page.", "error");
     })
 }
@@ -800,7 +878,7 @@ function save_global_settings()
             if(data["reason"] == "global_settings_saved")
             {
                 toggle_center_column("messages");
-
+                loadSettingsIntoVariable();
             }
             else if(data["reason"] == "global_settings_notupdated")
             {
