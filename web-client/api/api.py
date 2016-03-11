@@ -81,7 +81,7 @@ aka if he's not trying to access data of a user with a different ID
 def get_userID_if_loggedin(request):
     if "sessionid" in request.cookies:
         session_id_cookie = request.cookies.get("sessionid")
-        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
         print("session_id_cookie = ", session_id_cookie)
         cursor = db.cursor()
         result_code = cursor.execute("""SELECT * FROM `User_sessions` WHERE `session_id` = %s""", (session_id_cookie,))
@@ -101,7 +101,7 @@ def get_userID_if_loggedin(request):
 
 
 def check_if_serverID_belongs_to_userID(userID, serverID):
-    db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+    db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
 
     cursor = db.cursor()
     result_code = cursor.execute("""SELECT * FROM `IRC_servers` WHERE `serverID` = %s AND `Registred_users_userID` = %s""", (serverID, userID,))
@@ -139,7 +139,7 @@ def hello_world():
 @app.route("/logout", methods=["POST"])
 def logout():
     if "sessionid" in request.cookies:
-        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
         cursor = db.cursor()
         cookies_sessionid = request.cookies.get("sessionid")
         cursor = db.cursor()
@@ -183,7 +183,7 @@ def upon_login():
     userID = get_userID_if_loggedin(request)
     print("UserID = ", userID)
     if userID is not False:
-        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
         print("Hello boys")
         cursor = db.cursor()
         cursor.execute("""SELECT (email) FROM `Registered_users` WHERE `userID` = %s""", (userID,))
@@ -212,7 +212,7 @@ def login():
     _password = request.form.get("password")
     _hashed_password = sha512_crypt.encrypt(_password, salt="CodedSaltIsBad")
 
-    db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+    db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
 
     cursor = db.cursor()
     result_code = cursor.execute("""SELECT * FROM `Registered_users` WHERE `email` = %s AND `password` = %s""", (_email, _hashed_password))
@@ -272,7 +272,7 @@ def login():
 # routa volaná při registraci na index.html
 @app.route("/register", methods=["POST"])
 def register():
-    db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+    db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
     _email = None
     _password = None
     try:
@@ -315,7 +315,7 @@ def get_server_list():
     print("UserID = ", userID)
 
     if userID is not False:
-        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
         cursor = db.cursor()
         res = cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s;""", (userID,))
         if res != 0:
@@ -380,7 +380,7 @@ def add_channel():
     serverID = request.form.get("serverID") or ""
 
     if userID is not False and channelName is not None:
-        db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+        db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
         cursor = db.cursor()
 
         # přidáme server
@@ -404,7 +404,7 @@ def get_global_settings():
     userID = get_userID_if_loggedin(request)
     print("UserID = ", userID)
     if userID is not False:
-        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
         cursor = db.cursor()
         res = cursor.execute("""SELECT * FROM `User_settings` WHERE `Registred_users_userID` = %s;""", (userID,))
         if res != 0:
@@ -460,7 +460,7 @@ def set_global_settings():
 
         print("SETTINGS", settings_cols_names, "\n", settings_cols_values)
 
-        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
         cursor = db.cursor()
         res = cursor.execute("""INSERT INTO `User_settings` (highlight_words,
                                 whois_username,
@@ -520,7 +520,7 @@ def get_channel_list():
     print("UserID = ", userID)
 
     if userID is not False:
-        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
         cursor = db.cursor()
         res = cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s;""", (userID,))
         if res != 0:
@@ -562,7 +562,7 @@ def get_server_settings():
     print("UserID = ", userID)
 
     if userID is not False:
-        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
         cursor = db.cursor()
         res = cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s AND `serverID` = %s;""", (userID, serverID))
         #res = cursor.execute("""SHOW COLUMNS FROM `IRC_servers`;""")
@@ -588,7 +588,7 @@ def edit_server_settings():
     print("UserID = ", userID)
 
     if userID is not False:
-        db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+        db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
         cursor = db.cursor()
 
         # zjitíme, zda server, který se uživatel snaží editovat je opravdu jeho
@@ -619,7 +619,7 @@ def add_new_server_settings():
     userID = get_userID_if_loggedin(request)
 
     if userID is not False:
-        db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+        db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
         cursor = db.cursor()
         klice = {"serverName":"", "nickname":"", "serverPassword":"", "serverIP":"", "serverPort":"", "useSSL":""}
         for a in klice:
@@ -651,7 +651,7 @@ def get_messages():
     messageLimit = int(request.form.get("limit")) or 20 # if no limit is specified
 
     if userID is not False:
-        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
         cursor = db.cursor()
 
         res = cursor.execute("""SELECT * FROM `IRC_channels` WHERE `channelID` = %s;""", (channelID,)) #query to find the serverID so we can check if the user owns this serverID and is not trying to read something that is not his

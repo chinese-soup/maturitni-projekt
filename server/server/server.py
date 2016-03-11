@@ -35,7 +35,8 @@ class IRCSide(threading.Thread):
         self.userID = _userid
         self.cau_ne = "cau"
 
-        self.db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+
+        self.db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
         self.cursor = self.db.cursor()
         self.func_to_be_threaded()
         self.client.process_forever()
@@ -54,7 +55,7 @@ class IRCSide(threading.Thread):
 
     """Loads user's servers from the database"""
     def load_servers_from_db(self):
-        db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30)
+        db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
         cursor = db.cursor()
         userID = 1
 

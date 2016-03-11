@@ -129,6 +129,23 @@ function isUserLoggedIn()
 
 }
 
+
+function addActionMessage(messageID, timestamp, sender, senderColor, message, channelID)
+{
+    var html =
+    '<div class="log_message log_message_even">' +
+    '    <span class="timestamp">{0}</span>'.format(timestamp) +
+    '    <span class="message-body"><span class="message-sender message-sender-{0}">* {1}</span> {2}</span>'.format(senderColor, sender, message) +
+    '</div>';
+
+
+    var element = $("#channel_window_{0}".format(channelID));
+    element.append(html);
+
+    var element2 = $(".center_messages_container");
+    element.scrollTop(element2.scrollHeight); // scrollneme dolů, protože máme nové
+}
+
 function addJoinPartQuitToChannel(messageID, timestamp, messageType, sender, message, channelID)
 {
     if(global_settings["show_joinpartquit_messages"] == true) // only write these messages if the user has enabled it in his settings
@@ -216,10 +233,17 @@ function switchCurrentChannelEventStyle(event)
 
     log("Switching channel window to {0} ({1})".format(toChannelID, toChannelName));
 
+    // hide all message window divs
     $(".message_window").hide();
-    $("#channel_window_{0}".format(toChannelID)).show();
-    $(".channel_item".format(toChannelID)).toggleClass("channel_item_focused", false); // remove focused css for any previously focused window in the channel listing
-    $("#channel_{0}".format(toChannelID)).toggleClass("channel_item_focused", true); // add focused css for the focused window in the channel listing
+
+    // show the requested message window div
+    $("#channel_window_{0}".format(toChannelID)).fadeIn(200);
+
+    // remove focused css for any previously focused window in the channel listing
+    $(".channel_item".format(toChannelID)).toggleClass("channel_item_focused", false);
+
+    // add focused css for the focused window in the channel listing
+    $("#channel_{0}".format(toChannelID)).toggleClass("channel_item_focused", true);
 
     // change header room name TODO: Fix
     $(".header_room_name").html("{0} <small>({1} @ {2})</small>".format(toChannelName, toChannelID, "FIXME"))
@@ -252,7 +276,7 @@ function convertDBTimeToLocalTime(dbUTCtime)
         var local_date = date.toLocaleTimeString();
         if(global_settings["show_seconds"] == false)
         {
-            local_date = local_date.replace(/[0-9]{2}$/g, ""); // remove seconds from the localtime as the user does not wish to see them, ugly hack, but whatever, i need to finish this soon
+            local_date = local_date.replace(/\:[0-9]{2}$/g, ""); // remove seconds from the localtime as the user does not wish to see them, ugly hack, but whatever, i need to finish this soon
         }
     }
     else
@@ -333,6 +357,17 @@ function getBacklogForChannel(channelID, limit)
                             messages[i]["commandType"],
                             messages[i]["fromHostmask"],
                             messages[i]["messageBody"],
+                            messages[i]["IRC_channels_channelID"]
+                        );
+                    }
+                    else if(messages[i]["commandType"] == "ACTION")
+                    {
+                         addActionMessage(
+                            messages[i]["messageID"],
+                            convertDBTimeToLocalTime(messages[i]["timeReceived"]),
+                            getNicknameFromHostmask(messages[i]["fromHostmask"]),
+                            "ok",
+                            linkifyMessage(messages[i]["messageBody"]),
                             messages[i]["IRC_channels_channelID"]
                         );
                     }
@@ -455,7 +490,7 @@ function generateServerHTML(serverID)
                 '<li><a class="edit_server_link">Edit</a></li>' +
             '</ul>' +
         '</div>' +
-        '<ul class="channels_ul"></ul>' +
+        '<ul class="channels_ul" style="width: 2px; margin: 2px; padding: 2px;"></ul>' +
     '</li>';
     return(html);
 }
@@ -515,7 +550,8 @@ function join_channel(event)
         {
            if(data["reason"] == "channel_added_sucessfully")
            {
-                general_dialog("Server settings", data["message"], "ok", 2);
+                general_dialog("Channel added", data["message"], "ok", 2);
+                log(data["message"]);
                 /* TODO: call join from here */
                 /* TODO: call join from here */
                 toggle_center_column("messages");
@@ -523,7 +559,8 @@ function join_channel(event)
            }
            else if(data["reason"] == "channel_was_not_added")
            {
-                general_dialog("Channel added", data["message"], "ok", 2);
+                general_dialog("Channel not added", data["message"], "ok", 2);
+                log(data["message"]);
                 toggle_center_column("messages");
            }
         }
@@ -628,9 +665,6 @@ function loadServers()
                     switchCurrentChannelEventStyle)
                 }
             }
-            $(".dropdown_server_wheel").css("display", "flex");
-
-            $(".dropdown_server_wheel").css("width", "10px");
         }
         else if(data["reason"] == "no_servers_to_list")
         {

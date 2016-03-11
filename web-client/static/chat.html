@@ -265,16 +265,18 @@
             </div>
             <div class="center_content_item center_join_channel_container">
                 <form role="form" name="channel-join" id="channel-join-form" action="#" method="post">
-                    <div class="form-group">
+                    <div class="form-group col-sm-6">
                         <label for="channel_to_join_input_channel">Channel name:</label>
                         <input type="text" class="form-control" id="channel_to_join_input_channel" placeholder="e.g. #news">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group col-sm-6">
                         <label for="channel_to_join_input_password">Channel password (only if required, leave empty for none):</label>
                         <input type="password" class="form-control" id="channel_to_join_input_password">
                     </div>
-                    <button id="channel_to_join_submit_button" type="button" class="btn btn-primary">Add & join</button>
-                    <button id="close_join_channel_button" type="button" class="btn btn-primary" onclick="toggle_center_column('messages');">Cancel</button>
+                    <div class="form-group col-sm-12">
+                        <button id="channel_to_join_submit_button" type="button" class="btn btn-primary">Add & join</button>
+                        <button id="close_join_channel_button" type="button" class="btn btn-primary" onclick="toggle_center_column('messages');">Cancel</button>
+                    </div>
                 </form>
             </div>
         </div>
