@@ -196,11 +196,11 @@ function linkifyMessage(messageBody)
     {
         if(global_settings["show_image_previews"])
         {
-            return("<span class=\"message-image-preview\"><a href=\"#\" onclick=\"preview_images('{0}');\"><img alt=\"Image preview\" title=\"Image\" src=\"{0}\" target=\"_blank\"></a></span>".format(url));
+            return("<a href=\"{0}\">{0}</a><span class=\"message-image-preview\"><a href=\"#\" onclick=\"preview_images('{0}');\"><img alt=\"Image preview\" title=\"Image\" src=\"{0}\" target=\"_blank\"></a></span>".format(url));
         }
-        else if(global_settings[""])
+        else if(global_settings["show_image_previews"])
         {
-
+            return("<a href=\"{0}\">{0}</a>".format(url));
         }
     });
 }

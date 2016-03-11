@@ -106,7 +106,7 @@ class IRCSide(threading.Thread):
         self.client.add_global_handler("part", self.on_pubmsg)
         self.client.add_global_handler("quit", self.on_pubmsg)
         self.client.add_global_handler("nick", self.on_nick)
-        self.client.add_global_handler("action", self.on_action)
+        self.client.add_global_handler("action", self.on_pubmsg)
 
     def on_your_host(self, connection, event):
         print("test")
