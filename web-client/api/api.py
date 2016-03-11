@@ -385,7 +385,7 @@ def add_channel():
 
         # přidáme server
         res = cursor.execute("""INSERT INTO `IRC_channels` (channelName, channelPassword, IRC_servers_serverID, isJoined, lastOpened)
-        values(%s, %s, %s, %s, CURRENT_TIMESTAMP);""", (channelName, channelPassword, serverID, False))
+        values(%s, %s, %s, %s, CURRENT_TIMESTAMP) ON DUPLICATE KEY UPDATE `channelName` = `channelName`;""", (channelName, channelPassword, serverID, False))
         db.commit()
         if res == 1:
             response = {"status": "ok", "reason": "channel_added_sucessfully", "message": "Channel added successfully."}

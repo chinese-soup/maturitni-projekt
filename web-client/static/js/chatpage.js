@@ -134,22 +134,23 @@ function addJoinPartQuitToChannel(messageID, timestamp, messageType, sender, mes
     if(global_settings["show_joinpartquit_messages"] == true) // only write these messages if the user has enabled it in his settings
     {
         var verb = "";
+        console.log("CUS NE", messageType);
         switch(messageType)
         {
             case "PART":
                 verb = "left";
                 break;
-            case "QUIT":
-                verb = "quit";
-                break;
             case "JOIN":
                 verb = "joined";
+                break;
+            case "QUIT":
+                verb = "quit";
                 break;
         }
         var hostmask = sender;
         var nickname = getNicknameFromHostmask(hostmask);
         if(message == "[]")
-            message = "<no reason>";
+            message = "&lt;no reason&gt;";
 
         var html =
         '<div class="log_message log_message_odd">' +
@@ -194,14 +195,15 @@ function linkifyMessage(messageBody)
 
     return messageBody.replace(regexp, function(url)
     {
-        if(global_settings["show_image_previews"])
+        if(global_settings["show_image_previews"] == true)
         {
             return("<a href=\"{0}\">{0}</a><span class=\"message-image-preview\"><a href=\"#\" onclick=\"preview_images('{0}');\"><img alt=\"Image preview\" title=\"Image\" src=\"{0}\" target=\"_blank\"></a></span>".format(url));
         }
-        else if(global_settings["show_image_previews"])
+        else if(global_settings["show_image_previews"] == false)
         {
             return("<a href=\"{0}\">{0}</a>".format(url));
         }
+
     });
 }
 
@@ -211,19 +213,21 @@ function switchCurrentChannelEventStyle(event)
 {
     toChannelID = event.data.channelID;
     toChannelName = event.data.channelName;
-    console.log("Orange juice: ");
-    console.log(toChannelID);
 
     log("Switching channel window to {0} ({1})".format(toChannelID, toChannelName));
 
     $(".message_window").hide();
     $("#channel_window_{0}".format(toChannelID)).show();
-    $(".channel_item".format(toChannelID)).toggleClass("channel_item_focused", false); // defocus any previously focused window
-    $("#channel_{0}".format(toChannelID)).toggleClass("channel_item_focused", true);
+    $(".channel_item".format(toChannelID)).toggleClass("channel_item_focused", false); // remove focused css for any previously focused window in the channel listing
+    $("#channel_{0}".format(toChannelID)).toggleClass("channel_item_focused", true); // add focused css for the focused window in the channel listing
+
+    // change header room name TODO: Fix
     $(".header_room_name").html("{0} <small>({1} @ {2})</small>".format(toChannelName, toChannelID, "FIXME"))
 
+    // change placeholder of the input textbox
+    $("#input-group-msgline .dark_input").prop("placeholder", "Chat in {0}".format(toChannelName));
 
-    /* load backlog if it has not been loaded yet */
+    // load backlog if it has not been loaded yet
     if($.inArray(toChannelID, already_loaded_backlog) == -1)
     {
         console.log("Getting backlog");
@@ -246,6 +250,10 @@ function convertDBTimeToLocalTime(dbUTCtime)
     if(date.toLocaleDateString() ==  date_now.toLocaleDateString()) // zkontrolujeme, jestli daný čas je dnes, pokud ne, vrátíme i datum
     {
         var local_date = date.toLocaleTimeString();
+        if(global_settings["show_seconds"] == false)
+        {
+            local_date = local_date.replace(/[0-9]{2}$/g, ""); // remove seconds from the localtime as the user does not wish to see them, ugly hack, but whatever, i need to finish this soon
+        }
     }
     else
     {
@@ -316,7 +324,7 @@ function getBacklogForChannel(channelID, limit)
                             messages[i]["IRC_channels_channelID"]
                         );
                     }
-                    else if(messages[i]["commandType"] == "JOIN" || messages[i]["commandType"] == "QUIT" || messages[i]["commandType"] == "JOIN")
+                    else if(messages[i]["commandType"] == "JOIN" || messages[i]["commandType"] == "QUIT" || messages[i]["commandType"] == "PART")
                     {
                         // messageID, timestamp, messageType, sender, message, channelID)
                         addJoinPartQuitToChannel(
@@ -580,8 +588,6 @@ function loadServers()
                 $(".channel_list").append(generateServerHTML(serverID));  // generate a dummy <li> list and append it to the server list
                 $(".left_channels_flex_container .loading-ajax").hide(); // hide the loading servers icon
                 $(".channel_list #server_{0} .networkname".format(serverID)).html(serverName); // set the network name of the server
-
-                log(serverID, "ok");
 
                 //$(".channel_list #server_{0} .dropdown .dropdown-menu .disconnect_link".format(serverID)).on("click", {serverName: serverName, serverID: serverID,  });
                 //$(".channel_list #server_{0} .dropdown .dropdown-menu .remove_server_link".format(serverID)).on("click", remove_server_dialog(serverName, serverID));
