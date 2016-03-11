@@ -11,7 +11,6 @@ var hostname = location.hostname; // maybe temporary(?): get the current hostnam
 var already_loaded_backlog = [];
 var global_settings = {"hilight_words": null, "username": null, "realname": null, "nickname": null, "show_joinpartquit_messages": null, "show_seconds": null, "show_video_previews": null, "show_image_previews": null};
 
-
 /* maybe move to util.js? */
 /* overrides the default string function in javascript to include formatting support */
 String.prototype.format = function() {
@@ -132,8 +131,35 @@ function isUserLoggedIn()
 
 function addJoinPartQuitToChannel(messageID, timestamp, messageType, sender, message, channelID)
 {
-    if(show_joinpartquit_messages == true)
+    if(global_settings["show_joinpartquit_messages"] == true) // only write these messages if the user has enabled it in his settings
     {
+        var verb = "";
+        switch(messageType)
+        {
+            case "PART":
+                verb = "left";
+                break;
+            case "QUIT":
+                verb = "quit";
+                break;
+            case "JOIN":
+                verb = "joined";
+                break;
+        }
+        var hostmask = sender;
+        var nickname = getNicknameFromHostmask(hostmask);
+        if(message == "[]")
+            message = "<no reason>";
+
+        var html =
+        '<div class="log_message log_message_odd">' +
+        '    <span class="timestamp">{0}</span>'.format(timestamp) +
+        '    <span class="message-body"><span class="message-sender message-sender-{0}">{1}</span> <small>[{2}]</small> has {3} ({4})</span>'.format(2, nickname, hostmask, verb, message) +
+        '</div>';
+
+        var element = $("#channel_window_{0}".format(channelID));
+        element.append(html);
+
         log("hello", messageID, timestamp, messageType, sender, message, channelID);
     }
 }
@@ -236,7 +262,7 @@ function getNicknameFromHostmask(hostmask)
     var asdf = hostmask.match(regexp)[1];
     if(asdf == null)
     {
-        return("null");
+        return(hostmask);
     }
     else
     {

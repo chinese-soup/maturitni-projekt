@@ -102,9 +102,9 @@ class IRCSide(threading.Thread):
         self.client.add_global_handler("nicknameinuse", self.on_nicknameinuse)
         self.client.add_global_handler("pubmsg", self.on_pubmsg)
         self.client.add_global_handler("privmsg", self.on_privmsg)
-        """self.client.add_global_handler("join", self.on_pubmsg)
+        self.client.add_global_handler("join", self.on_pubmsg)
         self.client.add_global_handler("part", self.on_pubmsg)
-        self.client.add_global_handler("quit", self.on_pubmsg)"""
+        self.client.add_global_handler("quit", self.on_pubmsg)
         self.client.add_global_handler("nick", self.on_nick)
         self.client.add_global_handler("action", self.on_action)
 
@@ -150,7 +150,7 @@ class IRCSide(threading.Thread):
             result = self.cursor.fetchall()
             print(result)
 
-            serverID_res = int(result[i][0])
+            serverID_res = int(result[0][0])
 
             res = self.cursor.execute("""UPDATE `IRC_servers` SET `isConnected` = %s WHERE `serverID` = %s;""", (1, serverID_res))
 
@@ -195,14 +195,15 @@ class IRCSide(threading.Thread):
 
     """Fired when any client receives a message from a channel"""
     def on_pubmsg(self, connection, event):
-        print("IRC THREAD: {0}".format(self.cau_ne))
         print("CONNECTION = {}\n\n".format(connection.__dict__))
 
         print('[{}] Pubmsg {} {}\n' .format(event.type.upper(), event.source, str(event.__dict__)))
-        message = event.arguments[0]
+        if(len(event.arguments) != 0):
+            message = event.arguments[0]
+        else:
+            message = str(event.arguments)
 
         res = self.cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s AND `serverID` = %s;""", (self.userID, connection.serverID))
-
         if res != 0:
             result = self.cursor.fetchall()
             print(result)
@@ -214,7 +215,7 @@ class IRCSide(threading.Thread):
                 if res != 0:
                     result = self.cursor.fetchall()
                     print("Channels: {}".format(result))
-                    channelID_res = int(result[i][0])
+                    channelID_res = int(result[0][0])
 
                     res = self.cursor.execute("""INSERT INTO `IRC_channel_messages` (IRC_channels_channelID,
                     fromHostmask,
