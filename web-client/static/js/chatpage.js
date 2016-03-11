@@ -209,19 +209,21 @@ function switchCurrentChannel(toChannelID)
 function linkifyMessage(messageBody)
 {
     var regexp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-
-    return messageBody.replace(regexp, function(url)
+    var image_url = "";
+    messageBody = messageBody.replace(regexp, function(url)
     {
         if(global_settings["show_image_previews"] == true)
         {
-            return("<a href=\"{0}\">{0}</a><span class=\"message-image-preview\"><a href=\"#\" onclick=\"preview_images('{0}');\"><img alt=\"Image preview\" title=\"Image\" src=\"{0}\" target=\"_blank\"></a></span>".format(url));
+            image_url = url;
         }
-        else if(global_settings["show_image_previews"] == false)
-        {
-            return("<a href=\"{0}\">{0}</a>".format(url));
-        }
+        return("<a href=\"{0}\">{0}</a>".format(url));
 
     });
+    if(image_url != "")
+    {
+        messageBody = messageBody + "<span class=\"message-image-preview\"><a href=\"#\" onclick=\"preview_images('{0}');\"><img alt=\"Image preview\" title=\"Image\" src=\"{0}\" target=\"_blank\"></a></span>".format(image_url);
+    }
+    return(messageBody);
 }
 
 
