@@ -216,7 +216,7 @@ function linkifyMessage(messageBody)
         {
             image_url = url;
         }
-        return("<a href=\"{0}\">{0yy}</a>".format(url));
+        return("<a href=\"{0}\">{0}</a>".format(url));
 
     });
     if(image_url != "")
@@ -488,8 +488,8 @@ function generateServerHTML(serverID)
                 '<li><a class="join_another_channel_link" href="#">Join another channel&hellip;</a></li>' + /* join_channel_dialog(\'Freenode\',\'ID\' ); */
                 '<li><a class="disconnect_link">Disconnect</a></li>' + /* disconnect_dialog(\'Freenode\', \'ID\');*/
                 '<li role="separator" class="divider"></li>' +
-                '<li><a class="remove_server_link">Remove this server</a></li>' +
-                '<li><a class="edit_server_link">Edit</a></li>' +
+                '<li><a class="remove_server_link"><i class="icon-remove"></i> Remove this server</a></li>' +
+                '<li><a class="edit_server_link"><i class="icon-edit"></i> Edit</a></li>' +
             '</ul>' +
         '</div>' +
         '<ul class="channels_ul" style="width: 2px; margin: 2px; padding: 2px;"></ul>' +

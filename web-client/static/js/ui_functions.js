@@ -6,7 +6,7 @@ function toggle_center_column(what_to_show)
 	{
 		$("#center_content_message").hide();
 		$("#center_content_edit_server").hide();
-		$("#center_content_global_settings").show();
+		$("#center_content_global_settings").fadeIn(300);
 		$("#center_content_join_channel").hide();
 		console.log("what_to_show = global_setting done");
 		loadSettingsIntoInputs();
@@ -15,7 +15,7 @@ function toggle_center_column(what_to_show)
 	{
 		$("#center_content_message").hide();
 		$("#center_content_global_settings").hide();
-		$("#center_content_edit_server").show();
+		$("#center_content_edit_server").fadeIn(300);
 		$("#center_content_join_channel").hide();
 		console.log("what_to_show = edit_server done");
 	}
@@ -24,12 +24,12 @@ function toggle_center_column(what_to_show)
 	    $("#center_content_message").hide();
 		$("#center_content_global_settings").hide();
 		$("#center_content_edit_server").hide();
-        $("#center_content_join_channel").show();
+        $("#center_content_join_channel").fadeIn(300);
         console.log("what_to_show = join_channel done");
 	}
 	else
 	{
-		$("#center_content_message").show();
+		$("#center_content_message").fadeIn(300);
 		$("#center_content_edit_server").hide();
 		$("#center_content_global_settings").hide();
 		$("#center_content_join_channel").hide();
