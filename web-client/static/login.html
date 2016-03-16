@@ -129,28 +129,33 @@
 					</div>
 
 					<div class="col-sm-6">
-						<h2>Login:</h2>
-						<form class="form" role="form" name="login-form" id="login-form" action="#attempt" method="post">
-                            <div class="form-group">
-                                <label class="label sr-only" for="email_login">Email address:</label>
-                                <input type="email" class="form-control" id="email_login" name="email_login" placeholder="user@example.com">
-                            </div>
-                            <div class="form-group">
-                                <label class="label sr-only" for="password_login">Password:</label>
-                                <input type="password" class="form-control" id="password_login" name="password_login" placeholder="●●●●●●●●">
-                            </div>
-                            <!--<div class="checkbox">
-                                <label class=" label-inverse"><input type="checkbox">Remember me on this computer</label>
-                            </div>-->
-                            <button type="submit" class="btn btn-primary btn-block"><span class="glyphicon glyphicon-log-in"></span> Login</button>
-                            <p>
-                                Forgot your password? <a href="#" data-toggle="modal" data-target="#modalResetPasswd" style="font-weight: bold;">Reset it!</a>
-                            </p>
-							<p>
-							Don't have an account yet? <a href="index.html">Go check out the homepage to sign up!</a>
-							</p>
-                        </form>
-
+						<span id="content-form">
+							<h2>Login:</h2>
+							<form class="form" role="form" name="login-form" id="login-form" action="#attempt" method="post">
+								<div class="form-group">
+									<label class="label sr-only" for="email_login">Email address:</label>
+									<input type="email" class="form-control" id="email_login" name="email_login" placeholder="user@example.com">
+								</div>
+								<div class="form-group">
+									<label class="label sr-only" for="password_login">Password:</label>
+									<input type="password" class="form-control" id="password_login" name="password_login" placeholder="●●●●●●●●">
+								</div>
+								<!--<div class="checkbox">
+									<label class=" label-inverse"><input type="checkbox">Remember me on this computer</label>
+								</div>-->
+								<button type="submit" class="btn btn-primary btn-block"><span class="glyphicon glyphicon-log-in"></span> Login</button>
+								<p>
+									Forgot your password? <a href="#" data-toggle="modal" data-target="#modalResetPasswd" style="font-weight: bold;">Reset it!</a>
+								</p>
+								<p>
+								Don't have an account yet? <a href="index.html">Go check out the homepage to sign up!</a>
+								</p>
+							</form>
+						</span>
+						<span id="content-user-already-logged-in-button" style="display: none;">
+							<h2>You are already logged in on this computer.</h2>
+							<button type="submit" class="btn btn-primary btn-block" href="chat.html"><span class="glyphicon glyphicon-log-in"></span> Continue</button>
+						</span>
 					</div>
 				</div>
 

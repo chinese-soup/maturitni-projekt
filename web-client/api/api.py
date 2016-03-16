@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # coding=utf-8
-# neumim programovat
 # TODO: http://flask.pocoo.org/docs/0.10/patterns/packages/
 # TODO: http://flask.pocoo.org/docs/0.10/patterns/packages/
 # TODO: http://flask.pocoo.org/docs/0.10/patterns/packages/
@@ -101,6 +100,7 @@ def get_userID_if_loggedin(request):
 
 
 def check_if_serverID_belongs_to_userID(userID, serverID):
+    """Checks if a given serverID belongs to a given userID and returns True/False"""
     db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
 
     cursor = db.cursor()
@@ -118,16 +118,19 @@ def check_if_serverID_belongs_to_userID(userID, serverID):
     return False
 
 
+# after request, pro povoleni CORS requestů z javascriptu
 @app.after_request
 def after_request(response):
-  response.headers.add("Access-Control-Allow-Origin", "http://localhost")
-  response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization,Cookies")
-  response.headers.add("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE")
-  response.headers.add("Access-Control-Allow-Credentials", "true")
-  return response
+    """Adds CORS allowing headers to the response before sending it to the client."""
+    response.headers.add("Access-Control-Allow-Origin", "http://localhost")
+    response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization,Cookies")
+    response.headers.add("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE")
+    response.headers.add("Access-Control-Allow-Credentials", "true")
+    return response
 
 @app.route("/")
 def hello_world():
+    """Defaultní routa"""
     if "sessionid" in request.cookies:
         print("request.cookies", request.cookies)
         asdf = dict(status="ok", message=str(request.cookies["sessionid"]))
@@ -138,6 +141,7 @@ def hello_world():
 
 @app.route("/logout", methods=["POST"])
 def logout():
+    """Routa zařizující odhlášerní uživatele"""
     if "sessionid" in request.cookies:
         db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
         cursor = db.cursor()
@@ -180,6 +184,7 @@ def logout():
 # routa volaná při načtení chat.html pro ověření, zda je uživatel přihlášen
 @app.route("/upon_login", methods=["POST"])
 def upon_login():
+    """Routa volaná při načtení klientského chat.html, vrací email přihlášeného uživatele"""
     userID = get_userID_if_loggedin(request)
     print("UserID = ", userID)
     if userID is not False:
@@ -196,7 +201,7 @@ def upon_login():
         return jsonify(status="error", reason="not_loggedin", message="You are not logged in.")
 
 # routa volaná při načtení chat.html pro ověření, zda je uživatel přihlášen
-@app.route("/check_session", methods=["GET"])
+@app.route("/check_session", methods=["GET", "POST"])
 def check_session():
     userID = get_userID_if_loggedin(request)
     print("UserID = ", userID)
@@ -208,6 +213,7 @@ def check_session():
 # routa volaná při přihlášení na login.html
 @app.route("/login", methods=["POST"])
 def login():
+    """Routa volaná při přihlášení na login.html"""
     _email = request.form.get("email").lower() # WARNING: make lower() because USER@EXAMPLE.COM is the same as UsER@eXamPle.com !!!!!
     _password = request.form.get("password")
     _hashed_password = sha512_crypt.encrypt(_password, salt="CodedSaltIsBad")
@@ -308,7 +314,6 @@ def register():
 
 # routa volaná při načtení chat.html
 # routa volaná při přidání / odstranění serveru
-# split with get_channel_list?
 @app.route("/get_server_list", methods=["GET", "POST"])
 def get_server_list():
     userID = get_userID_if_loggedin(request)
@@ -372,6 +377,7 @@ def get_server_list():
     else:
         return error("error", "not_loggedin", "You are not logged in.")
 
+# routa volaná při přidávání kanálu do databáze uživatele
 @app.route("/add_channel", methods=["POST"])
 def add_channel():
     userID = get_userID_if_loggedin(request)

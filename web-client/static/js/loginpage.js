@@ -2,7 +2,10 @@
 function loginPageOnLoad()
 {
     var login_form = document.getElementById("login-form");
-    login_form.addEventListener("submit", login);
+    login_form.addEventListener("submit", login); // bind submit in the form to a function
+
+    checkUserAlreadyLoggedIn();
+
 }
 
 
@@ -28,13 +31,49 @@ window.onhashchange = function()
 $.ajaxSetup({
     crossDomain: true,
     xhrFields: {
-        withCredentials: true
+        withCredentials: true // very important, needed to be able to send POST data
     }
 });
 
+
+function checkUserAlreadyLoggedIn()
+{
+    var posting = $.post("http://" + hostname + ":5000/check_session",
+    {
+       email: $("#login-form input[id=email_login]").val(),
+       password: $("#login-form input[id=password_login]").val()
+    }, dataType="text"
+    );
+
+    posting.done(function(data)
+    {
+        console.log(data);
+        if(data["reason"] == "alive_loggedin")
+        {
+            $("#content-form").hide();
+            $("#content-user-already-logged-in-button").fadeIn(500);
+        }
+        else if(data["reason"] == "alive_not_loggedin")
+        {
+
+        }
+        disableLoginFormWhileAjax(false);
+    });
+
+    posting.fail(function()
+    {
+        disableLoginFormWhileAjax(false);
+    });
+
+}
+
+/*
+ * disable the form inputs when a logging in attempt is happening
+ */
+
 function disableLoginFormWhileAjax(toggle)
 {
-    if(Boolean(toggle)== true)
+    if(Boolean(toggle) == true)
     {
         $("#login-form input[id=email_login]").prop('disabled', true);
         $("#login-form input[id=password_login]").prop('disabled', true);

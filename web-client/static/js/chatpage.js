@@ -1,7 +1,7 @@
 $.ajaxSetup({
     crossDomain: true,
     xhrFields: {
-        withCredentials: true
+        withCredentials: true // very important, needed to be able to send POST data
     }
 });
 
@@ -216,7 +216,7 @@ function linkifyMessage(messageBody)
         {
             image_url = url;
         }
-        return("<a href=\"{0}\">{0}</a>".format(url));
+        return("<a href=\"{0}\">{0yy}</a>".format(url));
 
     });
     if(image_url != "")

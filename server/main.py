@@ -8,7 +8,7 @@ from server import server
 
 # TODO: parallel connections
 
-import threading # :)))))
+import threading
 
 
 if __name__ == "__main__":
