@@ -77,11 +77,13 @@ function disableLoginFormWhileAjax(toggle)
     {
         $("#login-form input[id=email_login]").prop('disabled', true);
         $("#login-form input[id=password_login]").prop('disabled', true);
+        $("#btn-submit-content").html("Logging in&hellip;");
     }
     else if(Boolean(toggle) == false)
     {
         $("#login-form input[id=email_login]").prop('disabled', false);
         $("#login-form input[id=password_login]").prop('disabled', false);
+        $("#btn-submit-content").html("Login");
     }
 }
 
@@ -120,11 +122,11 @@ function login(event)
         {
             if(data["reason"] == "badlogin")
             {
-                general_dialog("Bad login credentials", data["message"], "error");
+                general_dialog("Bad login credentials", data["message"], "error", 0);
             }
             else if(data["reason"] == "loginerror")
             {
-                general_dialog("General error", data["message"], "error");
+                general_dialog("General error", data["message"], "error", 0);
             }
 
         }

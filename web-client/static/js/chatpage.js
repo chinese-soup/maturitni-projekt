@@ -992,9 +992,9 @@ function logout()
         {
            if(data["reason"] == "loggedout")
            {
-                general_dialog("Logged out successfully.", data["message"], data["status"]);
+                //general_dialog("Logged out successfully.", data["message"], data["status"]);
                 log("Logged out successfully.", "error");
-                sendUserAway("login.html", 500);
+                sendUserAway("login.html", 100);
            }
         }
 

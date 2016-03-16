@@ -118,7 +118,7 @@
 			</div>
 		</nav>
 
-		<div class="jumbotron" style="height: 100% !important;">
+		<div class="jumbotron" style="height: 95% !important; overflow: auto;">
 			<div class="container first-header">
 				<div class="row">
 					<div class="col-sm-6 text-center">
@@ -143,7 +143,7 @@
 								<!--<div class="checkbox">
 									<label class=" label-inverse"><input type="checkbox">Remember me on this computer</label>
 								</div>-->
-								<button type="submit" class="btn btn-primary btn-block"><span class="glyphicon glyphicon-log-in"></span> Login</button>
+								<button type="submit" class="btn btn-primary btn-block"><span class="glyphicon glyphicon-log-in"></span> <span id="btn-submit-content">Login</span></button>
 								<p>
 									Forgot your password? <a href="#" data-toggle="modal" data-target="#modalResetPasswd" style="font-weight: bold;">Reset it!</a>
 								</p>
@@ -154,7 +154,7 @@
 						</span>
 						<span id="content-user-already-logged-in-button" style="display: none;">
 							<h2>You are already logged in on this computer.</h2>
-							<button type="submit" class="btn btn-primary btn-block" onclick="javascript:window.location.href='chat.html';"><span class="glyphicon glyphicon-log-in"></span> Continue</button>
+							<a class="btn btn-primary btn-block" href="chat.html"><span class="glyphicon glyphicon-log-in"></span> Continue</a>
 						</span>
 					</div>
 				</div>
