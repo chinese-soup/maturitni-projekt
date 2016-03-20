@@ -92,7 +92,7 @@ function getNewMessages()
 {
     for(var i=0; i < channel_ids.length; i++)
     {
-        channelID = channel_ids[i]; // TODO: REPLACE ME
+        var channelID = channel_ids[i]; // TODO: REPLACE ME
         if(channelID in last_message_id)
         {
             var posting = $.post("http://{0}:5000/get_messages".format(hostname),
@@ -120,9 +120,6 @@ function getNewMessages()
                 {
                    if(data["reason"] == "listing_new_messages")
                    {
-                        log(data["message"]);
-                        console.log(data["message"]);
-
                         var messages = data["message"];
 
                         for (var i=0; i < messages.length; i++)
@@ -163,22 +160,18 @@ function getNewMessages()
                                 );
                             }
                             last_message_id[messages[i]["IRC_channels_channelID"]] = messages[i]["messageID"];
+
+
                         }
 
-                        /*	content: "2";
-	backgorund-color: blue;
-	top: 0;
-	right: 0;
-	margin: 4px 15px 4px 4px;
-	padding-left: 3%;
-	padding-right: 3%;
-	padding-top: 2px;
-	position: absolute;
-	height: 80%;
-	width: auto;
-	background-color: #0E5381;
-	border-radius: 5px;
-	opacity: 1 !important;  */
+
+                        // if the currently focused window isn't the one we just got messages to add a notification meme
+                        /*if(currently_visible_message_window != channelID)
+                        {*/
+                            //channel_item_active_msg_count
+
+                        //}
+                        /*	  */
 
 
                    }
@@ -383,6 +376,9 @@ function switchCurrentChannelEventStyle(event)
 
     // save channelID to a variable
     currently_visible_message_window = toChannelID;
+
+    // hide NEW MESSAGES count span
+    $("#channel_{0} .channel_item_active_msg_count".format(toChannelID)).hide();
 
     // load backlog if it has not been loaded yet
     if($.inArray(toChannelID, already_loaded_backlog) == -1)
@@ -634,7 +630,7 @@ function generateServerHTML(serverID)
 
 function generateChannelHTML(channelID)
 {
-    var html =  '<li id="channel_{0}" class="left_channels_flex_item channel_item">'.format(channelID) +
+    var html =  '<li id="channel_{0}" class="left_channels_flex_item channel_item"><div class="channel_item_active_msg_count"></div>'.format(channelID) +
                 '   <a href="#" class="channelName">#channelName</a>' +
                 '</li>';
     return(html);
