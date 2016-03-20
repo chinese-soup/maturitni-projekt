@@ -15,6 +15,7 @@ var channel_messages = [];
 var channel_ids = [];
 var last_message_id = {};
 
+var currently_visible_message_window = -1;
 
 /* maybe move to util.js? */
 /* overrides the default string function in javascript to include formatting support */
@@ -163,6 +164,23 @@ function getNewMessages()
                             }
                             last_message_id[messages[i]["IRC_channels_channelID"]] = messages[i]["messageID"];
                         }
+
+                        /*	content: "2";
+	backgorund-color: blue;
+	top: 0;
+	right: 0;
+	margin: 4px 15px 4px 4px;
+	padding-left: 3%;
+	padding-right: 3%;
+	padding-top: 2px;
+	position: absolute;
+	height: 80%;
+	width: auto;
+	background-color: #0E5381;
+	border-radius: 5px;
+	opacity: 1 !important;  */
+
+
                    }
                 }
 
@@ -313,6 +331,7 @@ function switchCurrentChannel(toChannelID)
 {
     $(".message_window").hide();
     $("#channel_window_{0}".format(toChannelID)).show();
+    currently_visible_message_window = toChannelID;
 }
 
 function linkifyMessage(messageBody)
@@ -362,6 +381,9 @@ function switchCurrentChannelEventStyle(event)
     // change placeholder of the input textbox
     $("#input-group-msgline .dark_input").prop("placeholder", "Chat in {0}".format(toChannelName));
 
+    // save channelID to a variable
+    currently_visible_message_window = toChannelID;
+
     // load backlog if it has not been loaded yet
     if($.inArray(toChannelID, already_loaded_backlog) == -1)
     {
@@ -371,7 +393,6 @@ function switchCurrentChannelEventStyle(event)
     else
     {
         console.log("NOT getting backlog");
-
     }
 
 }
