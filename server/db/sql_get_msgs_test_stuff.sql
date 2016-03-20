@@ -14,12 +14,10 @@ select DATE_FORMAT(FROM_UNIXTIME('1458491199000'), '%e %b %Y');
                     ORDER BY `messageID` ASC;
 
 SELECT CONVERT_TZ(FROM_UNIXTIME(1277942400), @@session.time_zone,'UTC');                 
-                    
+
+
 (SELECT * FROM `IRC_channel_messages`
                     WHERE `IRC_channels_channelID` = 1
-					AND `timeReceived` >= DATE_FORMAT(FROM_UNIXTIME(1458492530+3600), '%Y-%m-%d %H:%M:%S')
-                    ORDER BY `messageID` DESC LIMIT 10000000)
+                    ORDER BY `messageID` DESC LIMIT 10)
                     ORDER BY `messageID` ASC;
-SELECT CURRENT_TIMESTAMP;
-SET @@session.time_zone='+00:00';
-SELECT CURRENT_TIMESTAMP;
+

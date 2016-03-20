@@ -688,6 +688,7 @@ def get_messages():
                         for res in result:
                             print(res)
                             dateTime = res[4]
+                            print("dateTime = ", dateTime)
                             import time
                             utc_time = time.mktime(dateTime.timetuple()) * 1000
 
@@ -711,19 +712,22 @@ def get_messages():
                     sinceTimestamp = request.form.get("sinceTimestamp") # load messages posted since a given time
 
                     res = cursor.execute("""
-                    SET @@session.time_zone='+00:00';
                     (SELECT * FROM `IRC_channel_messages`
                     WHERE `IRC_channels_channelID` = %s
-					AND `timeReceived` > DATE_FORMAT(FROM_UNIXTIME(%s), %s)
+					AND `messageID` > %s
                     ORDER BY `messageID` DESC LIMIT %s)
-                    ORDER BY `messageID` ASC;""", (channelID, sinceTimestamp, "%Y-%m-%d %H:%M:%S", messageLimit)
+                    ORDER BY `messageID` ASC;
+                    """, (channelID, sinceTimestamp, messageLimit)
                                          ) #
 
-                    print("""(SELECT * FROM `IRC_channel_messages`
+                    print("""
+                    (SELECT * FROM `IRC_channel_messages`
                     WHERE `IRC_channels_channelID` = %s
-					AND `timeReceived` >= DATE_FORMAT(FROM_UNIXTIME(%s), %s)
+					AND `messageID` >= %s
                     ORDER BY `messageID` DESC LIMIT %s)
-                    ORDER BY `messageID` ASC;""" % (channelID, sinceTimestamp, "'%Y-%m-%d %H:%M:%S'", messageLimit))
+                    ORDER BY `messageID` ASC;
+                    """ % (channelID, sinceTimestamp, messageLimit))
+
                     if res != 0:
                         result = cursor.fetchall()
                         print("\n\MRDKY\n\n", result)

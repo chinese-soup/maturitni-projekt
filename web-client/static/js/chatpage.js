@@ -161,7 +161,7 @@ function getNewMessages()
                                     messages[i]["IRC_channels_channelID"]
                                 );
                             }
-                            last_message_id[messages[i]["IRC_channels_channelID"]] = String(messages[i]["timeReceived"]).slice(0, -3); // cut off 3 zeros at the end
+                            last_message_id[messages[i]["IRC_channels_channelID"]] = messages[i]["messageID"];
                         }
                    }
                 }
@@ -486,7 +486,7 @@ function getBacklogForChannel(channelID, limit)
 
                     }
 
-                    last_message_id[messages[i]["IRC_channels_channelID"]] = String(messages[i]["timeReceived"]).slice(0, -3); // cut off 3 zeros at the end
+                    last_message_id[messages[i]["IRC_channels_channelID"]] = messages[i]["messageID"]; // cut off 3 zeros at the end
                 }
 
                 if($.inArray(channelID, already_loaded_backlog) == -1)
