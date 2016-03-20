@@ -652,17 +652,7 @@ def get_messages():
     userID = get_userID_if_loggedin(request)
     print("UserID = ", userID)
 
-    backlog = request.form.get("backlog")
-    backlog = bool(backlog)
-    print("backlog is:", backlog)
-    print("request.form.get(backlog) is:", request.form.get("backlog"))
-    print("boolean(request.form: backlog) is:", bool(request.form.get("backlog")))
-
-#    backlog is: True
-#    request.form.get(backlog) is: 0
-#    boolean(request.form: backlog) is: True
-
-
+    backlog = bool(int(request.form.get("backlog")))
 
     channelID = request.form.get("channelID")
     messageLimit = int(request.form.get("limit")) or 20 # if no limit is specified
@@ -682,7 +672,9 @@ def get_messages():
                 if backlog is True: # if we want to load messages for a channel we are opening for the first time this session
                     print("Welcome, this is the backlog chapter of the video game called getting messages.")
 
-                    res = cursor.execute("""(SELECT *
+                    res = cursor.execute("""
+
+                    (SELECT *
                     FROM `IRC_channel_messages`
                     WHERE `IRC_channels_channelID` = %s
                     ORDER BY `messageID` DESC LIMIT %s)
@@ -708,7 +700,7 @@ def get_messages():
                                 "IRC_channels_channelID": res[6]}
                             messages.append(server_dict_temp)
                             print(type(res[4]))
-
+                        db.close()
                         response = {"status": "ok", "reason": "listing_messages", "message": messages}
                         return jsonify(response)
 
@@ -718,12 +710,20 @@ def get_messages():
                     messageLimit = 10000000
                     sinceTimestamp = request.form.get("sinceTimestamp") # load messages posted since a given time
 
-                    res = cursor.execute("""(SELECT * FROM `IRC_channel_messages`
+                    res = cursor.execute("""
+                    SET @@session.time_zone='+00:00';
+                    (SELECT * FROM `IRC_channel_messages`
                     WHERE `IRC_channels_channelID` = %s
-					AND `timeReceived` >= DATE_FORMAT(FROM_UNIXTIME(%s), '%Y-%m-%d %H:%M:%S')
+					AND `timeReceived` > DATE_FORMAT(FROM_UNIXTIME(%s), %s)
                     ORDER BY `messageID` DESC LIMIT %s)
-                    ORDER BY `messageID` ASC;""", (channelID, sinceTimestamp, messageLimit)
+                    ORDER BY `messageID` ASC;""", (channelID, sinceTimestamp, "%Y-%m-%d %H:%M:%S", messageLimit)
                                          ) #
+
+                    print("""(SELECT * FROM `IRC_channel_messages`
+                    WHERE `IRC_channels_channelID` = %s
+					AND `timeReceived` >= DATE_FORMAT(FROM_UNIXTIME(%s), %s)
+                    ORDER BY `messageID` DESC LIMIT %s)
+                    ORDER BY `messageID` ASC;""" % (channelID, sinceTimestamp, "'%Y-%m-%d %H:%M:%S'", messageLimit))
                     if res != 0:
                         result = cursor.fetchall()
                         print("\n\MRDKY\n\n", result)
@@ -744,17 +744,24 @@ def get_messages():
                                 "IRC_channels_channelID": res[6]}
                             messages.append(server_dict_temp)
                             print(type(res[4]))
-
+                        db.close()
                         response = {"status": "ok", "reason": "listing_new_messages", "message": messages}
+                        return jsonify(response)
+                    else:
+                        db.close()
+                        response = {"status": "ok", "reason": "no_new_messages", "message": "No new messages since {0}".format(sinceTimestamp)}
                         return jsonify(response)
 
             else:
+                db.close()
                 return error("error", "channel_is_not_yours", "A channel with this channelID does not belong to your account.")
 
 
         else:
+            db.close()
             return error("error", "channelid_does_not_exist", "A channel with the requested channelID does not exist.")
     else:
+         db.close()
          return error("error", "not_loggedin", "You are not logged in.")
 
 

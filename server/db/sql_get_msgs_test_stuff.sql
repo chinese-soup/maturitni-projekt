@@ -6,9 +6,20 @@ use `cloudchatdb`;
 #delete from `IRC_servers` where serverID = 3;
 #ALTER TABLE `IRC_channels` ADD UNIQUE KEY `channelNameOnlyOncePerServer` (`channelName`, `IRC_servers_serverID`);
 #select * from `IRC_channel_messages`;
-select DATE_FORMAT(FROM_UNIXTIME('1458494357'), '%e %b %Y');
+select DATE_FORMAT(FROM_UNIXTIME('1458491199000'), '%e %b %Y');
 (SELECT * FROM `IRC_channel_messages`
                     WHERE `IRC_channels_channelID` = 2
-					AND `timeReceived` >= DATE_FORMAT(FROM_UNIXTIME('1458494357'), '%Y-%m-%d %H:%M:%S')
+					AND `timeReceived` >= DATE_FORMAT(FROM_UNIXTIME('1458491199'), '%Y-%m-%d %H:%M:%S')
                     ORDER BY `messageID` DESC LIMIT 20)
                     ORDER BY `messageID` ASC;
+
+SELECT CONVERT_TZ(FROM_UNIXTIME(1277942400), @@session.time_zone,'UTC');                 
+                    
+(SELECT * FROM `IRC_channel_messages`
+                    WHERE `IRC_channels_channelID` = 1
+					AND `timeReceived` >= DATE_FORMAT(FROM_UNIXTIME(1458492530+3600), '%Y-%m-%d %H:%M:%S')
+                    ORDER BY `messageID` DESC LIMIT 10000000)
+                    ORDER BY `messageID` ASC;
+SELECT CURRENT_TIMESTAMP;
+SET @@session.time_zone='+00:00';
+SELECT CURRENT_TIMESTAMP;

@@ -92,19 +92,14 @@ function getNewMessages()
     for(var i=0; i < channel_ids.length; i++)
     {
         channelID = channel_ids[i]; // TODO: REPLACE ME
-
-        console.log("mrdka");
-        console.log(last_message_id["{0}".format(channelID)]);
-
         if(channelID in last_message_id)
         {
-
             var posting = $.post("http://{0}:5000/get_messages".format(hostname),
             {
                channelID: channelID,
                limit: 1000000000,
                backlog: 0,
-               sinceTimestamp: last_message_id["{0}".format(channelID)]
+               sinceTimestamp: last_message_id[channelID]
             }, dataType="text"
             );
 
@@ -122,7 +117,7 @@ function getNewMessages()
                 }
                 else if(data["status"] == "ok")
                 {
-                   if(data["reason"] == "listing_messages")
+                   if(data["reason"] == "listing_new_messages")
                    {
                         log(data["message"]);
                         console.log(data["message"]);
@@ -131,7 +126,6 @@ function getNewMessages()
 
                         for (var i=0; i < messages.length; i++)
                         {
-                            log(i);
                             if(messages[i]["commandType"] == "PRIVMSG" || messages[i]["commandType"] == "PUBMSG")
                             {
                                 addMessageToChannel(
@@ -146,7 +140,6 @@ function getNewMessages()
                             }
                             else if(messages[i]["commandType"] == "JOIN" || messages[i]["commandType"] == "QUIT" || messages[i]["commandType"] == "PART")
                             {
-                                // messageID, timestamp, messageType, sender, message, channelID)
                                 addJoinPartQuitToChannel(
                                     messages[i]["messageID"],
                                     convertDBTimeToLocalTime(messages[i]["timeReceived"]),
@@ -168,17 +161,17 @@ function getNewMessages()
                                     messages[i]["IRC_channels_channelID"]
                                 );
                             }
-                            last_message_id["{0}".format(channelID)] = String(messages[i]["timeReceived"]).slice(0, -3); // cut off 3 zeros at the end
+                            last_message_id[messages[i]["IRC_channels_channelID"]] = String(messages[i]["timeReceived"]).slice(0, -3); // cut off 3 zeros at the end
                         }
                    }
                 }
 
             });
 
-                posting.fail(function()
-                {
-                     log("An error occurred while trying to contact the API server. Try reloading the page.", "error");
-                });
+            posting.fail(function()
+            {
+                 log("An error occurred while trying to contact the API server. Try reloading the page.", "error");
+            });
         }
     }
 }
@@ -388,7 +381,6 @@ function convertDBTimeToLocalTime(dbUTCtime)
     var date = new Date(dbUTCtime);
     var date_now = new Date();
 
-
     if(date.toLocaleDateString() ==  date_now.toLocaleDateString()) // zkontrolujeme, jestli daný čas je dnes, pokud ne, vrátíme i datum
     {
         var local_date = date.toLocaleTimeString();
@@ -423,11 +415,12 @@ function getNicknameFromHostmask(hostmask)
 
 function getBacklogForChannel(channelID, limit)
 {
+    console.log("backlog();");
     var posting = $.post("http://{0}:5000/get_messages".format(hostname),
     {
        channelID: channelID,
        limit: limit,
-       backlog: true
+       backlog: 1
     }, dataType="text"
     );
 
@@ -493,7 +486,7 @@ function getBacklogForChannel(channelID, limit)
 
                     }
 
-                    last_message_id["{0}".format(channelID)] = String(messages[i]["timeReceived"]).slice(0, -3); // cut off 3 zeros at the end
+                    last_message_id[messages[i]["IRC_channels_channelID"]] = String(messages[i]["timeReceived"]).slice(0, -3); // cut off 3 zeros at the end
                 }
 
                 if($.inArray(channelID, already_loaded_backlog) == -1)
