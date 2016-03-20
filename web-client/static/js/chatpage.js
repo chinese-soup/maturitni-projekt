@@ -10,6 +10,11 @@ $.ajaxSetup({
 var hostname = location.hostname; // maybe temporary(?): get the current hostname so we know where to make api calls (same host, different port)
 var already_loaded_backlog = [];
 var global_settings = {"hilight_words": null, "username": null, "realname": null, "nickname": null, "show_joinpartquit_messages": null, "show_seconds": null, "show_video_previews": null, "show_image_previews": null};
+var channel_messages = [];
+
+var channel_ids = [];
+var last_message_id = {};
+
 
 /* maybe move to util.js? */
 /* overrides the default string function in javascript to include formatting support */
@@ -28,7 +33,7 @@ function onChatLoad()
     console.log("onChatLoad();");
     checkIfUserIsLoggedInOnStart();
     loadSettingsIntoVariable();
-    //setTimeout(ping, 1000);
+    setTimeout(ping, 5000);
 }
 
 function loadSettingsIntoVariable()
@@ -49,7 +54,7 @@ function loadSettingsIntoVariable()
             console.log(settings);
 
 
-            global_settings["hilight_words"] = settings[0];
+            global_settings["hilfromMsgIDight_words"] = settings[0];
             global_settings["username"] = settings[1];
             global_settings["realname"] = settings[2];
             global_settings["nickname"] = settings[3];
@@ -75,9 +80,111 @@ function loadSettingsIntoVariable()
 
 function ping()
 {
-    log(isUserLoggedIn);
+    console.log("ping()");
+    getNewMessages();
     setTimeout(ping, 1000);
 }
+
+
+
+function getNewMessages()
+{
+    for(var i=0; i < channel_ids.length; i++)
+    {
+        channelID = channel_ids[i]; // TODO: REPLACE ME
+
+        console.log("mrdka");
+        console.log(last_message_id["{0}".format(channelID)]);
+
+        if(channelID in last_message_id)
+        {
+
+            var posting = $.post("http://{0}:5000/get_messages".format(hostname),
+            {
+               channelID: channelID,
+               limit: 1000000000,
+               backlog: 0,
+               sinceTimestamp: last_message_id["{0}".format(channelID)]
+            }, dataType="text"
+            );
+
+            posting.done(function(data)
+            {
+                console.log(data);
+                log(data["reason"], data["status"]);
+
+                if(data["status"] == "error")
+                {
+                    if(data["reason"] == "not_loggedin")
+                    {
+                        log(data["reason"]);
+                    }
+                }
+                else if(data["status"] == "ok")
+                {
+                   if(data["reason"] == "listing_messages")
+                   {
+                        log(data["message"]);
+                        console.log(data["message"]);
+
+                        var messages = data["message"];
+
+                        for (var i=0; i < messages.length; i++)
+                        {
+                            log(i);
+                            if(messages[i]["commandType"] == "PRIVMSG" || messages[i]["commandType"] == "PUBMSG")
+                            {
+                                addMessageToChannel(
+                                    messages[i]["messageID"],
+                                    convertDBTimeToLocalTime(messages[i]["timeReceived"]),
+                                    getNicknameFromHostmask(messages[i]["fromHostmask"]),
+                                    "ok",
+                                    linkifyMessage(messages[i]["messageBody"]),
+                                    messages[i]["IRC_channels_channelID"]
+                                );
+
+                            }
+                            else if(messages[i]["commandType"] == "JOIN" || messages[i]["commandType"] == "QUIT" || messages[i]["commandType"] == "PART")
+                            {
+                                // messageID, timestamp, messageType, sender, message, channelID)
+                                addJoinPartQuitToChannel(
+                                    messages[i]["messageID"],
+                                    convertDBTimeToLocalTime(messages[i]["timeReceived"]),
+                                    messages[i]["commandType"],
+                                    messages[i]["fromHostmask"],
+                                    messages[i]["messageBody"],
+                                    messages[i]["IRC_channels_channelID"]
+                                );
+
+                            }
+                            else if(messages[i]["commandType"] == "ACTION")
+                            {
+                                 addActionMessage(
+                                    messages[i]["messageID"],
+                                    convertDBTimeToLocalTime(messages[i]["timeReceived"]),
+                                    getNicknameFromHostmask(messages[i]["fromHostmask"]),
+                                    "ok",
+                                    linkifyMessage(messages[i]["messageBody"]),
+                                    messages[i]["IRC_channels_channelID"]
+                                );
+                            }
+                            last_message_id["{0}".format(channelID)] = String(messages[i]["timeReceived"]).slice(0, -3); // cut off 3 zeros at the end
+                        }
+                   }
+                }
+
+            });
+
+                posting.fail(function()
+                {
+                     log("An error occurred while trying to contact the API server. Try reloading the page.", "error");
+                });
+        }
+    }
+}
+
+
+
 
 /* never used (yet?) */
 $body = $("body");
@@ -128,7 +235,6 @@ function isUserLoggedIn()
     return(result);
 
 }
-
 
 function addActionMessage(messageID, timestamp, sender, senderColor, message, channelID)
 {
@@ -197,6 +303,16 @@ function addMessageToChannel(messageID, timestamp, sender, senderColor, message,
 
     var element2 = $(".center_messages_container");
     element.scrollTop(element2.scrollHeight); // scrollneme dolů, protože máme nové
+
+
+    /*
+        for (var key in array)
+        {
+            let value = array[key];
+            console.log(value);
+        }
+    */
+
 }
 
 
@@ -349,6 +465,7 @@ function getBacklogForChannel(channelID, limit)
                             linkifyMessage(messages[i]["messageBody"]),
                             messages[i]["IRC_channels_channelID"]
                         );
+
                     }
                     else if(messages[i]["commandType"] == "JOIN" || messages[i]["commandType"] == "QUIT" || messages[i]["commandType"] == "PART")
                     {
@@ -361,6 +478,7 @@ function getBacklogForChannel(channelID, limit)
                             messages[i]["messageBody"],
                             messages[i]["IRC_channels_channelID"]
                         );
+
                     }
                     else if(messages[i]["commandType"] == "ACTION")
                     {
@@ -372,7 +490,10 @@ function getBacklogForChannel(channelID, limit)
                             linkifyMessage(messages[i]["messageBody"]),
                             messages[i]["IRC_channels_channelID"]
                         );
+
                     }
+
+                    last_message_id["{0}".format(channelID)] = String(messages[i]["timeReceived"]).slice(0, -3); // cut off 3 zeros at the end
                 }
 
                 if($.inArray(channelID, already_loaded_backlog) == -1)
@@ -595,6 +716,8 @@ function loadServers()
 
     $(".channel_list").empty(); // clear the server list so we don't dupe the server entries (beware of element id hazard)
 
+    channel_ids = []; // empty the channel IDs array
+
     var posting = $.post("http://{0}:5000/get_server_list".format(hostname),
     {
     }, dataType="text"
@@ -665,6 +788,10 @@ function loadServers()
                     $(".channel_list #channel_{0} .channelName".format(channelID)).click(
                     {channelID:channelID, channelName:channelName, lastOpened: lastOpened, channelServerID:channelServerID},
                     switchCurrentChannelEventStyle)
+
+                    channel_ids.push(channelID);
+
+
                 }
             }
         }

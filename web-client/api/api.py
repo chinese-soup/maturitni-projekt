@@ -652,7 +652,18 @@ def get_messages():
     userID = get_userID_if_loggedin(request)
     print("UserID = ", userID)
 
-    backlog = bool(request.form.get("backlog"))
+    backlog = request.form.get("backlog")
+    backlog = bool(backlog)
+    print("backlog is:", backlog)
+    print("request.form.get(backlog) is:", request.form.get("backlog"))
+    print("boolean(request.form: backlog) is:", bool(request.form.get("backlog")))
+
+#    backlog is: True
+#    request.form.get(backlog) is: 0
+#    boolean(request.form: backlog) is: True
+
+
+
     channelID = request.form.get("channelID")
     messageLimit = int(request.form.get("limit")) or 20 # if no limit is specified
 
@@ -669,13 +680,14 @@ def get_messages():
                 print("THIS IS YOUR CHANNEL LOL")
 
                 if backlog is True: # if we want to load messages for a channel we are opening for the first time this session
+                    print("Welcome, this is the backlog chapter of the video game called getting messages.")
 
                     res = cursor.execute("""(SELECT *
                     FROM `IRC_channel_messages`
                     WHERE `IRC_channels_channelID` = %s
                     ORDER BY `messageID` DESC LIMIT %s)
                     ORDER BY `messageID` ASC;""", (channelID, messageLimit)
-                                         ) #query to find the serverID so we can check if the user owns this serverID and is not trying to read something that is not his
+                                         ) # query to get the backlog if the message window was opened just now
                     if res != 0:
                         result = cursor.fetchall()
                         print("\n\MRDKY\n\n", result)
@@ -701,7 +713,41 @@ def get_messages():
                         return jsonify(response)
 
                 else:
-                    return error("error", "not_yet_implemented", "This feature has not been implemented yet.")
+                    print("Welcome, this is the NEW MESSAGES chapter of the video game called getting messages.")
+
+                    messageLimit = 10000000
+                    sinceTimestamp = request.form.get("sinceTimestamp") # load messages posted since a given time
+
+                    res = cursor.execute("""(SELECT * FROM `IRC_channel_messages`
+                    WHERE `IRC_channels_channelID` = %s
+					AND `timeReceived` >= DATE_FORMAT(FROM_UNIXTIME(%s), '%Y-%m-%d %H:%M:%S')
+                    ORDER BY `messageID` DESC LIMIT %s)
+                    ORDER BY `messageID` ASC;""", (channelID, sinceTimestamp, messageLimit)
+                                         ) #
+                    if res != 0:
+                        result = cursor.fetchall()
+                        print("\n\MRDKY\n\n", result)
+                        messages = list()
+
+                        for res in result:
+                            print(res)
+                            dateTime = res[4]
+                            import time
+                            utc_time = time.mktime(dateTime.timetuple()) * 1000
+
+                            server_dict_temp = {"messageID": res[0],
+                                "fromHostmask": res[1],
+                                "messageBody": res[2],
+                                "commandType": res[3],
+                                "timeReceived": utc_time,
+                                "seen": res[5],
+                                "IRC_channels_channelID": res[6]}
+                            messages.append(server_dict_temp)
+                            print(type(res[4]))
+
+                        response = {"status": "ok", "reason": "listing_new_messages", "message": messages}
+                        return jsonify(response)
+
             else:
                 return error("error", "channel_is_not_yours", "A channel with this channelID does not belong to your account.")
 
@@ -710,6 +756,7 @@ def get_messages():
             return error("error", "channelid_does_not_exist", "A channel with the requested channelID does not exist.")
     else:
          return error("error", "not_loggedin", "You are not logged in.")
+
 
 
 if __name__ == '__main__':
