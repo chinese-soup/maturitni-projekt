@@ -34,7 +34,7 @@ function onChatLoad()
     console.log("onChatLoad();");
     checkIfUserIsLoggedInOnStart();
     loadSettingsIntoVariable();
-    setTimeout(ping, 5000);
+    setTimeout(ping, 2000);
 }
 
 function loadSettingsIntoVariable()
@@ -83,7 +83,7 @@ function ping()
 {
     console.log("ping()");
     getNewMessages();
-    setTimeout(ping, 1000);
+    setTimeout(ping, 1500);
 }
 
 
@@ -107,7 +107,6 @@ function getNewMessages()
             posting.done(function(data)
             {
                 console.log(data);
-                log(data["reason"], data["status"]);
 
                 if(data["status"] == "error")
                 {
@@ -163,17 +162,6 @@ function getNewMessages()
 
 
                         }
-
-
-                        // if the currently focused window isn't the one we just got messages to add a notification meme
-                        /*if(currently_visible_message_window != channelID)
-                        {*/
-                            //channel_item_active_msg_count
-
-                        //}
-                        /*	  */
-
-
                    }
                 }
 
@@ -253,7 +241,7 @@ function addActionMessage(messageID, timestamp, sender, senderColor, message, ch
     element.append(html);
 
     var element2 = $(".center_messages_container");
-    element.scrollTop(element2.scrollHeight); // scrollneme dolů, protože máme nové
+    element2.prop("scrollTop", 500000000000); // scrollneme dolů, protože máme nové
 }
 
 function addJoinPartQuitToChannel(messageID, timestamp, messageType, sender, message, channelID)
@@ -288,7 +276,8 @@ function addJoinPartQuitToChannel(messageID, timestamp, messageType, sender, mes
         var element = $("#channel_window_{0}".format(channelID));
         element.append(html);
 
-        log("hello", messageID, timestamp, messageType, sender, message, channelID);
+        var element2 = $(".message_window");
+        element2.prop("scrollTop", 500000000000); // scrollneme dolů, protože máme nové
     }
 }
 
@@ -306,7 +295,7 @@ function addMessageToChannel(messageID, timestamp, sender, senderColor, message,
     element.append(html);
 
     var element2 = $(".center_messages_container");
-    element.scrollTop(element2.scrollHeight); // scrollneme dolů, protože máme nové
+    element2.prop("scrollTop", 500000000000); // scrollneme dolů, protože máme nové
 
 
     /*

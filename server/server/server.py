@@ -187,7 +187,18 @@ class IRCSide(threading.Thread):
     """Fired when any client is disconnected from an IRC server"""
     def on_disconnect(self, connection, event):
         print('[{}] Disconnected from {}' .format(event.type.upper(), event.source))
-        pass
+        print("{}".format(event.arguments))
+
+        res = self.cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s AND `serverID` = %s;""", (self.userID, connection.serverID))
+        if res != 0:
+            result = self.cursor.fetchall()
+            print(result)
+            serverID_res = int(result[0][0])
+
+            res = self.cursor.execute("""UPDATE `IRC_servers` SET `isConnected` = %s WHERE `serverID` = %s;""", (0, serverID_res))
+
+            print("RES: ",res)
+            print("serverID = {}".format(serverID_res))
 
     """Fired when any client gets a /ME message from any channel or query"""
     def on_action(self, connection, event):

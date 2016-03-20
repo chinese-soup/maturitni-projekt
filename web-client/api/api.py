@@ -422,12 +422,8 @@ def get_global_settings():
 
             return jsonify(response)
         elif res == 0: # global settings row for this user doesn't exist, let's create it
-            # TODO: Consider removing this and creating the insert on /register
-            # TODO: Consider removing this and creating the insert on /register
-            # TODO2: ALSO CONSIDER SETTING THE USER_SETTINGS TABLE'S DEFAULT VALUES INSTEAD OF INSERTING STUPID SHIT LIKE THIS #
-
             cursor = db.cursor()
-            cursor.execute("""INSERT INTO `User_settings` (Registred_users_userID) values (%s);""", (userID,)) # generate default values for user's global settings
+            cursor.execute("""INSERT INTO `User_settings` (Registred_users_userID) values (%s);""", (userID,)) # vytvoří defaultní nastavení pro uživatele, který ještě nastavení nemá
             db.commit()
 
             res2 = cursor.execute("""SELECT * FROM `User_settings` WHERE `Registred_users_userID` = %s;""", (userID,)) # it's redundant to select the settings if we know that we just inserted the default ones, but just to be sure
@@ -435,7 +431,7 @@ def get_global_settings():
                 db.close()
                 result = cursor.fetchall()
                 global_settings = list(result)
-                response = {"status": "ok", "reason": "listing_settings", "message": global_settings}
+                response = {"status": "ok", "reason": "listing_settings", "message": global_settings} # vratí nastavení, kterými se naplní formulář s nastavením
                 return jsonify(response)
             else:
                 db.close()
@@ -652,10 +648,9 @@ def get_messages():
     userID = get_userID_if_loggedin(request)
     print("UserID = ", userID)
 
-    backlog = bool(int(request.form.get("backlog")))
-
-    channelID = request.form.get("channelID")
-    messageLimit = int(request.form.get("limit")) or 20 # if no limit is specified
+    backlog = bool(int(request.form.get("backlog"))) # rozhoduje zda budeme vracet backlog nebo nejnovější zprávy od minule
+    channelID = request.form.get("channelID") # channelID
+    messageLimit = int(request.form.get("limit")) or 20 # limit zpráv, které získáváme z db
 
     if userID is not False:
         db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
@@ -765,7 +760,6 @@ def get_messages():
             db.close()
             return error("error", "channelid_does_not_exist", "A channel with the requested channelID does not exist.")
     else:
-         db.close()
          return error("error", "not_loggedin", "You are not logged in.")
 
 
