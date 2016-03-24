@@ -34,7 +34,7 @@ function onChatLoad()
     console.log("onChatLoad();");
     checkIfUserIsLoggedInOnStart();
     loadSettingsIntoVariable();
-    setTimeout(ping, 2000);
+    setTimeout(ping, 1500);
 }
 
 function loadSettingsIntoVariable()
@@ -556,7 +556,7 @@ function checkIfUserIsLoggedInOnStart()
             {
                 general_dialog("Access denied: You are not logged in.", data["message"], "error");
                 /*sendUserAway("login.html", 3000);*/
-                sendUserAway("login.html", 2000);
+                sendUserAway("login.html", 3000);
             }
         }
         else if(data["status"] == "ok")
