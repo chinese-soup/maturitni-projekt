@@ -47,6 +47,13 @@ class IRCSide(threading.Thread):
         while(True):
             time.sleep(5)
             print("Sleep 5: ", self.userID)
+            db_pull = MySQLdb.connect(user="root", passwd="asfd", db="cloudchatdb", connect_timeout=30, charset="utf8")
+            cursor_pull = db_pull.cursor()
+            pull_result = cursor_pull.execute("""SELECT * FROM `IO_Table` WHERE `Registred_users_userID` = %s;""", (self.userID,))
+            for result in pull_result:
+                print(result)
+
+            db_pull.close()
 
 
     def func_to_be_threaded(self):
