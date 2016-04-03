@@ -763,6 +763,18 @@ def get_messages():
          return error("error", "not_loggedin", "You are not logged in.")
 
 
+@app.route("/send_textbox_io", methods=["POST"])
+def get_messages():
+    userID = get_userID_if_loggedin(request)
+    print("UserID = ", userID)
+
+    backlog = bool(int(request.form.get("backlog"))) # rozhoduje zda budeme vracet backlog nebo nejnovější zprávy od minule
+    channelID = request.form.get("channelID") # channelID
+
+    
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0") # TODO: remove binding on all interfaces; this is only here for debugging
