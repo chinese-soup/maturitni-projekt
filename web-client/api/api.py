@@ -781,21 +781,22 @@ def get_server_messages():
     except Exception as ex:
         print("Error trying to get form data @ get_server_messages(): {0}".format(ex))
         return error("error", "bad_request", "Bad API request.")
-
     if userID is not False:
-        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
+        db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
         cursor = db.cursor()
 
-        res = cursor.execute("""SELECT (serverID) FROM `IRC_servers` WHERE `Registred_users_userID` = %s;""",
-                             (userID,)) # get user's messages
+        res = cursor.execute("""SELECT serverID, serverName, Registred_users_userID FROM `IRC_servers` WHERE `Registred_users_userID` =
+        %s;""", (userID,)) # get user's messages
         all_serverIDs_for_this_user = cursor.fetchall()
-
+        print("all_serverIDs_for_this_user= ", all_serverIDs_for_this_user)
+        messages = list()
         for current_server in all_serverIDs_for_this_user:
             print("CURRENT_SERVER = ", current_server)
             serverID_result = int(current_server[0]) # 0 = serverID
+            serverName_result = str(current_server[1]) # 1 = serverName
 
             if check_if_serverID_belongs_to_userID(userID, serverID_result) is True:
-                print("THIS IS YOUR SERVER LOL")
+                print("THIS IS YOUR SERVER")
 
                 if backlog is True: # if we want to load messages for a channel we are opening for the first time this session
                     res = cursor.execute("""
@@ -803,12 +804,12 @@ def get_server_messages():
                     FROM `IRC_other_messages`
                     WHERE `IRC_servers_serverID` = %s
                     ORDER BY `messageID` DESC LIMIT %s)
-                    ORDER BY `messageID` ASC;""", (channelID, messageLimit)
+                    ORDER BY `messageID` ASC;""", (serverID_result, messageLimit)
                                          ) # query to get the backlog if the message window was opened just now
                     if res != 0:
                         result = cursor.fetchall()
                         print("\n\MRDKY\n\n", result)
-                        messages = list()
+
 
                         for res in result:
                             print(res)
@@ -823,21 +824,23 @@ def get_server_messages():
                                 "commandType": res[3],
                                 "timeReceived": utc_time,
                                 "seen": res[5],
-                                "IRC_channels_channelID": res[6]}
+                                "IRC_servers_serverID": res[6],
+                                "serverName": serverName_result}
                             messages.append(server_dict_temp)
                             print(type(res[4]))
-                        db.close()
-                        response = {"status": "ok", "reason": "listing_messages", "message": messages}
-                        return jsonify(response)
+
                     else:
                         db.close()
                         return error("error", "channel_is_not_yours", "A channel with this channelID does not belong to your account.")
                 else:
                     print("NOT BACKLOG")
-                    return error("error", "channel_is_not_yours", "A channel with this channelID does not belong to your account.")
+                    return error("error", "not_yet_implemented", "This stuff is not yet implemented.")
             else:
                 db.close()
                 return error("error", "channel_is_not_yours", "A channel with this channelID does not belong to your account.")
+        db.close()
+        response = {"status": "ok", "reason": "listing_other_messages", "message": messages}
+        return jsonify(response)
     else:
          return error("error", "not_loggedin", "You are not logged in.")
 

@@ -419,9 +419,69 @@ function getNicknameFromHostmask(hostmask)
 
 }
 
+
+function getBacklogForServers(limit)
+{
+    console.log("backlogServers();");
+    var posting = $.post("http://{0}:5000/get_server_messages".format(hostname),
+    {
+       serverID: -1,
+       limit: limit,
+       backlog: 1
+    }, dataType="text"
+    );
+
+    posting.done(function(data)
+    {
+        console.log(data);
+        log(data["reason"], data["status"]);
+
+        if(data["status"] == "error")
+        {
+            if(data["reason"] == "not_loggedin")
+            {
+                log(data["reason"]);
+            }
+        }
+        else if(data["status"] == "ok")
+        {
+           if(data["reason"] == "listing_other_messages")
+           {
+                log(data["message"]);
+                console.log(data["message"]);
+
+                var messages = data["message"];
+
+               	for (var i=0; i < messages.length; i++)
+                {
+                    log(i);
+                    // pokud se jedná o zprávu z kanálu
+
+                    addMessageToChannel(
+                        messages[i]["messageID"],
+                        convertDBTimeToLocalTime(messages[i]["timeReceived"]),
+                        "-!- [{0}] {1}".format(messages[i]["serverName"], messages[i]["fromHostmask"]),
+                        "ok",
+                        "({0}): {1}".format(messages[i]["commandType"], messages[i]["messageBody"]),
+                        -1
+                    );
+
+                }
+           }
+        }
+
+    });
+
+    posting.fail(function()
+    {
+         general_dialog("API endpoint error.", "An error occurred while trying to contact the API server. Try reloading the page.", "error", 3);
+         log("An error occurred while trying to contact the API server. Try reloading the page.", "error");
+    });
+}
+
 function getBacklogForChannel(channelID, limit)
 {
-    console.log("backlog();");
+    console.log("backlogChannel();");
     var posting = $.post("http://{0}:5000/get_messages".format(hostname),
     {
        channelID: channelID,
@@ -770,7 +830,7 @@ function loadServers()
                     console.log("CHEN");
                     console.log(channels["chan"]);
                     var channelID = channels[chans]["channelID"];
-                    log(channelID);
+                    console.log(channelID);
                     var channelName = channels[chans]["channelName"];
                     var isJoined = channels[chans]["isJoined"];
                     var lastOpened = channels[chans]["lastOpened"];
@@ -787,14 +847,16 @@ function loadServers()
 
                     /* bind a click event to a channel in teh channel list*/
                     $(".channel_list #channel_{0} .channelName".format(channelID)).click(
-                    {channelID:channelID, channelName:channelName, lastOpened: lastOpened, channelServerID:channelServerID},
-                    switchCurrentChannelEventStyle)
+                    {channelID:channelID, channelName:channelName, lastOpened: lastOpened,
+                    channelServerID:channelServerID}, switchCurrentChannelEventStyle)
 
                     channel_ids.push(channelID);
-
-
                 }
             }
+
+            getBacklogForServers(50); // get the backlog for server messages
+
+
         }
         else if(data["reason"] == "no_servers_to_list")
         {
