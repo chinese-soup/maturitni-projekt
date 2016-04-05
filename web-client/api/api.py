@@ -649,10 +649,13 @@ def add_new_server_settings():
 def get_messages():
     userID = get_userID_if_loggedin(request)
     print("UserID = ", userID)
-
-    backlog = bool(int(request.form.get("backlog"))) # rozhoduje zda budeme vracet backlog nebo nejnovější zprávy od minule
-    channelID = request.form.get("channelID") # channelID
-    messageLimit = int(request.form.get("limit")) or 20 # limit zpráv, které získáváme z db
+    try:
+        backlog = bool(int(request.form.get("backlog"))) # rozhoduje zda budeme vracet backlog nebo nejnovější zprávy od minule
+        channelID = request.form.get("channelID") # channelID
+        messageLimit = int(request.form.get("limit")) or 20 # limit zpráv, které získáváme z db
+    except Exception as ex:
+        print("Error trying to get form data @ get_messages(): {0}".format(ex))
+        return error("error", "bad_request", "Bad API request.")
 
     if userID is not False:
         db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
@@ -768,29 +771,37 @@ def get_server_messages():
     userID = get_userID_if_loggedin(request)
     print("UserID = ", userID)
 
-    backlog = bool(int(request.form.get("backlog"))) # rozhoduje zda budeme vracet backlog nebo nejnovější zprávy od minule
-    serverID = request.form.get("serverID") # TODO: REMOVE, THIS IS JUST FOR TESTING, WE NEED ALL THE IRC SERVER
+    try:
+        backlog = bool(int(request.form.get("backlog"))) # rozhoduje zda budeme vracet backlog nebo nejnovější
+        # zprávy od
+    #  minule
+        serverID = request.form.get("serverID") # TODO: REMOVE, THIS IS JUST FOR TESTING, WE NEED ALL THE IRC SERVER
     # MESSAGES
-    messageLimit = int(request.form.get("limit")) or 20 # limit zpráv, které získáváme z db
+        messageLimit = int(request.form.get("limit")) or 20 # limit zpráv, které získáváme z db
+    except Exception as ex:
+        print("Error trying to get form data @ get_server_messages(): {0}".format(ex))
+        return error("error", "bad_request", "Bad API request.")
 
     if userID is not False:
         db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
         cursor = db.cursor()
 
-        res = cursor.execute("""SELECT * FROM `IRC_channels` WHERE `channelID` = %s;""", (channelID,)) #query to find the serverID so we can check if the user owns this serverID and is not trying to read something that is not his
-        if res != 0:
-            result = cursor.fetchone()
-            serverID_result = int(result[5]) # 5 = IRC_servers_serverID
+        res = cursor.execute("""SELECT (serverID) FROM `IRC_servers` WHERE `Registred_users_userID` = %s;""",
+                             (userID,)) # get user's messages
+        all_serverIDs_for_this_user = cursor.fetchall()
+
+        for current_server in all_serverIDs_for_this_user:
+            print("CURRENT_SERVER = ", current_server)
+            serverID_result = int(current_server[0]) # 0 = serverID
 
             if check_if_serverID_belongs_to_userID(userID, serverID_result) is True:
-                print("THIS IS YOUR CHANNEL LOL")
+                print("THIS IS YOUR SERVER LOL")
 
                 if backlog is True: # if we want to load messages for a channel we are opening for the first time this session
                     res = cursor.execute("""
-
                     (SELECT *
-                    FROM `IRC_channel_messages`
-                    WHERE `IRC_channels_channelID` = %s
+                    FROM `IRC_other_messages`
+                    WHERE `IRC_servers_serverID` = %s
                     ORDER BY `messageID` DESC LIMIT %s)
                     ORDER BY `messageID` ASC;""", (channelID, messageLimit)
                                          ) # query to get the backlog if the message window was opened just now
@@ -818,64 +829,15 @@ def get_server_messages():
                         db.close()
                         response = {"status": "ok", "reason": "listing_messages", "message": messages}
                         return jsonify(response)
-
-                else:
-                    messageLimit = 10000000 # dummy, todo: fix? nah no time lol
-                    sinceTimestamp = request.form.get("sinceTimestamp") # load messages posted since a given time
-
-                    res = cursor.execute("""
-                    (SELECT * FROM `IRC_channel_messages`
-                    WHERE `IRC_channels_channelID` = %s
-					AND `messageID` > %s
-                    ORDER BY `messageID` DESC LIMIT %s)
-                    ORDER BY `messageID` ASC;
-                    """, (channelID, sinceTimestamp, messageLimit)
-                                         ) #
-
-                    print("""
-                    (SELECT * FROM `IRC_channel_messages`
-                    WHERE `IRC_channels_channelID` = %s
-					AND `messageID` >= %s
-                    ORDER BY `messageID` DESC LIMIT %s)
-                    ORDER BY `messageID` ASC;
-                    """ % (channelID, sinceTimestamp, messageLimit))
-
-                    if res != 0:
-                        result = cursor.fetchall()
-                        print("\n\MRDKY\n\n", result)
-                        messages = list()
-
-                        for res in result:
-                            print(res)
-                            dateTime = res[4]
-                            import time
-                            utc_time = time.mktime(dateTime.timetuple()) * 1000
-
-                            server_dict_temp = {"messageID": res[0],
-                                "fromHostmask": res[1],
-                                "messageBody": res[2],
-                                "commandType": res[3],
-                                "timeReceived": utc_time,
-                                "seen": res[5],
-                                "IRC_channels_channelID": res[6]}
-                            messages.append(server_dict_temp)
-                            print(type(res[4]))
-                        db.close()
-                        response = {"status": "ok", "reason": "listing_new_messages", "message": messages}
-                        return jsonify(response)
                     else:
                         db.close()
-                        response = {"status": "ok", "reason": "no_new_messages", "message": "No new messages since {0}".format(sinceTimestamp)}
-                        return jsonify(response)
-
+                        return error("error", "channel_is_not_yours", "A channel with this channelID does not belong to your account.")
+                else:
+                    print("NOT BACKLOG")
+                    return error("error", "channel_is_not_yours", "A channel with this channelID does not belong to your account.")
             else:
                 db.close()
                 return error("error", "channel_is_not_yours", "A channel with this channelID does not belong to your account.")
-
-
-        else:
-            db.close()
-            return error("error", "channelid_does_not_exist", "A channel with the requested channelID does not exist.")
     else:
          return error("error", "not_loggedin", "You are not logged in.")
 
