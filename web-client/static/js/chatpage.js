@@ -454,6 +454,7 @@ function getBacklogForChannel(channelID, limit)
                	for (var i=0; i < messages.length; i++)
                 {
                     log(i);
+                    // pokud se jedná o zprávu z kanálu
                     if(messages[i]["commandType"] == "PRIVMSG" || messages[i]["commandType"] == "PUBMSG")
                     {
                         addMessageToChannel(
@@ -466,6 +467,7 @@ function getBacklogForChannel(channelID, limit)
                         );
 
                     }
+                    // pokud se jedná o JOIN, QUIT nebo PART zprávu
                     else if(messages[i]["commandType"] == "JOIN" || messages[i]["commandType"] == "QUIT" || messages[i]["commandType"] == "PART")
                     {
                         // messageID, timestamp, messageType, sender, message, channelID)
@@ -479,7 +481,7 @@ function getBacklogForChannel(channelID, limit)
                         );
 
                     }
-                    else if(messages[i]["commandType"] == "ACTION")
+                    else if(messages[i]["commandType"] == "ACTION") // pokud se jedná /me zprávu
                     {
                          addActionMessage(
                             messages[i]["messageID"],

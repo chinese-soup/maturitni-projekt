@@ -92,18 +92,18 @@ class IRCSide(threading.Thread):
     """
     def add_handlers(self):
         self.client.add_global_handler("welcome", self.on_connect)
-        """self.client.add_global_handler("yourhost", self.on_connect)
-        self.client.add_global_handler("created", self.on_connect)
-        self.client.add_global_handler("myinfo", self.on_connect)
+        self.client.add_global_handler("yourhost", self.on_your_host)
+        self.client.add_global_handler("created", self.on_your_host)
+        self.client.add_global_handler("myinfo", self.on_your_host)
 
-        self.client.add_global_handler("nosuchnick", self.on_connect)
-        self.client.add_global_handler("nosuchcannel", self.on_connect)
-        self.client.add_global_handler("unknowncommand", self.on_connect)
-        self.client.add_global_handler("nonicknamegiven", self.on_connect)
-        self.client.add_global_handler("nicknameinuse", self.on_connect)
-        self.client.add_global_handler("nickcollison", self.on_connect)
-        self.client.add_global_handler("notonchannel", self.on_connect)
-        self.client.add_global_handler("useronchannel", self.on_connect)"""
+        self.client.add_global_handler("nosuchnick", self.on_your_host)
+        self.client.add_global_handler("nosuchcannel", self.on_your_host)
+        self.client.add_global_handler("unknowncommand", self.on_your_host)
+        self.client.add_global_handler("nonicknamegiven", self.on_your_host)
+        self.client.add_global_handler("nicknameinuse", self.on_your_host)
+        self.client.add_global_handler("nickcollison", self.on_your_host)
+        self.client.add_global_handler("notonchannel", self.on_your_host)
+        self.client.add_global_handler("useronchannel", self.on_your_host)
 
         self.client.add_global_handler("yourhost", self.on_your_host)
         self.client.add_global_handler("disconnect", self.on_disconnect)
@@ -118,6 +118,29 @@ class IRCSide(threading.Thread):
 
     def on_your_host(self, connection, event):
         print("test")
+
+        if(len(event.arguments) != 0):
+            message = event.arguments[0]
+        else:
+            message = str(event.arguments)
+
+        res = self.cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s AND `serverID` = %s;""", (self.userID, connection.serverID))
+        if res != 0:
+            result = self.cursor.fetchall()
+            print(result)
+            serverID_res = int(result[0][0])
+            print("serverID = {}".format(serverID_res))
+
+            if serverID_res == int(connection.serverID): # pokud se získané ID z databáze rovná tomu, které v sobě
+                # uchovává connection, redundantní check, ale just4safety
+                res = self.cursor.execute("""INSERT INTO `IRC_other_messages` (IRC_servers_serverID,
+                fromHostmask,
+                messageBody,
+                commandType,
+                timeReceived)
+                values (%s, %s, %s, %s, %s)""", (serverID_res, event.source, message, event.type.upper(),
+                                                 datetime.datetime.utcnow()))
+                self.db.commit()
 
     """
         Called to connect to a specified server
@@ -141,7 +164,7 @@ class IRCSide(threading.Thread):
             try:
                 self.connect_server(srvr["serverID"], srvr["serverIP"], int(srvr["serverPort"]), srvr["nickname"])
             except Exception as exp:
-                print("Error occurred.\nWhy: {0}".format(exp)) # TOOD: send errors like these to the client!!!
+                print("Error occurred.\nWhy: {0}".format(exp)) # TOOD: posílat takovéhle errory klientům
 
     """Called: never?"""
     def start(self):
@@ -215,8 +238,8 @@ class IRCSide(threading.Thread):
     """Fired when any client receives a message from a channel"""
     def on_pubmsg(self, connection, event):
         print("CONNECTION = {}\n\n".format(connection.__dict__))
-
         print('[{}] Pubmsg {} {}\n' .format(event.type.upper(), event.source, str(event.__dict__)))
+
         if(len(event.arguments) != 0):
             message = event.arguments[0]
         else:
@@ -229,7 +252,8 @@ class IRCSide(threading.Thread):
             serverID_res = int(result[0][0])
             print("serverID = {}".format(serverID_res))
 
-            if serverID_res == int(connection.serverID): # pokud se získané ID z databáze rovná tomu, které v sobě uchovává connection, redundantní check, ale JTS
+            if serverID_res == int(connection.serverID): # pokud se získané ID z databáze rovná tomu, které v sobě
+                # uchovává connection, redundantní check, ale just4safety
                 res = self.cursor.execute("""SELECT * FROM `IRC_channels` WHERE `IRC_servers_serverID` = %s AND `channelName` = %s;""", (serverID_res, event.target))
                 if res != 0:
                     result = self.cursor.fetchall()
