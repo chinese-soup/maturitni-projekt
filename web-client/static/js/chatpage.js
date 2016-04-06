@@ -34,9 +34,27 @@ function onChatLoad()
     console.log("onChatLoad();");
     checkIfUserIsLoggedInOnStart();
     loadSettingsIntoVariable();
+    $("#button_send_message").click({channelID:-1}, sendTextBoxCommand);
     setTimeout(ping, 1500);
 }
 
+
+/*
+    called when the user presses send/enter/etc. to send the textbox content to the server
+*/
+function sendTextBoxCommand(event)
+{
+    channelID = event.data.channelID;
+    log("sendTextBoxCommand({0})".format(channelID));
+    log($("#input-msgline").val());
+
+}
+
+
+/*
+   loading settings into variables
+   for when the user opens the edit global settings window
+*/
 function loadSettingsIntoVariable()
 {
     console.log("loadSettingsIntoInputs();")
@@ -313,6 +331,7 @@ function switchCurrentChannel(toChannelID)
 {
     $(".message_window").hide();
     $("#channel_window_{0}".format(toChannelID)).show();
+    $("#button_send_message").click({channelID:toChannelID}, sendTextBoxCommand);
     currently_visible_message_window = toChannelID;
 }
 
@@ -342,6 +361,8 @@ function switchCurrentChannelEventStyle(event)
 {
     toChannelID = event.data.channelID;
     toChannelName = event.data.channelName;
+
+    $("#button_send_message").click({channelID:toChannelID}, sendTextBoxCommand);
 
     log("Switching channel window to {0} ({1})".format(toChannelID, toChannelName));
 
@@ -454,9 +475,6 @@ function getBacklogForServers(limit)
 
                	for (var i=0; i < messages.length; i++)
                 {
-                    log(i);
-                    // pokud se jedná o zprávu z kanálu
-
                     addMessageToChannel(
                         messages[i]["messageID"],
                         convertDBTimeToLocalTime(messages[i]["timeReceived"]),
@@ -843,7 +861,7 @@ function loadServers()
                     $(".channel_list #channel_{0} .channelName".format(channelID)).html(channelName);
 
                     $(generateChannelWindow(channelID)).insertAfter($(".message_window".format(channelServerID)));
-                    already_loaded_backlog = []; // CLEAR ALL MEMES
+                    already_loaded_backlog = []; // CLEAR ALL INFO ABOUT BACKLOGS BEING ALREADY LOADED
 
                     /* bind a click event to a channel in teh channel list*/
                     $(".channel_list #channel_{0} .channelName".format(channelID)).click(
