@@ -28,7 +28,7 @@ function register(event)
 {
     $("body").css("cursor", "wait"); // indicate to the user that we are working on stuff
 
-    var posting = $.post("http://localhost:5000/register",
+    var posting = $.post("http://" + hostname + ":5000/register",
     {
         email: $("#signup-form input[id=email]").val(),
         password: $("#signup-form input[id=pwd]").val()
