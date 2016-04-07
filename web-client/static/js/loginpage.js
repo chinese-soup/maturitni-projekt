@@ -11,23 +11,6 @@ function loginPageOnLoad()
 
 var hostname = location.hostname; // maybe temporary(?): get the current hostname so we know where to make api calls (same host, different port)
 
-
-window.onhashchange = function()
-{
-  switch(location.hash) {
-    case "#regsuccess":
-        general_dialog("Registration success", "You have successfully registered an account. You can now login using this page.", "success", 0);
-    break;
-    case "#has2":
-      //do something else
-    break;
-    default:
-        console.log("default");
-    break;
-
-  }
-}
-
 $.ajaxSetup({
     crossDomain: true,
     xhrFields: {

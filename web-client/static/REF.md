@@ -9,3 +9,4 @@
 * [http://stackoverflow.com/questions/18229022/how-to-show-current-time-in-javascript-in-the-format-hhmmss](http://stackoverflow.com/questions/18229022/how-to-show-current-time-in-javascript-in-the-format-hhmmss)
 * [https://mathiasbynens.be/demo/url-regex](https://mathiasbynens.be/demo/url-regex)
 * [http://stackoverflow.com/questions/16531116/python-valueerror-unsupported-format-character-y-0x59](http://stackoverflow.com/questions/16531116/python-valueerror-unsupported-format-character-y-0x59)
+https://github.com/zenozeng/color-hash/

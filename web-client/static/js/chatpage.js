@@ -34,6 +34,8 @@ function onChatLoad()
     console.log("onChatLoad();");
     checkIfUserIsLoggedInOnStart();
     loadSettingsIntoVariable();
+
+    $("#button_send_message").off("click");
     $("#button_send_message").click({channelID:-1}, sendTextBoxCommand);
     setTimeout(ping, 1500);
 }
@@ -102,6 +104,85 @@ function ping()
     console.log("ping()");
     getNewMessages();
     setTimeout(ping, 1500);
+}
+
+
+function getNewServerMessages()
+{
+    var posting = $.post("http://{0}:5000/get_messages".format(hostname),
+    {
+       serverID: -1, // TODO: dummy, need to remove from API
+       limit: 1000000000,
+       backlog: 0,
+       sinceTimestamp: last_message_id[channelID]
+    }, dataType="text"
+    );
+
+    posting.done(function(data)
+    {
+        console.log(data);
+        if(data["status"] == "error")
+        {
+            if(data["reason"] == "not_loggedin")
+            {
+                log(data["reason"]);
+            }
+        }
+        else if(data["status"] == "ok")
+        {
+           if(data["reason"] == "listing_new_other_messages")
+           {
+                var messages = data["message"];
+                for (var i=0; i < messages.length; i++)
+                {
+                    if(messages[i]["commandType"] == "PRIVMSG" || messages[i]["commandType"] == "PUBMSG")
+                    {
+                        addMessageToChannel(
+                            messages[i]["messageID"],
+                            convertDBTimeToLocalTime(messages[i]["timeReceived"]),
+                            getNicknameFromHostmask(messages[i]["fromHostmask"]),
+                            "ok",
+                            linkifyMessage(messages[i]["messageBody"]),
+                            messages[i]["IRC_channels_channelID"]
+                        );
+
+                    }
+                    else if(messages[i]["commandType"] == "JOIN" || messages[i]["commandType"] == "QUIT" || messages[i]["commandType"] == "PART")
+                    {
+                        addJoinPartQuitToChannel(
+                            messages[i]["messageID"],
+                            convertDBTimeToLocalTime(messages[i]["timeReceived"]),
+                            messages[i]["commandType"],
+                            messages[i]["fromHostmask"],
+                            messages[i]["messageBody"],
+                            messages[i]["IRC_channels_channelID"]
+                        );
+
+                    }
+                    else if(messages[i]["commandType"] == "ACTION")
+                    {
+                         addActionMessage(
+                            messages[i]["messageID"],
+                            convertDBTimeToLocalTime(messages[i]["timeReceived"]),
+                            getNicknameFromHostmask(messages[i]["fromHostmask"]),
+                            "ok",
+                            linkifyMessage(messages[i]["messageBody"]),
+                            messages[i]["IRC_channels_channelID"]
+                        );
+                    }
+                    last_message_id[messages[i]["IRC_channels_channelID"]] = messages[i]["messageID"];
+
+
+                }
+           }
+        }
+
+    });
+
+    posting.fail(function()
+    {
+         log("An error occurred while trying to contact the API server. Try reloading the page.", "error");
+    });
 }
 
 
@@ -331,6 +412,8 @@ function switchCurrentChannel(toChannelID)
 {
     $(".message_window").hide();
     $("#channel_window_{0}".format(toChannelID)).show();
+
+    $("#button_send_message").off("click");
     $("#button_send_message").click({channelID:toChannelID}, sendTextBoxCommand);
     currently_visible_message_window = toChannelID;
 }
@@ -362,6 +445,7 @@ function switchCurrentChannelEventStyle(event)
     toChannelID = event.data.channelID;
     toChannelName = event.data.channelName;
 
+    $("#button_send_message").off("click");
     $("#button_send_message").click({channelID:toChannelID}, sendTextBoxCommand);
 
     log("Switching channel window to {0} ({1})".format(toChannelID, toChannelName));

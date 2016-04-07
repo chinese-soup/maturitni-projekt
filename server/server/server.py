@@ -46,14 +46,18 @@ class IRCSide(threading.Thread):
     def _func_to_be_threaded(self):
         while(True):
             time.sleep(5)
-            print("Sleep 5: ", self.userID)
-            db_pull = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
-            cursor_pull = db_pull.cursor()
-            pull_result = cursor_pull.execute("""SELECT * FROM `IO_Table` WHERE `Registered_users_userID` = %s;""", (self.userID,))
-            for result in pull_result:
-                print(result)
 
-            db_pull.close()
+            print("Sleep 5: ", self.userID)
+            try:
+                db_pull = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
+                cursor_pull = db_pull.cursor()
+                pull_result = cursor_pull.execute("""SELECT * FROM `IO_Table` WHERE `Registered_users_userID` = %s;""", (self.userID,))
+                for result in pull_result:
+                    print(result)
+
+                db_pull.close()
+            except Exception as ex:
+                print("EXCEPTION IN CHILD THREAD: {0}".format(ex))
 
 
     def func_to_be_threaded(self):
@@ -96,16 +100,19 @@ class IRCSide(threading.Thread):
         self.client.add_global_handler("created", self.on_your_host)
         self.client.add_global_handler("myinfo", self.on_your_host)
 
+        self.client.add_global_handler("namreply", self.nam_reply)
+
         self.client.add_global_handler("nosuchnick", self.on_your_host)
         self.client.add_global_handler("nosuchcannel", self.on_your_host)
         self.client.add_global_handler("unknowncommand", self.on_your_host)
         self.client.add_global_handler("nonicknamegiven", self.on_your_host)
-        self.client.add_global_handler("nicknameinuse", self.on_your_host)
         self.client.add_global_handler("nickcollison", self.on_your_host)
         self.client.add_global_handler("notonchannel", self.on_your_host)
         self.client.add_global_handler("useronchannel", self.on_your_host)
 
-        self.client.add_global_handler("yourhost", self.on_your_host)
+        self.client.add_global_handler("nicknameinuse", self.on_your_host)
+
+
         self.client.add_global_handler("disconnect", self.on_disconnect)
         self.client.add_global_handler("nicknameinuse", self.on_nicknameinuse)
         self.client.add_global_handler("pubmsg", self.on_pubmsg)
@@ -115,9 +122,15 @@ class IRCSide(threading.Thread):
         self.client.add_global_handler("quit", self.on_pubmsg)
         self.client.add_global_handler("nick", self.on_nick)
         self.client.add_global_handler("action", self.on_pubmsg)
+    def nickname_in_use(self, connection, event):
+        print("self.nickname_in_use")
+
+    def nam_reply(self, connection, event):
+        pass
 
     def on_your_host(self, connection, event):
-        print("test")
+        print(event)
+        print(event.arguments)
 
         if(len(event.arguments) != 0):
             message = event.arguments[0]
@@ -291,6 +304,7 @@ class IRCSide(threading.Thread):
         print('[{}] Quit {}' .format(event.type.upper(), event.source))
 
     def on_nick(self, connection, event):
+
         print('[{}] NickChange {}' .format(event.type.upper(), event.source))
 
     def on_nicknameinuse(self, connection, event):
