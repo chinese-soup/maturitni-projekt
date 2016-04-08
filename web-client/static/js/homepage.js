@@ -5,6 +5,9 @@ function homePageOnLoad()
     signup_form.addEventListener("submit", register);
 }
 
+var hostname = location.hostname; // maybe temporary(?): get the current hostname so we know where to make api calls (same host, different port)
+
+
 window.onhashchange = function()
 {
   switch(location.hash) {
@@ -46,7 +49,7 @@ function register(event)
             general_dialog("Registration successful", "You have successfully registered.<br>You can now use the <a href='login.html'>login page</a> to log in.", "ok", 0);
             /*window.location.href = "login.html#regsuccess";*/
         }
-        else if(json_parsed["status"] == "error")
+        else
         {
             $("body").css("cursor", "pointer");
             console.log(json_parsed["message"]);

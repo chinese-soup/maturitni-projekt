@@ -383,10 +383,13 @@ function addJoinPartQuitToChannel(messageID, timestamp, messageType, sender, mes
 
 function addMessageToChannel(messageID, timestamp, sender, senderColor, message, channelID)
 {
+    var colorHash = new ColorHash({lightness: [0.65, 0.65, 0.65]});
+    senderColor = colorHash.hex(sender);
+
     var html =
     '<div class="log_message log_message_even">' +
     '    <span class="timestamp">{0}</span>'.format(timestamp) +
-    '    <span class="message-body"><span class="message-sender message-sender-{0}">{1}</span>: {2}</span>'.format(senderColor, sender, message) +
+    '    <span class="message-body"><span class="message-sender message-sender-0" style="color: {0} !important;">{1}</span>: {2}</span>'.format(senderColor, sender, message) +
     '</div>';
 
 
@@ -395,18 +398,7 @@ function addMessageToChannel(messageID, timestamp, sender, senderColor, message,
 
     var element2 = $(".center_messages_container");
     element2.prop("scrollTop", 500000000000); // scrollneme dolů, protože máme nové
-
-
-    /*
-        for (var key in array)
-        {
-            let value = array[key];
-            console.log(value);
-        }
-    */
-
 }
-
 
 function switchCurrentChannel(toChannelID)
 {

@@ -1,28 +1,7 @@
 #!/usr/bin/env python3
 # coding=utf-8
 # TODO: http://flask.pocoo.org/docs/0.10/patterns/packages/
-# TODO: http://flask.pocoo.org/docs/0.10/patterns/packages/
-# TODO: http://flask.pocoo.org/docs/0.10/patterns/packages/
-# TODO: http://flask.pocoo.org/docs/0.10/patterns/packages/
-# TODO: http://flask.pocoo.org/docs/0.10/patterns/packages/
-# TODO: http://flask.pocoo.org/docs/0.10/patterns/packages/
-# TODO: http://flask.pocoo.org/docs/0.10/patterns/packages/
-# TODO: http://flask.pocoo.org/docs/0.10/patterns/packages/
-# TODO: http://flask.pocoo.org/docs/0.10/patterns/packages/
-# TODO: http://flask.pocoo.org/docs/0.10/patterns/packages/
-# TODO: http://flask.pocoo.org/docs/0.10/patterns/packages/
 # TODO2: http://flask.pocoo.org/docs/0.10/deploying/mod_wsgi/
-# TODO2: http://flask.pocoo.org/docs/0.10/deploying/mod_wsgi/
-# TODO2: http://flask.pocoo.org/docs/0.10/deploying/mod_wsgi/
-# TODO2: http://flask.pocoo.org/docs/0.10/deploying/mod_wsgi/
-# TODO2: http://flask.pocoo.org/docs/0.10/deploying/mod_wsgi/
-# TODO2: http://flask.pocoo.org/docs/0.10/deploying/mod_wsgi/
-# TODO2: http://flask.pocoo.org/docs/0.10/deploying/mod_wsgi/
-# TODO2: http://flask.pocoo.org/docs/0.10/deploying/mod_wsgi/
-# TODO3: Check for invalid data in forms
-# TODO3: Check for invalid data in forms
-# TODO3: Check for invalid data in forms
-# TODO3: Check for invalid data in forms
 # TODO3: Check for invalid data in forms
 
 
@@ -789,7 +768,9 @@ def get_server_messages():
         %s;""", (userID,)) # get user's messages
         all_serverIDs_for_this_user = cursor.fetchall()
         print("all_serverIDs_for_this_user= ", all_serverIDs_for_this_user)
+
         messages = list()
+
         for current_server in all_serverIDs_for_this_user:
             print("CURRENT_SERVER = ", current_server)
             serverID_result = int(current_server[0]) # 0 = serverID
@@ -830,14 +811,51 @@ def get_server_messages():
                             print(type(res[4]))
 
                     else:
-                        db.close()
-                        return error("error", "channel_is_not_yours", "A channel with this channelID does not belong to your account.")
+                        pass # IT IS IMPORTANT TO PASS HERE, BECAUSE THE SERVER MIGHT NOT HAVE ANY MESSAGES YET!!
+
                 else:
                     print("NOT BACKLOG")
-                    return error("error", "not_yet_implemented", "This stuff is not yet implemented.")
+                    messageLimit = 10000000 # dummy, todo: fix? nah no time lol
+                    sinceTimestamp = request.form.get("sinceTimestamp") or -1 # load messages posted since a given time
+
+                    res = cursor.execute("""
+                    (SELECT *
+                    FROM `IRC_other_messages`
+                    WHERE `IRC_servers_serverID` = %s
+                    AND `messageID` > %s
+                    ORDER BY `messageID` DESC LIMIT %s)
+                    ORDER BY `messageID` ASC;
+                    """, (serverID_result, sinceTimestamp, messageLimit)) #
+
+                    if res != 0:
+                        result = cursor.fetchall()
+                        print("\n\MRDKY\n\n", result)
+                        messages = list()
+
+                        for res in result:
+                            print(res)
+                            dateTime = res[4]
+                            import time
+                            utc_time = time.mktime(dateTime.timetuple()) * 1000
+
+                            server_dict_temp = {"messageID": res[0],
+                                "fromHostmask": res[1],
+                                "messageBody": res[2],
+                                "commandType": res[3],
+                                "timeReceived": utc_time,
+                                "seen": res[5],
+                                "IRC_servers_serverID": res[6]}
+                            messages.append(server_dict_temp)
+                    else:
+                        db.close()
+                        response = {"status": "ok", "reason": "no_new_messages", "message": "No new messages since {0}".format(sinceTimestamp)}
+                        return jsonify(response)
+
             else:
                 db.close()
                 return error("error", "channel_is_not_yours", "A channel with this channelID does not belong to your account.")
+                #response = {"status": "ok", "reason": "listing_other_messages", "message": messages}
+                #return jsonify(response)
         db.close()
         response = {"status": "ok", "reason": "listing_other_messages", "message": messages}
         return jsonify(response)
@@ -849,14 +867,25 @@ def get_server_messages():
 @app.route("/send_io", methods=["POST"])
 def send_io():
     userID = get_userID_if_loggedin(request)
-    print("UserID = ", userID)
-    channelID = request.form.get("channelID") # channelID
+    ioType = request.form.get("ioType") or "error"
+    channelID = request.form.get("channelID") or -1 # channelID
+    serverID = request.form.get("serverID") or -1
+
     if userID is not False:
         db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
         cursor = db.cursor()
+        if(ioType == "CONNECT_SERVER"):
+            print("CONNECT_SERVER")
+        if(ioType == "REMOVE_SERVER"):
+            print("REMOVE_SERVER")
+        if(ioType == "PART_CHANNEL"):
+            print("PART CHANNEL")
+
         res = cursor.execute("""SELECT * FROM `IRC_channels` WHERE `channelID` = %s;""", (channelID,)) #query to find the serverID so we can check if the user owns this serverID and is not trying to read something that is not his
         if res != 0:
-            print("ahoj")
+            channelID = cursor.fetchone()
+
+
 
 
 
