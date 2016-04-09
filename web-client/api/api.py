@@ -20,6 +20,8 @@ from base64 import b64encode
 from time import time
 import datetime
 
+import time
+
 
 from flask import Flask, request, jsonify, redirect
 app = Flask(__name__)
@@ -659,14 +661,12 @@ def get_messages():
                                          ) # query to get the backlog if the message window was opened just now
                     if res != 0:
                         result = cursor.fetchall()
-                        print("\n\MRDKY\n\n", result)
                         messages = list()
 
                         for res in result:
                             print(res)
                             dateTime = res[4]
                             print("dateTime = ", dateTime)
-                            import time
                             utc_time = time.mktime(dateTime.timetuple()) * 1000
 
                             server_dict_temp = {"messageID": res[0],
@@ -705,13 +705,11 @@ def get_messages():
 
                     if res != 0:
                         result = cursor.fetchall()
-                        print("\n\MRDKY\n\n", result)
                         messages = list()
 
                         for res in result:
                             print(res)
                             dateTime = res[4]
-                            import time
                             utc_time = time.mktime(dateTime.timetuple()) * 1000
 
                             server_dict_temp = {"messageID": res[0],
@@ -750,53 +748,49 @@ def get_server_messages():
     userID = get_userID_if_loggedin(request)
     print("UserID = ", userID)
 
-    try:
-        backlog = bool(int(request.form.get("backlog"))) # rozhoduje zda budeme vracet backlog nebo nejnovější
-        # zprávy od
-    #  minule
-        serverID = request.form.get("serverID") # TODO: REMOVE, THIS IS JUST FOR TESTING, WE NEED ALL THE IRC SERVER
-    # MESSAGES
-        messageLimit = int(request.form.get("limit")) or 20 # limit zpráv, které získáváme z db
-    except Exception as ex:
-        print("Error trying to get form data @ get_server_messages(): {0}".format(ex))
-        return error("error", "bad_request", "Bad API request.")
+    backlog = bool(int(request.form.get("backlog"))) # rozhoduje zda budeme vracet backlog nebo nejnovější
+    # zprávy odccccc
+#  minule
+    serverID = request.form.get("serverID") # TODO: REMOVE, THIS IS JUST FOR TESTING, WE NEED ALL THE IRC SERVER
+# MESSAGES
+    messageLimit = int(request.form.get("limit")) or 20 # limit zpráv, které získáváme z db
+
+
     if userID is not False:
         db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
         cursor = db.cursor()
 
         res = cursor.execute("""SELECT serverID, serverName, Registred_users_userID FROM `IRC_servers` WHERE `Registred_users_userID` =
         %s;""", (userID,)) # get user's messages
+
         all_serverIDs_for_this_user = cursor.fetchall()
         print("all_serverIDs_for_this_user= ", all_serverIDs_for_this_user)
 
         messages = list()
+        if backlog is True: # if we want to load messages for a channel we are opening for the first time this session
+            for current_server in all_serverIDs_for_this_user:
+                print("CURRENT_SERVER = ", current_server)
+                serverID_result = int(current_server[0]) # 0 = serverID
+                serverName_result = str(current_server[1]) # 1 = serverName
 
-        for current_server in all_serverIDs_for_this_user:
-            print("CURRENT_SERVER = ", current_server)
-            serverID_result = int(current_server[0]) # 0 = serverID
-            serverName_result = str(current_server[1]) # 1 = serverName
+                res = cursor.execute("""
+                (SELECT *
+                FROM `IRC_other_messages`
+                WHERE `IRC_servers_serverID` = %s
+                ORDER BY `messageID` DESC LIMIT %s)
+                ORDER BY `messageID` ASC;""", (serverID_result, messageLimit)
+                                     ) # query to get the backlog if the message window was opened just now
 
-            if check_if_serverID_belongs_to_userID(userID, serverID_result) is True:
-                print("THIS IS YOUR SERVER")
+                if res != 0:
+                    result = cursor.fetchall()
 
-                if backlog is True: # if we want to load messages for a channel we are opening for the first time this session
-                    res = cursor.execute("""
-                    (SELECT *
-                    FROM `IRC_other_messages`
-                    WHERE `IRC_servers_serverID` = %s
-                    ORDER BY `messageID` DESC LIMIT %s)
-                    ORDER BY `messageID` ASC;""", (serverID_result, messageLimit)
-                                         ) # query to get the backlog if the message window was opened just now
-                    if res != 0:
-                        result = cursor.fetchall()
-                        print("\n\MRDKY\n\n", result)
-
-
-                        for res in result:
-                            print(res)
+                    for res in result:
+                        print(res)
+                        if check_if_serverID_belongs_to_userID(userID, int(res[6])) is True:
+                            print("THIS IS YOUR SERVER")
                             dateTime = res[4]
                             print("dateTime = ", dateTime)
-                            import time
+
                             utc_time = time.mktime(dateTime.timetuple()) * 1000
 
                             server_dict_temp = {"messageID": res[0],
@@ -810,54 +804,55 @@ def get_server_messages():
                             messages.append(server_dict_temp)
                             print(type(res[4]))
 
-                    else:
-                        pass # IT IS IMPORTANT TO PASS HERE, BECAUSE THE SERVER MIGHT NOT HAVE ANY MESSAGES YET!!
-
                 else:
-                    print("NOT BACKLOG")
-                    messageLimit = 10000000 # dummy, todo: fix? nah no time lol
-                    sinceTimestamp = request.form.get("sinceTimestamp") or -1 # load messages posted since a given time
+                    pass # PASS HERE, BECAUSE THE SERVER MIGHT NOT HAVE ANY MESSAGES YET
 
-                    res = cursor.execute("""
-                    (SELECT *
-                    FROM `IRC_other_messages`
-                    WHERE `IRC_servers_serverID` = %s
-                    AND `messageID` > %s
-                    ORDER BY `messageID` DESC LIMIT %s)
-                    ORDER BY `messageID` ASC;
-                    """, (serverID_result, sinceTimestamp, messageLimit)) #
+        else:
+            print("NOT BACKLOG")
+            messageLimit = 10000000 # dummy, todo: fix? nah no time lol
+            sinceTimestamp = request.form.get("sinceTimestamp") or -1 # load messages posted since a given ID
 
-                    if res != 0:
-                        result = cursor.fetchall()
-                        print("\n\MRDKY\n\n", result)
-                        messages = list()
+            res = cursor.execute("""
+            (SELECT *
+            FROM `IRC_other_messages`
+            WHERE `messageID` > %s
+            ORDER BY `messageID` DESC LIMIT %s)
+            ORDER BY `messageID` ASC;
+            """, (sinceTimestamp, messageLimit)) #
 
-                        for res in result:
-                            print(res)
-                            dateTime = res[4]
-                            import time
-                            utc_time = time.mktime(dateTime.timetuple()) * 1000
+            if res != 0:
+                result = cursor.fetchall()
+                for res in result:
+                    if check_if_serverID_belongs_to_userID(userID, int(res[6])) is True:
+                        print(res)
+                        dateTime = res[4]
+                        utc_time = time.mktime(dateTime.timetuple()) * 1000
 
-                            server_dict_temp = {"messageID": res[0],
-                                "fromHostmask": res[1],
-                                "messageBody": res[2],
-                                "commandType": res[3],
-                                "timeReceived": utc_time,
-                                "seen": res[5],
-                                "IRC_servers_serverID": res[6]}
-                            messages.append(server_dict_temp)
-                    else:
-                        db.close()
-                        response = {"status": "ok", "reason": "no_new_messages", "message": "No new messages since {0}".format(sinceTimestamp)}
-                        return jsonify(response)
-
+                        server_dict_temp = {"messageID": res[0],
+                            "fromHostmask": res[1],
+                            "messageBody": res[2],
+                            "commandType": res[3],
+                            "timeReceived": utc_time,
+                            "seen": res[5],
+                            "IRC_servers_serverID": res[6]}
+                        messages.append(server_dict_temp)
             else:
-                db.close()
-                return error("error", "channel_is_not_yours", "A channel with this channelID does not belong to your account.")
+                #db.close()
+                #response = {"status": "ok", "reason": "no_new_messages", "message": "No new messages since {
+                # 0}".format(sinceTimestamp)}
+                #return jsonify(response)
+                pass
+
+            #else:
+             #   db.close()
+              #  return error("error", "channel_is_not_yours", "A channel with this channelID does not belong to your account.")
                 #response = {"status": "ok", "reason": "listing_other_messages", "message": messages}
                 #return jsonify(response)
         db.close()
-        response = {"status": "ok", "reason": "listing_other_messages", "message": messages}
+        if(len(messages) != 0):
+            response = {"status": "ok", "reason": "listing_other_messages", "message": messages}
+        else:
+            response = {"status": "ok", "reason": "no_new_messages", "message": "No new messages since {0}".format(sinceTimestamp)}
         return jsonify(response)
     else:
          return error("error", "not_loggedin", "You are not logged in.")
