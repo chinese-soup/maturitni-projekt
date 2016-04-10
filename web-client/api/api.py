@@ -102,11 +102,12 @@ def check_if_serverID_belongs_to_userID(userID, serverID):
 @app.after_request
 def after_request(response):
     """Adds CORS allowing headers to the response before sending it to the client."""
-    response.headers.add("Access-Control-Allow-Origin", "http://localhost")
+    response.headers.add("Access-Control-Allow-Origin", "http://localhost") #TODO: localhost fix
     response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization,Cookies")
     response.headers.add("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE")
     response.headers.add("Access-Control-Allow-Credentials", "true")
     return response
+
 
 @app.route("/")
 def hello_world():
@@ -871,29 +872,49 @@ def send_io():
     if userID is not False:
         db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
         cursor = db.cursor()
-        if(ioType == "CONNECT_SERVER"):
-            print("CONNECT_SERVER")
-        if(ioType == "REMOVE_SERVER"):
-            print("REMOVE_SERVER")
-        if(ioType == "PART_CHANNEL"):
-            print("PART CHANNEL")
 
         res = cursor.execute("""SELECT * FROM `IRC_channels` WHERE `channelID` = %s;""", (channelID,)) #query to find the serverID so we can check if the user owns this serverID and is not trying to read something that is not his
         if res != 0:
             chaninfo = cursor.fetchone()
-            serverID = chaninfo[5] #ServerID
 
+            channelID_result = chaninfo[0] #channelID
+            serverID = chaninfo[5] #ServerID
 
             result_code = cursor.execute("""SELECT * FROM `IRC_servers` WHERE `serverID` = %s AND `Registred_users_userID` = %s""", (serverID, userID,))
             if result_code is not 0:
                 result = cursor.fetchone()
                 serverID_result = result[0]
                 userID_result = result[5]
+                argument1 = ""
+                argument2 = ""
+                argument3 = ""
+                timeSent = None
+                processed = None
 
 
+                if(ioType == "CONNECT_SERVER"):
+                    print("CONNECT_SERVER")
+                elif(ioType == "REMOVE_SERVER"):
+                    print("REMOVE_SERVER")
+                elif(ioType == "PART_CHANNEL"):
+                    print("PART CHANNEL")
 
+                cursor.execute("""INSERT INTO `IO_Table` (Registred_users_userID,
+                                                        commandType,
+                                                        argument1,
+                                                        argument2,
+                                                        argument3,
+                                                        timeSent,
+                                                        processed,
+                                                        fromClient,
+                                                        serverID,
+                                                        channelID)
 
-
+                                                        values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                """, (userID_result, argument1, argument2, argument3, timeSent, processed, True, serverID_result,
+                      channelID_result))
+                db.commit()
+                db.close()
 
 
 @app.route("/send_textbox_io", methods=["POST"])
@@ -901,8 +922,24 @@ def send_textbox_io():
     userID = get_userID_if_loggedin(request)
     print("UserID = ", userID)
     try:
-        backlog = bool(int(request.form.get("backlog"))) # rozhoduje zda budeme vracet backlog nebo nejnovější zprávy od minule
-        channelID = request.form.get("channelID") # channelID
+        if userID is not None:
+            backlog = bool(int(request.form.get("backlog"))) # rozhoduje zda budeme vracet backlog nebo nejnovější zprávy od minule
+            channelID = request.form.get("channelID") # channelID
+            res = cursor.execute("""SELECT * FROM `IRC_channels` WHERE `channelID` = %s;""", (channelID,)) #query to find the serverID so we can check if the user owns this serverID and is not trying to read something that is not his
+            if res != 0:
+                chaninfo = cursor.fetchone()
+                serverID = chaninfo[5] #ServerID
+
+                result_code = cursor.execute("""SELECT * FROM `IRC_servers` WHERE `serverID` = %s AND `Registred_users_userID` = %s""", (serverID, userID,))
+                if result_code is not 0:
+                    result = cursor.fetchone()
+                    serverID_result = result[0]
+                    userID_result = result[5]
+
+
+
+
+
     except Exception as ex:
         print(ex)
 
