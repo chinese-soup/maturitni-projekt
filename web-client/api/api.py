@@ -98,7 +98,6 @@ def check_if_serverID_belongs_to_userID(userID, serverID):
             return False
     return False
 
-
 # after request, pro povoleni CORS requestů z javascriptu
 @app.after_request
 def after_request(response):
@@ -613,6 +612,7 @@ def add_new_server_settings():
                                 values(%s, %s, %s, %s, %s, %s, %s, -1, 0, 0);""",
                              (userID, klice["serverName"], klice["nickname"], klice["serverPassword"], klice["serverIP"], klice["serverPort"], klice["useSSL"]))
         db.commit()
+
         if res == 1:
             response = {"status": "ok", "reason": "server_settings_edited_successfully", "message": "Server settings edited successfully.<br>Sending reconnect request."}
         else:
@@ -681,6 +681,8 @@ def get_messages():
                         db.close()
                         response = {"status": "ok", "reason": "listing_messages", "message": messages}
                         return jsonify(response)
+                    else:
+                        return error("error", "no_messages_in_backlog", "There are no messages in this channel yet")
 
                 else:
                     messageLimit = 10000000 # dummy, todo: fix? nah no time lol
@@ -726,7 +728,7 @@ def get_messages():
                         return jsonify(response)
                     else:
                         db.close()
-                        response = {"status": "ok", "reason": "no_new_messages", "message": "No new messages since {0}".format(sinceTimestamp)}
+                        response = {"status": "ok", "reason": "no_new_messages", "message": "No new messages since"}
                         return jsonify(response)
 
             else:
@@ -852,7 +854,7 @@ def get_server_messages():
         if(len(messages) != 0):
             response = {"status": "ok", "reason": "listing_other_messages", "message": messages}
         else:
-            response = {"status": "ok", "reason": "no_new_messages", "message": "No new messages since {0}".format(sinceTimestamp)}
+            response = {"status": "ok", "reason": "no_new_messages", "message": "No new messages since"}
         return jsonify(response)
     else:
          return error("error", "not_loggedin", "You are not logged in.")
@@ -878,7 +880,16 @@ def send_io():
 
         res = cursor.execute("""SELECT * FROM `IRC_channels` WHERE `channelID` = %s;""", (channelID,)) #query to find the serverID so we can check if the user owns this serverID and is not trying to read something that is not his
         if res != 0:
-            channelID = cursor.fetchone()
+            chaninfo = cursor.fetchone()
+            serverID = chaninfo[5] #ServerID
+
+
+            result_code = cursor.execute("""SELECT * FROM `IRC_servers` WHERE `serverID` = %s AND `Registred_users_userID` = %s""", (serverID, userID,))
+            if result_code is not 0:
+                result = cursor.fetchone()
+                serverID_result = result[0]
+                userID_result = result[5]
+
 
 
 
@@ -889,9 +900,12 @@ def send_io():
 def send_textbox_io():
     userID = get_userID_if_loggedin(request)
     print("UserID = ", userID)
+    try:
+        backlog = bool(int(request.form.get("backlog"))) # rozhoduje zda budeme vracet backlog nebo nejnovější zprávy od minule
+        channelID = request.form.get("channelID") # channelID
+    except Exception as ex:
+        print(ex)
 
-    backlog = bool(int(request.form.get("backlog"))) # rozhoduje zda budeme vracet backlog nebo nejnovější zprávy od minule
-    channelID = request.form.get("channelID") # channelID
 
 
 
