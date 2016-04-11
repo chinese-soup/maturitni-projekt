@@ -741,6 +741,11 @@ def get_messages():
 # TODO: fix sql?
 @app.route("/get_server_messages", methods=["POST"])
 def get_server_messages():
+    """
+    Route called to get new server messages for all servers since time
+    Route called to get old server messages for all serversto fill the backlog
+    :return:
+    """
     userID = get_userID_if_loggedin(request)
     print("UserID = ", userID)
 
@@ -833,13 +838,8 @@ def get_server_messages():
                 #response = {"status": "ok", "reason": "no_new_messages", "message": "No new messages since {
                 # 0}".format(sinceTimestamp)}
                 #return jsonify(response)
-                pass
+                pass # if there are no messages, just pass, deal with it later
 
-            #else:
-             #   db.close()
-              #  return error("error", "channel_is_not_yours", "A channel with this channelID does not belong to your account.")
-                #response = {"status": "ok", "reason": "listing_other_messages", "message": messages}
-                #return jsonify(response)
         db.close()
         if(len(messages) != 0):
             response = {"status": "ok", "reason": "listing_other_messages", "message": messages}
@@ -853,6 +853,10 @@ def get_server_messages():
 
 @app.route("/send_io", methods=["POST"])
 def send_io():
+    """
+    Route called to add an IO request to the database for the server backend to process.
+    :return:
+    """
     userID = get_userID_if_loggedin(request)
     ioType = request.form.get("ioType") or "error"
     channelID = request.form.get("channelID") or -1 # channelID
@@ -911,6 +915,10 @@ def send_io():
 
 @app.route("/send_textbox_io", methods=["POST"])
 def send_textbox_io():
+    """
+    Route called to add an IO request invoked from the textbox to the database for the server backend to process.
+    :return:
+    """
     userID = get_userID_if_loggedin(request)
     channelID = int(request.form.get("channelID")) or -1 # channelID
     serverID = int( request.form.get("serverID")) or -1 # serverID
