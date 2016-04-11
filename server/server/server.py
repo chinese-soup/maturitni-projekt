@@ -2,16 +2,21 @@
 
 import os, sys, argparse
 
-# db access lib
+# db access library
 import MySQLdb
 
 #irc library
 from irc import client
 
+# time libraries
 import time
 import datetime
 
-import threading # :)))))
+import queue
+import threading
+
+# regular expresseions
+import re
 
 
 
@@ -40,6 +45,9 @@ class IRCSide(threading.Thread):
         self.start_pull_thread()
         self.client.process_forever()
 
+    def prepare_regexps(self):
+        print("Preparing regular expressions for this session.")
+        privmsg_parse = re.compile("")
 
 
     def _pull_thread(self):
@@ -47,40 +55,57 @@ class IRCSide(threading.Thread):
             Thread to pull IO data from the database to process and send to the main thread
         """
         while(True):
+            db_pull = self.getDB()
+            cursor_pull = db_pull.cursor()
+            pull_result_code = cursor_pull.execute("""SELECT * FROM `IO_Table` WHERE `Registered_users_userID` = %s;""", (self.userID,))
+            pull_result = cursor_pull.fetchall()
+            for result in pull_result:
+                print(result)
+                #(1, 'TEXTBOX', 'AHOJ', '', '', None, 0, None, 1, 2, -1, 73)
+                data = {
+                    "userID": result[0],
+                    "commandType": result[1],
+                    "argument1": result[2],
+                    "argument2": result[3],
+                    "argument3": result[4],
+                    "timeSent": result[5],
+                    "processed": bool(result[6]),
+                    "timeReceived": result[7],
+                    "fromClient": bool(result[8]),
+                    "serverID": result[9],
+                    "channelID": result[10],
+                    "messageID": result[11]
+                }
+
+                if data["commandType"] == "TEXTBOX":
+                    message = data["argument1"]
+                    if(message[0] == "/"): # if the first character is a slash the user is trying to exec a command
+                        print("Command.")
+
+                    elif(message[0] != "/"):
+                        print("Not command.")
+                        for i in self.server_list_server_objects:
+                            print(i.__dict__)
+                            print("ČUS", i.serverID)
+
+                            if(int(i.serverID) == data["serverID"]):
+                                res = cursor_pull.execute("""SELECT * FROM `IRC_channels` WHERE `IRC_servers_serverID` = %s AND `channelID` = %s;""", (i.serverID, data["channelID"]))
+                                if res != 0:
+                                    print("VíTĚZ")
+                                    result = cursor_pull.fetchall()
+                                    channelID_res = int(result[0][0])
+                                    channelName_res = str(result[0][1])
+                                    print(channelName_res)
+                                    if i.is_connected() == True:
+                                        i.privmsg(channelName_res, message)
+
+
+
             time.sleep(5)
 
             print("Sleep 5: ", self.userID)
-            try:
-                db_pull = self.getDB()
-                cursor_pull = db_pull.cursor()
-                pull_result_code = cursor_pull.execute("""SELECT * FROM `IO_Table` WHERE `Registered_users_userID` = %s;""", (self.userID,))
-                pull_result = cursor_pull.fetchall()
-                for result in pull_result:
-                    print(result)
-                    #(1, 'TEXTBOX', 'AHOJ', '', '', None, 0, None, 1, 2, -1, 73)
-                    data = {
-                        "userID": result[0],
-                        "commandType": result[1],
-                        "argument1": result[2],
-                        "argument2": result[3],
-                        "argument3": result[4],
-                        "timeSent": result[5],
-                        "processed": bool(result[6]),
-                        "timeReceived": result[7],
-                        "fromClient": bool(result[8]),
-                        "serverID": result[9],
-                        "channelID": result[10],
-                        "messageID": result[11]
-                    }
 
-                    if data["commandType"] == "TEXTBOX":
-                        print("HI")
-
-
-
-                db_pull.close()
-            except Exception as ex:
-                print("EXCEPTION IN CHILD THREAD: {0}".format(ex))
+            db_pull.close()
 
 
     def start_pull_thread(self):

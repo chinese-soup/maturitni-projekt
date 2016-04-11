@@ -225,7 +225,6 @@ def check_session():
 def login():
     """
         Route called upon clicking Login on login.html
-    :return:
     """
     _email = request.form.get("email").lower() # .lower() protože aHoJ je to samé jako ahoj => zabraňuje více registrací na jeden email
     _password = request.form.get("password")
@@ -272,12 +271,6 @@ def login():
             data_to_send = jsonify(status="ok", reason="cookie_ok", message="Logged in successfully.", sessionid=generated_sessionID)
             response = app.make_response(data_to_send)
             response.set_cookie("sessionid", value=generated_sessionID)
-            #response.headers['Access-Control-Allow-Origin'] = "http://localhost"
-            #response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization,Cookies'
-            #response.headers['Access-Control-Allow-Methods'] = 'GET,PUT,POST,DELETE'
-            #response.headers['Access-Control-Allow-Credentials'] = 'true'
-
-            #print("RESPONSE", response)
             return response
         else:
             return error("error", "loginerror", "An error occurred while trying to log you in.")
