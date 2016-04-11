@@ -53,12 +53,13 @@ def _make_login_response(data_to_send, generated_sessionID):
     return response
 
 
-""" this function checks for a sessionID in the database and joins it with the userID of a user
-this is used to check if the user is allowed to request the data he's requesting
-aka if he's not trying to access data of a user with a different ID
-"""
 
 def get_userID_if_loggedin(request):
+    """
+    This function checks for a sessionID in the database and joins it with the userID of a user
+    this is used to check if the user is allowed to request the data he's requesting
+    aka if he's not trying to access data of a user with a different ID
+    """
     if "sessionid" in request.cookies:
         session_id_cookie = request.cookies.get("sessionid")
         db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
@@ -254,7 +255,7 @@ def login():
     elif result_code is 0:
         return error("error", "badlogin", "The login information you have provided is incorrect.<br>Check your email address and password and try again.")
 
-    return jsonify(status="error", message="REACHED END OF LOGIN() WITHOUT RETURNING BEFORE THAT, THIS SHOULD NEVER HAPPEN.")
+    return error("error", "unknown_error", "REACHED END OF LOGIN() WITHOUT RETURNING BEFORE THAT, THIS SHOULD NEVER HAPPEN.")
 
 # routa volaná při registraci na index.html
 @app.route("/register", methods=["POST"])
@@ -649,11 +650,9 @@ def get_messages():
             serverID_result = int(result[5]) # 5 = IRC_servers_serverID
 
             if check_if_serverID_belongs_to_userID(userID, serverID_result) is True:
-                print("THIS IS YOUR CHANNEL LOL")
 
                 if backlog is True: # if we want to load messages for a channel we are opening for the first time this session
                     res = cursor.execute("""
-
                     (SELECT *
                     FROM `IRC_channel_messages`
                     WHERE `IRC_channels_channelID` = %s
@@ -697,15 +696,6 @@ def get_messages():
                     ORDER BY `messageID` ASC;
                     """, (channelID, sinceTimestamp, messageLimit)
                                          ) #
-
-                    print("""
-                    (SELECT * FROM `IRC_channel_messages`
-                    WHERE `IRC_channels_channelID` = %s
-					AND `messageID` >= %s
-                    ORDER BY `messageID` DESC LIMIT %s)
-                    ORDER BY `messageID` ASC;
-                    """ % (channelID, sinceTimestamp, messageLimit))
-
                     if res != 0:
                         result = cursor.fetchall()
                         messages = list()
@@ -811,7 +801,6 @@ def get_server_messages():
                     pass # PASS HERE, BECAUSE THE SERVER MIGHT NOT HAVE ANY MESSAGES YET
 
         else:
-            print("NOT BACKLOG")
             messageLimit = 10000000 # dummy, todo: fix? nah no time lol
             sinceTimestamp = request.form.get("sinceTimestamp") or -1 # load messages posted since a given ID
 
@@ -893,7 +882,9 @@ def send_io():
 
 
                 if(ioType == "CONNECT_SERVER"):
-                    print("CONNECT_SERVER")
+                    argument1 = ""
+                elif(ioType == "RECONNECT_SERVER"):
+                    argument1 = ""
                 elif(ioType == "REMOVE_SERVER"):
                     print("REMOVE_SERVER")
                 elif(ioType == "PART_CHANNEL"):
@@ -915,75 +906,107 @@ def send_io():
                       channelID_result))
                 db.commit()
                 db.close()
-                response = {"status": "ok", "reason": "listing_other_messages", "message": messages}
+                response = {"status": "ok", "reason": "aha_obiku", "message": "UmŘÍT"}
                 return jsonify(response)
 
 @app.route("/send_textbox_io", methods=["POST"])
 def send_textbox_io():
     userID = get_userID_if_loggedin(request)
-    channelID = request.form.get("channelID") or -1 # channelID
-    serverID = request.form.get("serverID") or -1 # channelID
+    channelID = int(request.form.get("channelID")) or -1 # channelID
+    serverID = int( request.form.get("serverID")) or -1 # serverID
     print("SERVER ID JE {0}".format(serverID))
-    textBoxData = request.form.get("textBoxData") or None # channelID
+    textBoxData = str(request.form.get("textBoxData")) or "" # textBoxData
+
+    print("do kundy: channelID {} serverID {} textBoxData {}".format(channelID, serverID, textBoxData))
 
     print("UserID = ", userID)
-    try:
-        if userID is not False and textBoxData is not None:
-            db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
-            cursor = db.cursor()
+    db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
+    cursor = db.cursor()
+    #channelID -1 serverID 1 textBoxData asdf
+    if userID is not False and textBoxData != "" and channelID != -1: # if user is logged in & textboxdata has content and channelID was sent and serverID was not send (aka the command was sent while a channel or a query was open)
+        print("PATRIK neni MRDKA")
 
-            res = cursor.execute("""SELECT * FROM `IRC_channels` WHERE `channelID` = %s;""", (channelID,)) #query to find the serverID so we can check if the user owns this serverID and is not trying to read something that is not his
-            if res != 0:
-                chaninfo = cursor.fetchone()
+        result_code = cursor.execute("""SELECT * FROM `IRC_channels` WHERE `channelID` = %s;""", (channelID,)) #query to find the serverID so we can check if the user owns this serverID and is not trying to read something that is not his
+        if result_code is not 0:
+            chaninfo = cursor.fetchone()
 
-                channelID_result = chaninfo[0] #channelID
-                serverID = chaninfo[5] #ServerID
+            channelID_result = chaninfo[0] #channelID
+            serverID = chaninfo[5] #ServerID
 
-                result_code = cursor.execute("""SELECT * FROM `IRC_servers` WHERE `serverID` = %s AND `Registred_users_userID` = %s""", (serverID, userID,))
-                if result_code is not 0:
-                    result = cursor.fetchone()
-                    serverID_result = result[0]
-                    userID_result = result[5]
-                    commandType = "TEXTBOX"
+            result_code = cursor.execute("""SELECT * FROM `IRC_servers` WHERE `serverID` = %s AND `Registred_users_userID` = %s""", (serverID, userID,))
+            if result_code is not 0:
+                result = cursor.fetchone()
+                serverID_result = result[0]
+                userID_result = result[5]
+                commandType = "TEXTBOX"
 
-                    argument1 = textBoxData
-                    argument2 = ""
-                    argument3 = ""
-                    timeSent = None
-                    processed = False
+                argument1 = textBoxData
+                argument2 = ""
+                argument3 = ""
+                timeSent = None
+                processed = False
 
 
-                    res = cursor.execute("""INSERT INTO `IO_Table` (Registered_users_userID,
-                                                            commandType,
-                                                            argument1,
-                                                            argument2,
-                                                            argument3,
-                                                            timeSent,
-                                                            processed,
-                                                            fromClient,
-                                                            serverID,
-                                                            channelID)
+                res = cursor.execute("""INSERT INTO `IO_Table` (Registered_users_userID,
+                                                        commandType,
+                                                        argument1,
+                                                        argument2,
+                                                        argument3,
+                                                        timeSent,
+                                                        processed,
+                                                        fromClient,
+                                                        serverID,
+                                                        channelID)
 
-                                                            values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
-                    """, (userID_result, commandType, argument1, argument2, argument3, timeSent, processed, True,
-                          serverID_result, channelID_result))
-                    db.commit()
-                    db.close()
-
-                response = {"status": "ok", "reason": "listing_other_messages", "message": res}
+                                                        values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                """, (userID_result, commandType, argument1, argument2, argument3, timeSent, processed, True,
+                      serverID_result, channelID_result))
+                db.commit()
+                db.close()
+                response = {"status": "ok", "reason": "textbox_io_channel_window_inserted", "message": "Di do píče"}
                 return jsonify(response)
+        else:
+            return error("error", "channel_not_found", "Channel does not exist.")
+    #channelID -1 serverID 1 textBoxData asdf
+    elif userID is not False and textBoxData != "" and serverID != -1:
+        print("PATRIK JE MRDKA" + str(serverID))
+        result_code = cursor.execute("""SELECT * FROM `IRC_servers` WHERE `serverID` = %s AND `Registred_users_userID` = %s""", (serverID, userID,))
+        if result_code is not 0:
+            result = cursor.fetchone()
+            serverID_result = result[0]
+            userID_result = result[5]
+            commandType = "TEXTBOX"
+
+            argument1 = textBoxData
+            argument2 = ""
+            argument3 = ""
+            timeSent = None
+            processed = False
+
+            res = cursor.execute("""INSERT INTO `IO_Table` (Registered_users_userID,
+                                                    commandType,
+                                                    argument1,
+                                                    argument2,
+                                                    argument3,
+                                                    timeSent,
+                                                    processed,
+                                                    fromClient,
+                                                    serverID,
+                                                    channelID)
+
+                                                    values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+            """, (userID_result, commandType, argument1, argument2, argument3, timeSent, processed, True,
+                  serverID_result, -1))
+            db.commit()
+            db.close()
+            response = {"status": "ok", "reason": "textbox_io_server_window_inserted", "message": res}
+            return jsonify(response)
 
         else:
-            print("AHOJ")
-            return error("error", "not_loggedin", "You are not logged in.")
-
-
-    except Exception as ex:
-        print(ex)
-        return error("error", "bad_request", "Bad request.")
-
-
-
+            return error("error", "server_does_not_exist", "Server does not exist.")
+    else:
+        print("AHOJ")
+        return error("error", "not_loggedin", "You are not logged in.")
 
 
 if __name__ == '__main__':

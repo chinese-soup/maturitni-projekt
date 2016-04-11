@@ -51,7 +51,8 @@ class IRCSide(threading.Thread):
             try:
                 db_pull = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
                 cursor_pull = db_pull.cursor()
-                pull_result = cursor_pull.execute("""SELECT * FROM `IO_Table` WHERE `Registered_users_userID` = %s;""", (self.userID,))
+                pull_result_code = cursor_pull.execute("""SELECT * FROM `IO_Table` WHERE `Registered_users_userID` = %s;""", (self.userID,))
+                pull_result = cursor_pull.fetchall()
                 for result in pull_result:
                     print(result)
 
@@ -122,6 +123,7 @@ class IRCSide(threading.Thread):
         self.client.add_global_handler("quit", self.on_pubmsg)
         self.client.add_global_handler("nick", self.on_nick)
         self.client.add_global_handler("action", self.on_pubmsg)
+
     def nickname_in_use(self, connection, event):
         print("self.nickname_in_use")
 

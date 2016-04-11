@@ -52,14 +52,9 @@ function sendTextBoxCommand(event)
 {
     channelID = event.data.channelID;
     textBoxData = $("#input-msgline").val();
-    log("sendTextBoxCommand({0})".format(channelID));
-    log($("#input-msgline").val());
 
-    /*@app.route("/send_textbox_io", methods=["POST"])
-    def send_textbox_io():
-    userID = get_userID_if_loggedin(request)
-    channelID = request.form.get("channelID") or -1 # channelID
-    textBoxData = request.form.get("textBoxData") or None # channelID*/
+    log("sendTextBoxCommand({0})".format(channelID, textBoxData));
+
     if(channelID == -1 && current_status_window_serverID != -1)
     {
         serverID = current_status_window_serverID;
@@ -79,9 +74,11 @@ function sendTextBoxCommand(event)
 
     posting.done(function(data)
     {
-        if(data["reason"] == "ok")
+        console.log("PATRIK JE MRDKA" + data);
+        console.log(data);
+        if(data["reason"] == "textbox_io_server_window_inserted" || data["reason"] == "textbox_io_channel_window_inserted")
         {
-            console.log("AHOJ");
+            $("#input-msgline").val("");
 
         }
         if(data["reason"] == "not_loggedin")
@@ -94,7 +91,7 @@ function sendTextBoxCommand(event)
     {
         //general_dialog("API endpoint error.", "An error occurred while trying to retrieve your account's global settings.", "error", 2);
         toggle_center_column("messages"); // show the messages window instead of global settings, because we can't load user's settings
-        log("Could not load global settings.")
+        log("There was an error sendingy our textbox input.")
     })
 
 
@@ -170,13 +167,9 @@ function getNewServerMessages()
 
     posting.done(function(data)
     {
-        console.log(data);
         if(data["status"] == "error")
         {
-            if(data["reason"] == "not_loggedin")
-            {
-                log(data["reason"]);
-            }
+            log(data["reason"]);
         }
         else if(data["status"] == "ok")
         {
@@ -231,10 +224,7 @@ function getNewMessages()
                 console.log(data);
                 if(data["status"] == "error")
                 {
-                    if(data["reason"] == "not_loggedin")
-                    {
-                        log(data["reason"]);
-                    }
+                    log(data["reason"]);
                 }
                 else if(data["status"] == "ok")
                 {
@@ -433,6 +423,23 @@ function switchCurrentChannel(toChannelID)
     $("#button_send_message").click({channelID:toChannelID}, sendTextBoxCommand);
     currently_visible_message_window = toChannelID;
 
+    if(toChannelID == -1 && event.data.clickedServerID != null)
+    {
+        $(".current_server_div").show();
+        current_status_window_serverID = event.data.clickedServerID;
+        $(".current_server_div_serverid").html(current_status_window_serverID);
+        $(".current_server_div_servername").html(event.data.clickedServerName);
+        $("#input-group-msgline .dark_input").prop("placeholder", "Send a command to {0}".format(event.data.clickedServerName));
+        log("Server changed to {0}".format(event.data.clickedServerName));
+    }
+    else if(toChannelID != -1)
+    {
+        $(".current_server_div").hide();
+
+        // change placeholder of the input textbox
+        $("#input-group-msgline .dark_input").prop("placeholder", "Chat in {0}".format(toChannelName));
+
+    }
 
 }
 
@@ -498,6 +505,7 @@ function switchCurrentChannelEventStyle(event)
         $(".current_server_div_serverid").html(current_status_window_serverID);
         $(".current_server_div_servername").html(event.data.clickedServerName);
         $("#input-group-msgline .dark_input").prop("placeholder", "Send a command to {0}".format(event.data.clickedServerName));
+        log("Server changed to {0}".format(event.data.clickedServerName));
     }
     else if(toChannelID != -1)
     {
@@ -573,7 +581,6 @@ function getBacklogForServers(limit)
     posting.done(function(data)
     {
         console.log(data);
-        log(data["reason"], data["status"]);
 
         if(data["status"] == "error")
         {
@@ -618,7 +625,6 @@ function getBacklogForServers(limit)
 
 function getBacklogForChannel(channelID, limit)
 {
-    console.log("backlogChannel();");
     var posting = $.post("http://{0}:5000/get_messages".format(hostname),
     {
        channelID: channelID,
@@ -630,7 +636,6 @@ function getBacklogForChannel(channelID, limit)
     posting.done(function(data)
     {
         console.log(data);
-        log(data["reason"], data["status"]);
 
         if(data["status"] == "error")
         {
@@ -908,7 +913,7 @@ function join_channel(event)
 function loadServers()
 {
     console.log("loadServers();");
-    log("loadServers();")
+
     $(".left_channels_flex_container .loading-ajax").show(); // hide the loading servers icon
     $(".left_channels_flex_container .loading-ajax-message").hide(); // hide the "you have no servers" message
 
@@ -923,7 +928,6 @@ function loadServers()
 
     posting.done(function(data)
     {
-        log(data["reason"], data["status"]);
         if(data["reason"] == "listing_servers")
         {
             console.log(data["message"][0]);
