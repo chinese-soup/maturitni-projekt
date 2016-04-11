@@ -16,6 +16,8 @@ var channel_ids = [];
 var last_message_id = {};
 var last_message_id_servers = -1;
 
+var current_status_window_serverID = -1;
+
 
 var currently_visible_message_window = -1;
 
@@ -58,10 +60,18 @@ function sendTextBoxCommand(event)
     userID = get_userID_if_loggedin(request)
     channelID = request.form.get("channelID") or -1 # channelID
     textBoxData = request.form.get("textBoxData") or None # channelID*/
+    if(channelID == -1 && current_status_window_serverID != -1)
+    {
+        serverID = current_status_window_serverID;
+    }
+    else
+    {
+        serverID = -1;
+    }
 
     var posting = $.post("http://{0}:5000/send_textbox_io".format(hostname),
     {
-       //serverID: -1, // TODO: dummy, need to remove from API
+       serverID: serverID,
        channelID: channelID,
        textBoxData: textBoxData
     }, dataType="text"
@@ -72,7 +82,7 @@ function sendTextBoxCommand(event)
         if(data["reason"] == "ok")
         {
             console.log("AHOJ");
-            
+
         }
         if(data["reason"] == "not_loggedin")
         {
@@ -149,7 +159,6 @@ function ping()
 
 function getNewServerMessages()
 {
-    console.log("AHOJ SERRVER MSGS");
     var posting = $.post("http://{0}:5000/get_server_messages".format(hostname),
     {
        serverID: -1, // TODO: dummy, need to remove from API
@@ -423,6 +432,8 @@ function switchCurrentChannel(toChannelID)
     $("#button_send_message").off("click");
     $("#button_send_message").click({channelID:toChannelID}, sendTextBoxCommand);
     currently_visible_message_window = toChannelID;
+
+
 }
 
 function linkifyMessage(messageBody)
@@ -480,6 +491,13 @@ function switchCurrentChannelEventStyle(event)
 
     // hide NEW MESSAGES count span
     $("#channel_{0} .channel_item_active_msg_count".format(toChannelID)).hide();
+
+    if(toChannelID == -1 && event.data.clickedServerID != null)
+    {
+        current_status_window_serverID = event.data.clickedServerID;
+        $(".current_server_div_serverid").html(current_status_window_serverID);
+        $(".current_server_div_servername").html(event.data.clickedServerName);
+    }
 
     // load backlog if it has not been loaded yet
     if($.inArray(toChannelID, already_loaded_backlog) == -1)
@@ -926,7 +944,16 @@ function loadServers()
                 //$(".channel_list #server_{0} .dropdown .dropdown-menu .remove_server_link".format(serverID)).on("click", remove_server_dialog(serverName, serverID));
                 $(".channel_list #server_{0} .dropdown .dropdown-menu .edit_server_link".format(serverID)).click({serverName:serverName, serverID:serverID, isAnEdit: true}, edit_server);
                 $(".channel_list #server_{0} .dropdown .dropdown-menu .join_another_channel_link".format(serverID)).click({serverName:serverName, serverID:serverID}, join_channel_dialog);
-                $(".channel_list #server_{0} .network_name_link".format(serverID)).click({channelID:-1, channelName:"Status window"}, switchCurrentChannelEventStyle); // causes the server headers to link to the main status window
+                $(".channel_list #server_{0} .network_name_link".format(serverID)).click({channelID:-1,
+                channelName:"Status window", clickedServerID:serverID, clickedServerName:serverName},
+                switchCurrentChannelEventStyle); /* causes
+                the server                headers
+                 to link to the main status window*/
+
+                // change the selected server (in status window) to the latest one we got:
+                current_status_window_serverID = serverID;
+                $(".current_server_div_serverid").html(serverID);
+                $(".current_server_div_servername").html(serverName);
 
 
                 if(useSSL == 0)

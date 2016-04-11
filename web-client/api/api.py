@@ -922,9 +922,10 @@ def send_io():
 def send_textbox_io():
     userID = get_userID_if_loggedin(request)
     channelID = request.form.get("channelID") or -1 # channelID
+    serverID = request.form.get("serverID") or -1 # channelID
+    print("SERVER ID JE {0}".format(serverID))
     textBoxData = request.form.get("textBoxData") or None # channelID
 
-    userID = get_userID_if_loggedin(request)
     print("UserID = ", userID)
     try:
         if userID is not False and textBoxData is not None:
@@ -979,8 +980,7 @@ def send_textbox_io():
 
     except Exception as ex:
         print(ex)
-
-
+        return error("error", "bad_request", "Bad request.")
 
 
 
