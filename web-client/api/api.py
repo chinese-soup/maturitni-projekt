@@ -623,11 +623,16 @@ def add_new_server_settings():
         return error("error", "not_loggedin", "You are not logged in.")
 
 
-
-# routa volaná při volbě kanálu ze seznamu, routa volaná při scrollnutí nahoru v chatovacím okénku pro získání více zpráv z minulosti
-# TODO: fix sql?
 @app.route("/get_messages", methods=["POST"])
 def get_messages():
+    """
+    Route called to get new messages from a channel since time
+    Route called to get old messages from a channel to fill the backlog
+    :param backlog: true/false
+    :param channelID: which channel should we get the messages for
+    :param messageLimit: change the amount of messages if loading backlog
+    :return:
+    """
     userID = get_userID_if_loggedin(request)
     print("UserID = ", userID)
     try:
@@ -665,14 +670,14 @@ def get_messages():
                             print(res)
                             dateTime = res[4]
                             print("dateTime = ", dateTime)
-                            utc_time = time.mktime(dateTime.timetuple()) * 1000
+                            utc_time = time.mktime(dateTime.timetuple()) * 1000 #  TODO: Fix UTC
 
                             server_dict_temp = {"messageID": res[0],
                                 "fromHostmask": res[1],
                                 "messageBody": res[2],
                                 "commandType": res[3],
                                 "timeReceived": utc_time,
-                                "seen": res[5],
+                                "seen": res[5], # TODO: useless?
                                 "IRC_channels_channelID": res[6]}
                             messages.append(server_dict_temp)
                             print(type(res[4]))
