@@ -84,11 +84,12 @@ class IRCSide(threading.Thread):
 
                     elif(message[0] != "/"):
                         print("Not command.")
+
                         for i in self.server_list_server_objects:
                             print(i.__dict__)
                             print("ČUS", i.serverID)
 
-                            if(int(i.serverID) == int(data["serverID"])):
+                            if(i.serverID == data["serverID"]):
                                 res = cursor_pull.execute("""SELECT * FROM `IRC_channels` WHERE `IRC_servers_serverID` = %s AND `channelID` = %s;""", (i.serverID, data["channelID"]))
                                 if res != 0:
                                     print("VíTĚZ")
@@ -97,16 +98,24 @@ class IRCSide(threading.Thread):
                                     channelName_res = str(result[0][1])
                                     print(channelName_res)
 
-                                    if i.is_connected() == True:
+                                    if i.is_connected() == True and data["channelID"] != -1:
                                         i.privmsg(channelName_res, message)
+                                        res = cursor_pull.execute("""DELETE FROM `IO_Table` WHERE `messageID` = %s;""", (data["messageID"],)) # delete the message, we just processed
+                                        res = cursor_pull.execute("""INSERT INTO `IRC_channel_messages` (IRC_channels_channelID,
+                                                                    fromHostmask,
+                                                                    messageBody,
+                                                                    commandType,
+                                                                    timeReceived)
+                                                                    values (%s, %s, %s, %s, %s)""", (channelID_res, "polivecka!polivecka@polivecka", message, "PUBMSG", datetime.datetime.utcnow()))
+                                        db_pull.commit()
 
-                                    res = cursor_pull.execute("""DELETE FROM `IO_Table` WHERE `messageID` = %s;""", (data["messageID"],)) # delete the message, we just processed
+                                    #TOD: FIX HARDCODED STUFF
                                     #TODO: Change booleanm processed=TRUE
 
 
 
 
-            time.sleep(5)
+            time.sleep(2+)
 
             print("Sleep 5: ", self.userID)
 
