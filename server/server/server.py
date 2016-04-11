@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-# coding=utf-8
 
 import os, sys, argparse
 
@@ -52,12 +51,32 @@ class IRCSide(threading.Thread):
 
             print("Sleep 5: ", self.userID)
             try:
-                db_pull = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
+                db_pull = self.getDB()
                 cursor_pull = db_pull.cursor()
                 pull_result_code = cursor_pull.execute("""SELECT * FROM `IO_Table` WHERE `Registered_users_userID` = %s;""", (self.userID,))
                 pull_result = cursor_pull.fetchall()
                 for result in pull_result:
                     print(result)
+                    #(1, 'TEXTBOX', 'AHOJ', '', '', None, 0, None, 1, 2, -1, 73)
+                    data = {
+                        "userID": result[0],
+                        "commandType": result[1],
+                        "argument1": result[2],
+                        "argument2": result[3],
+                        "argument3": result[4],
+                        "timeSent": result[5],
+                        "processed": bool(result[6]),
+                        "timeReceived": result[7],
+                        "fromClient": bool(result[8]),
+                        "serverID": result[9],
+                        "channelID": result[10],
+                        "messageID": result[11]
+                    }
+
+                    if data["commandType"] == "TEXTBOX":
+                        print("HI")
+
+
 
                 db_pull.close()
             except Exception as ex:
@@ -68,11 +87,14 @@ class IRCSide(threading.Thread):
         threading.Thread(target=self._pull_thread).start()
 
 
+    def getDB(self):
+        return MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
+
     """
         Loads user's servers from the database
     """
     def load_servers_from_db(self):
-        db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
+        db = self.getDB()
         cursor = db.cursor()
         userID = 1
 
@@ -106,7 +128,6 @@ class IRCSide(threading.Thread):
         self.client.add_global_handler("created", self.on_your_host)
         self.client.add_global_handler("myinfo", self.on_your_host)
 
-        self.client.add_global_handler("namreply", self.nam_reply)
 
         self.client.add_global_handler("nosuchnick", self.on_your_host)
         self.client.add_global_handler("nosuchcannel", self.on_your_host)
@@ -131,9 +152,6 @@ class IRCSide(threading.Thread):
 
     def nickname_in_use(self, connection, event):
         print("self.nickname_in_use")
-
-    def nam_reply(self, connection, event):
-        pass
 
     """
         Handles several different commands the server sends upon connecting
@@ -163,6 +181,8 @@ class IRCSide(threading.Thread):
                 timeReceived)
                 values (%s, %s, %s, %s, %s)""", (serverID_res, event.source, message, event.type.upper(),
                                                  datetime.datetime.utcnow()))
+
+
                 self.db.commit()
 
     """
@@ -192,6 +212,7 @@ class IRCSide(threading.Thread):
     """Called: never?"""
     def start(self):
         pass
+
     """
         Fired when any client successfully connects to an IRC server
     """
@@ -237,7 +258,9 @@ class IRCSide(threading.Thread):
                 else:
                     print("[WARNING on_connect]: No channels to join on this server (serverID = {})".format(serverID_res))
 
-    """Fired when any client is disconnected from an IRC server"""
+    """
+    Fired when any client is disconnected from an IRC server
+    """
     def on_disconnect(self, connection, event):
         print('[{}] Disconnected from {}' .format(event.type.upper(), event.source))
         print("{}".format(event.arguments))
@@ -253,12 +276,16 @@ class IRCSide(threading.Thread):
             print("RES: ",res)
             print("serverID = {}".format(serverID_res))
 
-    """Fired when any client gets a /ME message from any channel or query"""
+    """
+    Fired when any client gets a /ME message from any channel or query
+    """
     def on_action(self, connection, event):
         print('[{}] OnAction from {}' .format(event.type.upper(), event.source))
 
 
-    """Fired when any client receives a message from a channel"""
+    """
+    Fired when any client receives a message from a channel
+    """
     def on_pubmsg(self, connection, event):
         print("CONNECTION = {}\n\n".format(connection.__dict__))
         print('[{}] Pubmsg {} {}\n' .format(event.type.upper(), event.source, str(event.__dict__)))
@@ -298,7 +325,9 @@ class IRCSide(threading.Thread):
             #res2 = self.cursor.execute("""select * from `IRC_channels` where `IRC_servers_serverID` = 1;""", (self.userID,))
 
         #connection.privmsg(event.target, str(event.__dict__))
-
+    """
+    Fired upon receiving a private message.
+    """
     def on_privmsg(self, connection, event):
         print('[{}] Privmsg {}' .format(event.type.upper(), event.source))
         connection.privmsg(event.target, str(event.__dict__))

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# coding=utf-8
+
 # TODO: http://flask.pocoo.org/docs/0.10/patterns/packages/
 # TODO2: http://flask.pocoo.org/docs/0.10/deploying/mod_wsgi/
 # TODO3: Check for invalid data in forms
@@ -27,6 +27,10 @@ app = Flask(__name__) # initializes the Flask app
 
 from werkzeug.exceptions import default_exceptions
 from werkzeug.exceptions import HTTPException
+
+def getDB():
+    return MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
+
 
 def is_email_valid(email_to_check):
     """Checks if a given email is valid"""
@@ -81,14 +85,14 @@ def get_userID_if_loggedin(request):
 
     if "sessionid" in request.cookies: # checks if the request even has a session cookie, otherwise return False
         session_id_cookie = request.cookies.get("sessionid") # get sessionID from a cookie
-        db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
+        db = getDB()
         print("session_id_cookie = ", session_id_cookie)
         cursor = db.cursor()
         result_code = cursor.execute("""SELECT * FROM `User_sessions` WHERE `session_id` = %s""", (session_id_cookie,)) # look up the session cookie in the database and compare it to the request one
         if result_code is not 0:
             result = cursor.fetchone()
-            session_id = result[0]
-            userID = result[3]
+            session_id = result[0] # session_id
+            userID = result[3] # Registred_users_userID
             print(session_id, userID)
             if session_id == session_id_cookie:
                 return userID
@@ -153,7 +157,7 @@ def hello_world():
 def logout():
     """User logout route"""
     if "sessionid" in request.cookies:
-        db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
+        db = getDB()
         cookies_sessionid = request.cookies.get("sessionid") # get sessionID from a cookie
         cursor = db.cursor()
         result_code = cursor.execute("""SELECT * FROM `User_sessions` WHERE `session_id` = %s""", (cookies_sessionid,)) # look up the given session cookie in the database and compare it to the request one
@@ -227,7 +231,7 @@ def login():
     _password = request.form.get("password")
     _hashed_password = sha512_crypt.encrypt(_password, salt="CodedSaltIsBad") # hash zadaného hesla
 
-    db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
+    db = getDB()
 
     cursor = db.cursor()
     result_code = cursor.execute("""SELECT * FROM `Registered_users` WHERE `email` = %s AND `password` = %s""", (_email, _hashed_password))
@@ -401,7 +405,7 @@ def add_channel():
     serverID = request.form.get("serverID") or ""
 
     if userID is not False and channelName is not None:
-        db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
+        db = getDB()
         cursor = db.cursor()
 
         # přidáme server
@@ -572,7 +576,7 @@ def edit_server_settings():
     print("UserID = ", userID)
 
     if userID is not False:
-        db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
+        db = getDB()
         cursor = db.cursor()
 
         # zjitíme, zda server, který se uživatel snaží editovat je opravdu jeho
@@ -606,7 +610,7 @@ def add_new_server_settings():
     userID = get_userID_if_loggedin(request)
 
     if userID is not False:
-        db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
+        db = getDB()
         cursor = db.cursor()
         klice = {"serverName":"", "nickname":"", "serverPassword":"", "serverIP":"", "serverPort":"", "useSSL":""}
         for a in klice:
@@ -759,7 +763,7 @@ def get_server_messages():
     messageLimit = int(request.form.get("limit")) or 20 # limit zpráv, které získáváme z db
 
     if userID is not False:
-        db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
+        db = getDB()
         cursor = db.cursor()
 
         res = cursor.execute("""SELECT serverID, serverName, Registred_users_userID FROM `IRC_servers` WHERE `Registred_users_userID` =
@@ -929,7 +933,7 @@ def send_textbox_io():
     print("do kundy: channelID {} serverID {} textBoxData {}".format(channelID, serverID, textBoxData))
 
     print("UserID = ", userID)
-    db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
+    db = getDB()
     cursor = db.cursor()
     #channelID -1 serverID 1 textBoxData asdf
     if userID is not False and textBoxData != "" and channelID != -1: # if user is logged in & textboxdata has content and channelID was sent and serverID was not send (aka the command was sent while a channel or a query was open)

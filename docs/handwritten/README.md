@@ -31,6 +31,7 @@ Nejdůležitější z HTML stránek je stránka chat.html, která již má spous
 
 ## Část první: Klientská JavaScript část
 
+
 ## Část druhá: API endpoint
 
 ## Část třetí: Serverová (bouncer) část
