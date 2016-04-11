@@ -483,9 +483,6 @@ function switchCurrentChannelEventStyle(event)
     // change header room name TODO: Fix
     $(".header_room_name").html("{0} <small>({1} @ {2})</small>".format(toChannelName, toChannelID, "FIXME"))
 
-    // change placeholder of the input textbox
-    $("#input-group-msgline .dark_input").prop("placeholder", "Chat in {0}".format(toChannelName));
-
 
 
     // save channelID to a variable
@@ -500,10 +497,15 @@ function switchCurrentChannelEventStyle(event)
         current_status_window_serverID = event.data.clickedServerID;
         $(".current_server_div_serverid").html(current_status_window_serverID);
         $(".current_server_div_servername").html(event.data.clickedServerName);
+        $("#input-group-msgline .dark_input").prop("placeholder", "Send a command to {0}".format(event.data.clickedServerName));
     }
     else if(toChannelID != -1)
     {
         $(".current_server_div").hide();
+
+        // change placeholder of the input textbox
+        $("#input-group-msgline .dark_input").prop("placeholder", "Chat in {0}".format(toChannelName));
+
     }
 
     // load backlog if it has not been loaded yet
