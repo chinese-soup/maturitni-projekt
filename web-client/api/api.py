@@ -32,19 +32,34 @@ from werkzeug.exceptions import HTTPException
 
 def is_email_valid(email_to_check): # TODO: maybe move to api_utils or sth??????
     regexp = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
-    result = re.match(regexp, str(email_to_check)) # if we conv to string we don't have to care about checking if the string is None and the regexp will just say it's not a valid email address, i will forever wonder what is faster, probably checking for None, but we may never be sure and I am too lazy to test it out so instead I am writing out this long comment on a single line without word wrapping just to calm myself down
+    result = re.match(regexp, str(email_to_check)) # if we conv to string we don't have to care about checking if the string is None and the regexp will just say it's not a valid email address
     if result is None:
         return False
     else:
         return True
 
 def error(_status, _reason, _message):
+    """
+    :param _status: Status code (ok/error)
+    :param _reason: A one word reason used in the chat.html javascript logic
+    :param _message: A human-like message describing what went wrong (right).
+    :return:
+    """
     return jsonify(status=_status, reason=_reason, message=_message)
 
 def get_userIP(request):
+    """
+        Gets the source IP from a request.
+    :param request:
+    :return:
+    """
     return request.remote_addr
 
+
 def _make_login_response(data_to_send, generated_sessionID):
+    """
+        This function sets a cookie header BEFORE sending off a successful /login response.
+    """
     response = app.make_response(data_to_send)
     response.set_cookie("sessionid", value=generated_sessionID)
     response.headers.add("Access-Control-Allow-Origin", "localhost")
@@ -58,14 +73,19 @@ def get_userID_if_loggedin(request):
     """
     This function checks for a sessionID in the database and joins it with the userID of a user
     this is used to check if the user is allowed to request the data he's requesting
-    aka if he's not trying to access data of a user with a different ID
+    aka if he's not trying to access data of a user with a different ID.
+
+    :param request: Flask request object
+    :return: userID if the user is loggedIn / False if the user is not logged in or an error occurred while trying to get the lgged in info from the database
     """
-    if "sessionid" in request.cookies:
-        session_id_cookie = request.cookies.get("sessionid")
-        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
+
+
+    if "sessionid" in request.cookies: # checks if the request even has a session cookie, otherwise return False
+        session_id_cookie = request.cookies.get("sessionid") # get sessionID from a cookie
+        db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
         print("session_id_cookie = ", session_id_cookie)
         cursor = db.cursor()
-        result_code = cursor.execute("""SELECT * FROM `User_sessions` WHERE `session_id` = %s""", (session_id_cookie,))
+        result_code = cursor.execute("""SELECT * FROM `User_sessions` WHERE `session_id` = %s""", (session_id_cookie,)) # look up the session cookie in the database and compare it to the request one
         if result_code is not 0:
             result = cursor.fetchone()
             session_id = result[0]
@@ -82,7 +102,12 @@ def get_userID_if_loggedin(request):
 
 
 def check_if_serverID_belongs_to_userID(userID, serverID):
-    """Checks if a given serverID belongs to a given userID and returns True/False"""
+    """
+    Checks if a given serverID belongs to a given userID and returns True/False
+    :param userID:
+    :param serverID:
+    :return:
+    """
     db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
 
     cursor = db.cursor()
@@ -102,7 +127,11 @@ def check_if_serverID_belongs_to_userID(userID, serverID):
 # after request, pro povoleni CORS requestů z javascriptu
 @app.after_request
 def after_request(response):
-    """Adds CORS allowing headers to the response before sending it to the client."""
+    """
+    Adds CORS allowing headers to the response before sending it to the client.
+    :param response: Flask response object
+    :return: response: Flask response object with added CORS allowing headers
+    """
     response.headers.add("Access-Control-Allow-Origin", "http://localhost") #TODO: localhost fix
     response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization,Cookies")
     response.headers.add("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE")
@@ -123,12 +152,12 @@ def hello_world():
 
 @app.route("/logout", methods=["POST"])
 def logout():
-    """Routa zařizující odhlášerní uživatele"""
+    """User logout route"""
     if "sessionid" in request.cookies:
         db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
-        cookies_sessionid = request.cookies.get("sessionid")
+        cookies_sessionid = request.cookies.get("sessionid") # get sessionID from a cookie
         cursor = db.cursor()
-        result_code = cursor.execute("""SELECT * FROM `User_sessions` WHERE `session_id` = %s""", (cookies_sessionid,))
+        result_code = cursor.execute("""SELECT * FROM `User_sessions` WHERE `session_id` = %s""", (cookies_sessionid,)) # look up the given session cookie in the database and compare it to the request one
 
         if result_code is not 0:
             session_id = cursor.fetchone()[0]
@@ -138,42 +167,36 @@ def logout():
 
             if session_id == session_id_cookie:
                 cursor = db.cursor()
-                # delete the session cookie from database
-                result_code = cursor.execute("DELETE FROM `User_sessions` WHERE `session_id` = %s", (session_id,))
+                result_code = cursor.execute("DELETE FROM `User_sessions` WHERE `session_id` = %s", (session_id,)) # delete the session cookie from database => logged out
                 db.commit()
                 db.close()
-
-        print("Reached the end of checking the session cookie with the one in DB.",
-              "The current cookie session does not exist (anymore). The user is logged out.",
-              "It's time to remove his cookie.")
 
         # delete the cookie from client's browser, we delete it even if it isn't in the database. as he's trying to login with an invalid sessionid
         data = jsonify(status="ok", reason="loggedout", message="Logged out successfully.")
         response = app.make_response(data)
-        response.set_cookie("sessionid", value="", expires=0)
-        #response.headers.add('Access-Control-Allow-Origin', "http://localhost")
-        #response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Cookies')
-        #response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
-        #response.headers.add('Access-Control-Allow-Credentials', 'true')
+        response.set_cookie("sessionid", value="", expires=0) # adds a cookie removal header to the logout response
 
         return response
     else:
-         return jsonify(status="error", reason="not_loggedin", message="You are not logged in.")
+        return jsonify(status="error", reason="not_loggedin", message="You are not logged in.")
 
 
 @app.route("/upon_login", methods=["POST"])
 def upon_login():
-    """Routa volaná při načtení klientského chat.html, vrací přihlašovací email přihlášeného uživatele"""
+    """
+        Route called upon loading chat.html.
+        Returns the email of the user if they are logged in.
+        Returns a not_loggedin response if the user is not logged in.
+    """
     userID = get_userID_if_loggedin(request)
     print("UserID = ", userID)
     if userID is not False:
         db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
-        print("Hello boys")
+
         cursor = db.cursor()
         cursor.execute("""SELECT (email) FROM `Registered_users` WHERE `userID` = %s""", (userID,))
         result = cursor.fetchone()
-        _email = result[0]
-        print("Email" + _email)
+        _email = result[0] # 0 = email
         return jsonify(status="ok", reason="loggedin_email_status", message=_email)
 
     else:
@@ -183,20 +206,24 @@ def upon_login():
 @app.route("/check_session", methods=["GET", "POST"])
 def check_session():
     """
-        Routa volaná při načtení chat.html pro ověření, zda je uživatel přihlášen a při načtení login.html pro zjištění,
-        zda je uživatel již přihlášen
+        Route called upon loading login.html to check if the API is alive and if the user is logged in.
+        Used to replace the login form on login.html with a button to continue to the main app site.
+        Used to periodically check if the user is still logged in and does not need to be redirected away
+        from chat.html
     """
     userID = get_userID_if_loggedin(request)
-    print("UserID = ", userID)
+
     if userID is not False:
         return jsonify(status="ok", reason="alive_loggedin", message=True)
     else:
         return jsonify(status="error", reason="alive_not_loggedin", message="You are not logged in.")
 
-# routa volaná při přihlášení na login.html
 @app.route("/login", methods=["POST"])
 def login():
-    """Routa volaná při přihlášení na login.html"""
+    """
+        Route called upon clicking Login on login.html
+    :return:
+    """
     _email = request.form.get("email").lower() # .lower() protože aHoJ je to samé jako ahoj => zabraňuje více registrací na jeden email
     _password = request.form.get("password")
     _hashed_password = sha512_crypt.encrypt(_password, salt="CodedSaltIsBad") # hash zadaného hesla
@@ -206,7 +233,7 @@ def login():
     cursor = db.cursor()
     result_code = cursor.execute("""SELECT * FROM `Registered_users` WHERE `email` = %s AND `password` = %s""", (_email, _hashed_password))
 
-    if result_code is not 0: # use "is not" for extra speed (not like it matters, all code around here is slow anyway)
+    if result_code is not 0:
         values = cursor.fetchone()
         _id = values[0]
 
@@ -228,13 +255,12 @@ def login():
             print("Reached the end of checking the session cookie with the one in DB.",
                   "The current cookie session does not exist. Gonna relog now.")
 
-        # remove any original session we had (stupid, but whatever, I'd rather pass my last year of high school than have a good session system
+        # remove any original session we had (stupid, ofc means that a user gets only one session => no multiple instances of the app across browsers)
         cursor = db.cursor()
         result_code = cursor.execute("DELETE FROM `User_sessions` WHERE `Registred_users_userID` = %s", (_id,))
         db.commit()
 
-        generated_sessionID = b64encode(urandom(64)).decode("utf-8")
-        print("Generated sessionID", generated_sessionID)
+        generated_sessionID = b64encode(urandom(64)).decode("utf-8") # generate a sessionID
 
         result_code = cursor.execute("""INSERT INTO `User_sessions` (session_id, Registred_users_userID) values (%s, %s)""", (generated_sessionID, _id), )
         db.commit()
@@ -276,7 +302,7 @@ def register():
         return jsonify(status="error", reason="password_empty", message="The password is empty.")
 
     _email = str(_email).lower()
-    _hashed_password = sha512_crypt.encrypt(_password, salt="CodedSaltIsBad")
+    _hashed_password = sha512_crypt.encrypt(_password, salt="CodedSaltIsBad") # hash the given password
 
     cursor = db.cursor()
     cursor.execute("""SELECT (email) FROM `Registered_users` WHERE `email` = %s;""", (_email,))
@@ -299,6 +325,10 @@ def register():
 # routa volaná při přidání / odstranění serveru
 @app.route("/get_server_list", methods=["GET", "POST"])
 def get_server_list():
+    """
+    Route called upon loading chat.html, adding, removing and editing servers.
+    :return:
+    """
     userID = get_userID_if_loggedin(request)
     print("UserID = ", userID)
 
@@ -308,7 +338,8 @@ def get_server_list():
         res = cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s;""", (userID,))
         if res != 0:
             result = cursor.fetchall()
-            # horrible hacks to get aronud the fact that jsonify is stupid (imo) follow: #
+            # horrible hacks (to get around the fact that jsonify is stupid) follow: #
+            #TODO: REWRITE BECAUSE IT IS NOT STUPID, I AM STUPID, SEE SOLUTION IN ROUTES BELOW #
             servers = dict()
 
             i = 0
@@ -328,8 +359,8 @@ def get_server_list():
                 i = i+1
 
             i = 0
-            for srvr in servers.items():
-                print(srvr)
+
+            for srvr in servers.items(): # loop through servers in order to get the list of channels (TODO: Add queries)
                 srvrID = int(srvr[1]["serverID"])
                 cursor = db.cursor()
                 res = cursor.execute("""SELECT * FROM `IRC_channels` WHERE `IRC_servers_serverID` = %s;""", (srvrID,))
@@ -349,20 +380,22 @@ def get_server_list():
                 servers[i]["channels"] = channels_list
 
                 i = i+1
-            print("SERVERS!!!!", servers)
+
             response = {"status": "ok", "reason": "listing_servers", "message": servers}
             return jsonify(response)
 
         else:
             return error("ok", "no_servers_to_list", "No servers yet.")
-
-        #return error("error", "debug", result)
     else:
         return error("error", "not_loggedin", "You are not logged in.")
 
-# routa volaná při přidávání kanálu do databáze uživatele
 @app.route("/add_channel", methods=["POST"])
 def add_channel():
+    """
+    Routa called upon joining (adding) a new channel
+    TODO: MOVE TO SERVER SIDE?
+    :return: channel_added_sucessfully / channel_was_not_added / not_loggedin
+    """
     userID = get_userID_if_loggedin(request)
     channelName = request.form.get("channelName") or None
     channelPassword = request.form.get("channelPassword") or ""
@@ -390,6 +423,9 @@ def add_channel():
 # routa volaná při zobrazení okna globálních nastavení
 @app.route("/get_global_settings", methods=["POST"])
 def get_global_settings():
+    """
+    Route called to get the current global settings for when a user opens the settings dialog
+    """
     userID = get_userID_if_loggedin(request)
     print("UserID = ", userID)
     if userID is not False:
@@ -424,9 +460,13 @@ def get_global_settings():
     else:
          return error("error", "not_loggedin", "You are not logged in.")
 
-# routa volaná při uložení globálních nastavení v okně nastavení globálních nastavení
+
 @app.route("/save_global_settings", methods=["POST"])
 def set_global_settings():
+    """
+    Route called upon clicking the save button in the global settings dialog.
+    :return: global_settings_saved / global_settings_not_saved / not_loggedin
+    """
     userID = get_userID_if_loggedin(request)
     print("UserID = ", userID)
     if userID is not False:
@@ -434,16 +474,14 @@ def set_global_settings():
                               "show_seconds", "show_video_previews", "show_image_previews"]
         settings_cols_values = []
 
+        # initialize list with values from the request
         for key in settings_cols_names:
-            # fix boolean values
             if(request.form.get(key) == "true"):
-                settings_cols_values.append(1)
+                settings_cols_values.append(1) # js<->python<->db fix true => 1
             elif(request.form.get(key) == "false"):
-                settings_cols_values.append(0)
+                settings_cols_values.append(0) # js<->python<->db fix false => 0
             else:
-                settings_cols_values.append(request.form.get(key))
-
-        print("SETTINGS", settings_cols_names, "\n", settings_cols_values)
+                settings_cols_values.append(request.form.get(key)) # if not boolean just add
 
         db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
         cursor = db.cursor()
@@ -494,53 +532,12 @@ def set_global_settings():
 
 
 
-
-
-# routa volaná při načtení chat.html
-# routa volaná při přidání / odstranění serveru
-# split with get_channel_list?
-@app.route("/get_channel_list", methods=["POST"])
-def get_channel_list():
-    userID = get_userID_if_loggedin(request)
-    print("UserID = ", userID)
-
-    if userID is not False:
-        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
-        cursor = db.cursor()
-        res = cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s;""", (userID,))
-        if res != 0:
-            result = cursor.fetchall()
-            db.close()
-            print("RESULT", result)
-            servers = dict()
-
-            i = 0
-            for res in result:
-                server_dict_temp = {"serverID": res[0],
-                                    "serverSessionID": res[1],
-                                    "nickname": res[2],
-                                    "isAway": res[3],
-                                    "isConnected": res[4],
-                                    "Registred_users_userID": res[5],
-                                    "serverName": res[6],
-                                    "serverIP": res[7],
-                                    "serverPort": res[8],
-                                    "useSSL": res[9]}
-                servers[i] = server_dict_temp
-                i = i+1
-
-            response = {"status": "ok", "reason": "listing_servers", "message": servers}
-            return jsonify(response)
-
-        else:
-            return error("ok", "no_servers_to_list", "No servers yet.")
-    else:
-        return error("error", "not_loggedin", "You are not logged in.")
-
-
-# called to prefill the inputs when user edits a server
 @app.route("/get_server_settings", methods=["POST"])
 def get_server_settings():
+    """
+    Route called to prefill the inputs when a user edits a server.
+    :return: listing_server_info / not_loggedin
+    """
     userID = get_userID_if_loggedin(request)
     serverID = request.form.get("serverID") # gets the serverID of the server the user wants to edit from the ajax request
 
