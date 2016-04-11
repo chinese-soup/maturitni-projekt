@@ -915,7 +915,8 @@ def send_io():
                       channelID_result))
                 db.commit()
                 db.close()
-
+                response = {"status": "ok", "reason": "listing_other_messages", "message": messages}
+                return jsonify(response)
 
 @app.route("/send_textbox_io", methods=["POST"])
 def send_textbox_io():
@@ -951,7 +952,7 @@ def send_textbox_io():
                     processed = False
 
 
-                    cursor.execute("""INSERT INTO `IO_Table` (Registred_users_userID,
+                    res = cursor.execute("""INSERT INTO `IO_Table` (Registered_users_userID,
                                                             commandType,
                                                             argument1,
                                                             argument2,
@@ -963,10 +964,13 @@ def send_textbox_io():
                                                             channelID)
 
                                                             values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
-                    """, (userID_result, argument1, argument2, argument3, timeSent, processed, True, serverID_result,
-                          channelID_result))
+                    """, (userID_result, commandType, argument1, argument2, argument3, timeSent, processed, True,
+                          serverID_result, channelID_result))
                     db.commit()
                     db.close()
+
+                response = {"status": "ok", "reason": "listing_other_messages", "message": res}
+                return jsonify(response)
 
         else:
             print("AHOJ")

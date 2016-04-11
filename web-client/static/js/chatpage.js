@@ -49,8 +49,44 @@ function onChatLoad()
 function sendTextBoxCommand(event)
 {
     channelID = event.data.channelID;
+    textBoxData = $("#input-msgline").val();
     log("sendTextBoxCommand({0})".format(channelID));
     log($("#input-msgline").val());
+
+    /*@app.route("/send_textbox_io", methods=["POST"])
+    def send_textbox_io():
+    userID = get_userID_if_loggedin(request)
+    channelID = request.form.get("channelID") or -1 # channelID
+    textBoxData = request.form.get("textBoxData") or None # channelID*/
+
+    var posting = $.post("http://{0}:5000/send_textbox_io".format(hostname),
+    {
+       //serverID: -1, // TODO: dummy, need to remove from API
+       channelID: channelID,
+       textBoxData: textBoxData
+    }, dataType="text"
+    );
+
+    posting.done(function(data)
+    {
+        if(data["reason"] == "ok")
+        {
+            console.log("AHOJ");
+            
+        }
+        if(data["reason"] == "not_loggedin")
+        {
+            general_dialog("Access denied: You are not logged in.", data["message"], "error", -1);
+        }
+    });
+
+    posting.fail(function()
+    {
+        //general_dialog("API endpoint error.", "An error occurred while trying to retrieve your account's global settings.", "error", 2);
+        toggle_center_column("messages"); // show the messages window instead of global settings, because we can't load user's settings
+        log("Could not load global settings.")
+    })
+
 
 }
 
