@@ -125,13 +125,10 @@ def hello_world():
 def logout():
     """Routa zařizující odhlášerní uživatele"""
     if "sessionid" in request.cookies:
-        db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
-        cursor = db.cursor()
+        db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
         cookies_sessionid = request.cookies.get("sessionid")
         cursor = db.cursor()
         result_code = cursor.execute("""SELECT * FROM `User_sessions` WHERE `session_id` = %s""", (cookies_sessionid,))
-
-        print("session_id cookie:", cookies_sessionid)
 
         if result_code is not 0:
             session_id = cursor.fetchone()[0]
@@ -163,10 +160,10 @@ def logout():
     else:
          return jsonify(status="error", reason="not_loggedin", message="You are not logged in.")
 
-# routa volaná při načtení chat.html pro ověření, zda je uživatel přihlášen
+
 @app.route("/upon_login", methods=["POST"])
 def upon_login():
-    """Routa volaná při načtení klientského chat.html, vrací email přihlášeného uživatele"""
+    """Routa volaná při načtení klientského chat.html, vrací přihlašovací email přihlášeného uživatele"""
     userID = get_userID_if_loggedin(request)
     print("UserID = ", userID)
     if userID is not False:
@@ -182,9 +179,13 @@ def upon_login():
     else:
         return jsonify(status="error", reason="not_loggedin", message="You are not logged in.")
 
-# routa volaná při načtení chat.html pro ověření, zda je uživatel přihlášen
+
 @app.route("/check_session", methods=["GET", "POST"])
 def check_session():
+    """
+        Routa volaná při načtení chat.html pro ověření, zda je uživatel přihlášen a při načtení login.html pro zjištění,
+        zda je uživatel již přihlášen
+    """
     userID = get_userID_if_loggedin(request)
     print("UserID = ", userID)
     if userID is not False:
@@ -196,11 +197,11 @@ def check_session():
 @app.route("/login", methods=["POST"])
 def login():
     """Routa volaná při přihlášení na login.html"""
-    _email = request.form.get("email").lower() # WARNING: make lower() because USER@EXAMPLE.COM is the same as UsER@eXamPle.com !!!!!
+    _email = request.form.get("email").lower() # .lower() protože aHoJ je to samé jako ahoj => zabraňuje více registrací na jeden email
     _password = request.form.get("password")
-    _hashed_password = sha512_crypt.encrypt(_password, salt="CodedSaltIsBad")
+    _hashed_password = sha512_crypt.encrypt(_password, salt="CodedSaltIsBad") # hash zadaného hesla
 
-    db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
+    db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
 
     cursor = db.cursor()
     result_code = cursor.execute("""SELECT * FROM `Registered_users` WHERE `email` = %s AND `password` = %s""", (_email, _hashed_password))
@@ -264,12 +265,12 @@ def register():
     _email = None
     _password = None
     try:
-        _email = request.form.get("email").lower() or None # WARNING: make lower() because USER@EXAMPLE.COM is the same as UsER@eXamPle.com !!!!!
+        _email = request.form.get("email").lower() or None
         _password = request.form.get("password") or None
     except:
         return jsonify(status="error", reason="email_invalid", message="The email address you have specified is invalid.")
 
-    if is_email_valid(_email) == False: # checking for email's validness automatically already checks if it's empty
+    if is_email_valid(_email) == False: # FYI: checking for email's validness automatically already checks if it's empty
         return jsonify(status="error", reason="email_invalid", message="The email address you have specified is invalid.")
     if _password == None:
         return jsonify(status="error", reason="password_empty", message="The password is empty.")
@@ -741,13 +742,10 @@ def get_server_messages():
     userID = get_userID_if_loggedin(request)
     print("UserID = ", userID)
 
-    backlog = bool(int(request.form.get("backlog"))) # rozhoduje zda budeme vracet backlog nebo nejnovější
-    # zprávy odccccc
-#  minule
-    serverID = request.form.get("serverID") # TODO: REMOVE, THIS IS JUST FOR TESTING, WE NEED ALL THE IRC SERVER
-# MESSAGES
-    messageLimit = int(request.form.get("limit")) or 20 # limit zpráv, které získáváme z db
+    backlog = bool(int(request.form.get("backlog"))) # rozhoduje zda budeme vracet backlog nebo nejnovější zprávy od minulého updatu
 
+    serverID = request.form.get("serverID") # TODO: smazat?
+    messageLimit = int(request.form.get("limit")) or 20 # limit zpráv, které získáváme z db
 
     if userID is not False:
         db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")

@@ -38,12 +38,12 @@ class IRCSide(threading.Thread):
 
         self.db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
         self.cursor = self.db.cursor()
-        self.func_to_be_threaded()
+        self.start_pull_thread()
         self.client.process_forever()
 
 
 
-    def _func_to_be_threaded(self):
+    def _pull_thread(self):
         while(True):
             time.sleep(5)
 
@@ -61,11 +61,13 @@ class IRCSide(threading.Thread):
                 print("EXCEPTION IN CHILD THREAD: {0}".format(ex))
 
 
-    def func_to_be_threaded(self):
-        threading.Thread(target=self._func_to_be_threaded).start()
+    def start_pull_thread(self):
+        threading.Thread(target=self._pull_thread).start()
 
 
-    """Loads user's servers from the database"""
+    """
+        Loads user's servers from the database
+    """
     def load_servers_from_db(self):
         db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
         cursor = db.cursor()
@@ -130,6 +132,9 @@ class IRCSide(threading.Thread):
     def nam_reply(self, connection, event):
         pass
 
+    """
+        Handles several different commands the server sends upon connecting
+    """
     def on_your_host(self, connection, event):
         print(event)
         print(event.arguments)
