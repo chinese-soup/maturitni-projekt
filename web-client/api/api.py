@@ -920,14 +920,21 @@ def send_io():
 @app.route("/send_textbox_io", methods=["POST"])
 def send_textbox_io():
     userID = get_userID_if_loggedin(request)
+    channelID = request.form.get("channelID") or -1 # channelID
+    textBoxData = request.form.get("textBoxData") or None # channelID
+
+    userID = get_userID_if_loggedin(request)
     print("UserID = ", userID)
     try:
-        if userID is not None:
-            backlog = bool(int(request.form.get("backlog"))) # rozhoduje zda budeme vracet backlog nebo nejnovější zprávy od minule
-            channelID = request.form.get("channelID") # channelID
+        if userID is not False and textBoxData is not None:
+            db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
+            cursor = db.cursor()
+
             res = cursor.execute("""SELECT * FROM `IRC_channels` WHERE `channelID` = %s;""", (channelID,)) #query to find the serverID so we can check if the user owns this serverID and is not trying to read something that is not his
             if res != 0:
                 chaninfo = cursor.fetchone()
+
+                channelID_result = chaninfo[0] #channelID
                 serverID = chaninfo[5] #ServerID
 
                 result_code = cursor.execute("""SELECT * FROM `IRC_servers` WHERE `serverID` = %s AND `Registred_users_userID` = %s""", (serverID, userID,))
@@ -935,9 +942,35 @@ def send_textbox_io():
                     result = cursor.fetchone()
                     serverID_result = result[0]
                     userID_result = result[5]
+                    commandType = "TEXTBOX"
+
+                    argument1 = textBoxData
+                    argument2 = ""
+                    argument3 = ""
+                    timeSent = None
+                    processed = False
 
 
+                    cursor.execute("""INSERT INTO `IO_Table` (Registred_users_userID,
+                                                            commandType,
+                                                            argument1,
+                                                            argument2,
+                                                            argument3,
+                                                            timeSent,
+                                                            processed,
+                                                            fromClient,
+                                                            serverID,
+                                                            channelID)
 
+                                                            values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                    """, (userID_result, argument1, argument2, argument3, timeSent, processed, True, serverID_result,
+                          channelID_result))
+                    db.commit()
+                    db.close()
+
+        else:
+            print("AHOJ")
+            return error("error", "not_loggedin", "You are not logged in.")
 
 
     except Exception as ex:
