@@ -44,6 +44,9 @@ class IRCSide(threading.Thread):
 
 
     def _pull_thread(self):
+        """
+            Thread to pull IO data from the database to process and send to the main thread
+        """
         while(True):
             time.sleep(5)
 

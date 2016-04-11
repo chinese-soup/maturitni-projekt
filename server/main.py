@@ -10,7 +10,6 @@ from server import server
 
 import threading
 
-
 if __name__ == "__main__":
     aparser = argparse.ArgumentParser()
     aparser.add_argument("--config", "-c", help="Select an alternative config file.")
@@ -23,7 +22,8 @@ if __name__ == "__main__":
         #irc_side2 = server.IRCSide(2)
         #irc_side.start()
         #irc_side2.start()
-        
+
+
         i1 = threading.Thread(target=server.IRCSide, args=(1,))
         i2 = threading.Thread(target=server.IRCSide, args=(2,))
         i1.start()

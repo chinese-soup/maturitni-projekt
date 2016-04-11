@@ -766,7 +766,6 @@ def get_server_messages():
         %s;""", (userID,)) # get user's messages
 
         all_serverIDs_for_this_user = cursor.fetchall()
-        print("all_serverIDs_for_this_user= ", all_serverIDs_for_this_user)
 
         messages = list()
         if backlog is True: # if we want to load messages for a channel we are opening for the first time this session
@@ -787,9 +786,7 @@ def get_server_messages():
                     result = cursor.fetchall()
 
                     for res in result:
-                        print(res)
                         if check_if_serverID_belongs_to_userID(userID, int(res[6])) is True:
-                            print("THIS IS YOUR SERVER")
                             dateTime = res[4]
                             print("dateTime = ", dateTime)
 
@@ -974,7 +971,7 @@ def send_textbox_io():
                       serverID_result, channelID_result))
                 db.commit()
                 db.close()
-                response = {"status": "ok", "reason": "textbox_io_channel_window_inserted", "message": "Di do píče"}
+                response = {"status": "ok", "reason": "textbox_io_channel_window_inserted", "message": "Inserted successfully"}
                 return jsonify(response)
         else:
             return error("error", "channel_not_found", "Channel does not exist.")
