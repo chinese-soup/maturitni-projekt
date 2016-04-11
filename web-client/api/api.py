@@ -4,8 +4,7 @@
 # TODO2: http://flask.pocoo.org/docs/0.10/deploying/mod_wsgi/
 # TODO3: Check for invalid data in forms
 
-
-# db access lib
+# db access library
 import MySQLdb
 
 # passlib for password hashing
@@ -17,20 +16,20 @@ import re
 # randomness for session IDs
 from os import urandom
 from base64 import b64encode
+
 from time import time
 import datetime
 
 import time
 
-
 from flask import Flask, request, jsonify, redirect
-app = Flask(__name__)
-
+app = Flask(__name__) # initializes the Flask app
 
 from werkzeug.exceptions import default_exceptions
 from werkzeug.exceptions import HTTPException
 
-def is_email_valid(email_to_check): # TODO: maybe move to api_utils or sth??????
+def is_email_valid(email_to_check):
+    """Checks if a given email is valid"""
     regexp = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
     result = re.match(regexp, str(email_to_check)) # if we conv to string we don't have to care about checking if the string is None and the regexp will just say it's not a valid email address
     if result is None:
@@ -557,9 +556,12 @@ def get_server_settings():
 
 
 
-# called to prefill the inputs when user edits a server
 @app.route("/edit_server_settings", methods=["POST"])
 def edit_server_settings():
+    """
+    Called to prefill the inputs when user edits a server
+    :return: g
+    """
     userID = get_userID_if_loggedin(request)
     serverID = request.form.get("serverID") # gets the serverID of the server the user wants to edit from the ajax request
 
@@ -598,6 +600,9 @@ def edit_server_settings():
 
 @app.route("/add_new_server_settings", methods=["POST"])
 def add_new_server_settings():
+    """
+    Called upon saving a new IRC server in the add server dialog.
+    """
     userID = get_userID_if_loggedin(request)
 
     if userID is not False:
@@ -737,7 +742,6 @@ def get_messages():
          return error("error", "not_loggedin", "You are not logged in.")
 
 
-# routa volaná při volbě kanálu ze seznamu, routa volaná při scrollnutí nahoru v chatovacím okénku pro získání více zpráv z minulosti
 # TODO: fix sql?
 @app.route("/get_server_messages", methods=["POST"])
 def get_server_messages():
