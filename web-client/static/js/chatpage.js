@@ -486,6 +486,8 @@ function switchCurrentChannelEventStyle(event)
     // change placeholder of the input textbox
     $("#input-group-msgline .dark_input").prop("placeholder", "Chat in {0}".format(toChannelName));
 
+
+
     // save channelID to a variable
     currently_visible_message_window = toChannelID;
 
@@ -494,9 +496,14 @@ function switchCurrentChannelEventStyle(event)
 
     if(toChannelID == -1 && event.data.clickedServerID != null)
     {
+        $(".current_server_div").show();
         current_status_window_serverID = event.data.clickedServerID;
         $(".current_server_div_serverid").html(current_status_window_serverID);
         $(".current_server_div_servername").html(event.data.clickedServerName);
+    }
+    else if(toChannelID != -1)
+    {
+        $(".current_server_div").hide();
     }
 
     // load backlog if it has not been loaded yet
