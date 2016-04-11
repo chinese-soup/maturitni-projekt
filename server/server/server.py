@@ -88,7 +88,7 @@ class IRCSide(threading.Thread):
                             print(i.__dict__)
                             print("ČUS", i.serverID)
 
-                            if(int(i.serverID) == data["serverID"]):
+                            if(int(i.serverID) == int(data["serverID"])):
                                 res = cursor_pull.execute("""SELECT * FROM `IRC_channels` WHERE `IRC_servers_serverID` = %s AND `channelID` = %s;""", (i.serverID, data["channelID"]))
                                 if res != 0:
                                     print("VíTĚZ")
@@ -96,8 +96,13 @@ class IRCSide(threading.Thread):
                                     channelID_res = int(result[0][0])
                                     channelName_res = str(result[0][1])
                                     print(channelName_res)
+
                                     if i.is_connected() == True:
                                         i.privmsg(channelName_res, message)
+
+                                    res = cursor_pull.execute("""DELETE FROM `IO_Table` WHERE `messageID` = %s;""", (data["messageID"],)) # delete the message, we just processed
+                                    #TODO: Change booleanm processed=TRUE
+
 
 
 
