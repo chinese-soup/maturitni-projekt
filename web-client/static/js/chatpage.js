@@ -21,6 +21,7 @@ var current_status_window_serverID = -1;
 
 var currently_visible_message_window = -1;
 
+
 /* maybe move to util.js? */
 /* overrides the default string function in javascript to include formatting support */
 String.prototype.format = function() {
@@ -41,6 +42,10 @@ function onChatLoad()
 
     $("#button_send_message").off("click");
     $("#button_send_message").click({channelID:-1}, sendTextBoxCommand);
+
+
+    $("#input-msgline").keypress({channelID:-1}, sendTextBoxCommand);
+
     setTimeout(ping, 1500);
 }
 
@@ -50,50 +55,56 @@ function onChatLoad()
 */
 function sendTextBoxCommand(event)
 {
-    channelID = event.data.channelID;
-    textBoxData = $("#input-msgline").val();
-
-    log("sendTextBoxCommand({0})".format(channelID, textBoxData));
-
-    if(channelID == -1 && current_status_window_serverID != -1)
+    if (event.keyCode == 13 || event.keyCode == null)
     {
-        serverID = current_status_window_serverID;
-    }
-    else
-    {
-        serverID = -1;
-    }
+        console.log("Enter key");
 
-    var posting = $.post("http://{0}:5000/send_textbox_io".format(hostname),
-    {
-       serverID: serverID,
-       channelID: channelID,
-       textBoxData: textBoxData
-    }, dataType="text"
-    );
 
-    posting.done(function(data)
-    {
-        console.log("PATRIK JE MRDKA" + data);
-        console.log(data);
-        if(data["reason"] == "textbox_io_server_window_inserted" || data["reason"] == "textbox_io_channel_window_inserted")
+        channelID = event.data.channelID;
+        textBoxData = $("#input-msgline").val();
+
+        log("sendTextBoxCommand({0})".format(channelID, textBoxData));
+
+        if(channelID == -1 && current_status_window_serverID != -1)
         {
-            $("#input-msgline").val("");
-
+            serverID = current_status_window_serverID;
         }
-        if(data["reason"] == "not_loggedin")
+        else
         {
-            general_dialog("Access denied: You are not logged in.", data["message"], "error", -1);
+            serverID = -1;
         }
-    });
 
-    posting.fail(function()
-    {
-        //general_dialog("API endpoint error.", "An error occurred while trying to retrieve your account's global settings.", "error", 2);
-        toggle_center_column("messages"); // show the messages window instead of global settings, because we can't load user's settings
-        log("There was an error sendingy our textbox input.")
-    })
+        var posting = $.post("http://{0}:5000/send_textbox_io".format(hostname),
+        {
+           serverID: serverID,
+           channelID: channelID,
+           textBoxData: textBoxData
+        }, dataType="text"
+        );
 
+        posting.done(function(data)
+        {
+            console.log("PATRIK JE MRDKA" + data);
+            console.log(data);
+            if(data["reason"] == "textbox_io_server_window_inserted" || data["reason"] == "textbox_io_channel_window_inserted")
+            {
+                $("#input-msgline").val("");
+
+            }
+            if(data["reason"] == "not_loggedin")
+            {
+                general_dialog("Access denied: You are not logged in.", data["message"], "error", -1);
+            }
+        });
+
+        posting.fail(function()
+        {
+            //general_dialog("API endpoint error.", "An error occurred while trying to retrieve your account's global settings.", "error", 2);
+            toggle_center_column("messages"); // show the messages window instead of global settings, because we can't load user's settings
+            log("There was an error sendingy our textbox input.")
+        })
+
+    }
 
 }
 
