@@ -932,7 +932,6 @@ def send_textbox_io():
     cursor = db.cursor()
     #channelID -1 serverID 1 textBoxData asdf
     if userID is not False and textBoxData != "" and channelID != -1: # if user is logged in & textboxdata has content and channelID was sent and serverID was not send (aka the command was sent while a channel or a query was open)
-        print("PATRIK neni MRDKA")
 
         result_code = cursor.execute("""SELECT * FROM `IRC_channels` WHERE `channelID` = %s;""", (channelID,)) #query to find the serverID so we can check if the user owns this serverID and is not trying to read something that is not his
         if result_code is not 0:
@@ -977,7 +976,6 @@ def send_textbox_io():
             return error("error", "channel_not_found", "Channel does not exist.")
     #channelID -1 serverID 1 textBoxData asdf
     elif userID is not False and textBoxData != "" and serverID != -1:
-        print("PATRIK JE MRDKA" + str(serverID))
         result_code = cursor.execute("""SELECT * FROM `IRC_servers` WHERE `serverID` = %s AND `Registred_users_userID` = %s""", (serverID, userID,))
         if result_code is not 0:
             result = cursor.fetchone()
