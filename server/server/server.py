@@ -85,28 +85,32 @@ class IRCSide(threading.Thread):
                     elif(message[0] != "/"):
                         print("Not command.")
 
-                        for i in self.server_list_server_objects:
-                            print(i.__dict__)
-                            print("ČUS", i.serverID)
-
-                            if(i.serverID == data["serverID"]):
-                                res = cursor_pull.execute("""SELECT * FROM `IRC_channels` WHERE `IRC_servers_serverID` = %s AND `channelID` = %s;""", (i.serverID, data["channelID"]))
+                        for i in self.server_list_server_objects: # loop through all the server instances this user has
+                            if(i.serverID == data["serverID"]): # if the server is the server we need
+                                res = cursor_pull.execute("""SELECT * FROM `IRC_channels` WHERE `IRC_servers_serverID` = %s AND `channelID` = %s;""", (i.serverID, data["channelID"])) # get the IRC channel based on the ID
                                 if res != 0:
                                     print("VíTĚZ")
                                     result = cursor_pull.fetchall()
                                     channelID_res = int(result[0][0])
-                                    channelName_res = str(result[0][1])
-                                    print(channelName_res)
+                                    channelName_res = str(result[0][1]) # get the channelName from the query
 
-                                    if i.is_connected() == True and data["channelID"] != -1:
+                                    if i.is_connected() == True and data["channelID"] != -1: # if we are connected and the channelID is not -1 (broken)
                                         i.privmsg(channelName_res, message)
-                                        res = cursor_pull.execute("""DELETE FROM `IO_Table` WHERE `messageID` = %s;""", (data["messageID"],)) # delete the message, we just processed
+                                        res = cursor_pull.execute("""DELETE FROM `IO_Table` WHERE `messageID` = %s;""", (data["messageID"],)) # delete the message we just processed
                                         res = cursor_pull.execute("""INSERT INTO `IRC_channel_messages` (IRC_channels_channelID,
                                                                     fromHostmask,
                                                                     messageBody,
                                                                     commandType,
                                                                     timeReceived)
                                                                     values (%s, %s, %s, %s, %s)""", (channelID_res, "polivecka!polivecka@polivecka", message, "PUBMSG", datetime.datetime.utcnow()))
+                                        db_pull.commit()
+                                    else:
+                                        res = cursor_pull.execute("""INSERT INTO `IRC_other_messages` (IRC_servers_serverID,
+                                                        fromHostmask,
+                                                        messageBody,
+                                                        commandType,
+                                                        timeReceived)
+                                                        values (%s, %s, %s, %s, %s)""", (i.serverID, i.real_server_name, "You cannot write into server windows. If you want to send raw IRC use /RAW. If you want to message someone use /MSG or /PRIVMSG.", "CMD_ERROR" , datetime.datetime.utcnow()))
                                         db_pull.commit()
 
                                     #TOD: FIX HARDCODED STUFF
@@ -115,9 +119,9 @@ class IRCSide(threading.Thread):
 
 
 
-            time.sleep(2+)
+            time.sleep(2)
 
-            print("Sleep 5: ", self.userID)
+            print("Sleep2: ", self.userID)
 
             db_pull.close()
 

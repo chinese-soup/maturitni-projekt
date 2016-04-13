@@ -672,7 +672,10 @@ def get_messages():
                             print(res)
                             dateTime = res[4]
                             print("dateTime = ", dateTime)
-                            utc_time = time.mktime(dateTime.timetuple()) * 1000 #  TODO: Fix UTC
+                            try:
+                                utc_time = time.mktime(dateTime.timetuple()) * 1000 #  TODO: Fix UTC
+                            except:
+                                utc_time = 0
 
                             server_dict_temp = {"messageID": res[0],
                                 "fromHostmask": res[1],
@@ -708,7 +711,10 @@ def get_messages():
                         for res in result:
                             print(res)
                             dateTime = res[4]
-                            utc_time = time.mktime(dateTime.timetuple()) * 1000
+                            try:
+                                utc_time = time.mktime(dateTime.timetuple()) * 1000 #  TODO: Fix UTC
+                            except:
+                                utc_time = 0
 
                             server_dict_temp = {"messageID": res[0],
                                 "fromHostmask": res[1],
@@ -787,7 +793,10 @@ def get_server_messages():
                             dateTime = res[4]
                             print("dateTime = ", dateTime)
 
-                            utc_time = time.mktime(dateTime.timetuple()) * 1000
+                            try:
+                                utc_time = time.mktime(dateTime.timetuple()) * 1000 #  TODO: Fix UTC
+                            except:
+                                utc_time = 0
 
                             server_dict_temp = {"messageID": res[0],
                                 "fromHostmask": res[1],
@@ -821,7 +830,10 @@ def get_server_messages():
                     if check_if_serverID_belongs_to_userID(userID, int(res[6])) is True:
                         print(res)
                         dateTime = res[4]
-                        utc_time = time.mktime(dateTime.timetuple()) * 1000
+                        try:
+                            utc_time = time.mktime(dateTime.timetuple()) * 1000 #  TODO: Fix UTC
+                        except:
+                            utc_time = 0
 
                         server_dict_temp = {"messageID": res[0],
                             "fromHostmask": res[1],
