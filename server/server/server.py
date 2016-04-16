@@ -120,9 +120,7 @@ class IRCSide(threading.Thread):
 
 
             time.sleep(2)
-
             print("Sleep2: ", self.userID)
-
             db_pull.close()
 
 

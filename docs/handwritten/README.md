@@ -30,7 +30,12 @@ Pokud je uživatel přihlášen tak je formulář dynamicky skryt (více o tom v
 Nejdůležitější z HTML stránek je stránka chat.html, která již má spoustu statických prvků, které se zdynamičťují JavaScriptovou logikou popsanou v části první.
 
 ## Část první: Klientská JavaScript část
-Klientská javascript část se skládá z několika funkcí a globálních proměnných. Využívá knihovny jQuery
+Klientská javascript část se skládá z několika funkcí a globálních proměnných. Využívá knihovny jQuery k práci s DOM elementy a k posílání ajax požadavků.
+### homepage.js
+Obsahuje pouze ajax request pro registrační formulář.
+### loginpage.js
+Obsahuje ajax request, který se vykoná při načtení stránky a odešle API serveru session cookie uživatele. 
+
  
 
 ## Část druhá: API endpoint

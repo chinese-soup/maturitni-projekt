@@ -15,6 +15,7 @@ if __name__ == "__main__":
     aparser.add_argument("userid", help="userid")
     args = aparser.parse_args()
 
+
     if args.userid:
         #irc_side = server.IRCSide(1)
 
