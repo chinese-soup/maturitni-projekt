@@ -79,10 +79,11 @@ class IRCSide(threading.Thread):
 
                 if data["commandType"] == "TEXTBOX":
                     message = data["argument1"]
-                    if(message[0] == "/"): # if the first character is a slash the user is trying to exec a command
+                    if message[0] == "/" : # if the first character is a slash the user is trying to exec a command
                         print("Command.")
 
-                    elif(message[0] != "/"):
+
+                    elif message[0] != "/":
                         print("Not command.")
 
                         for i in self.server_list_server_objects: # loop through all the server instances this user has
@@ -97,6 +98,7 @@ class IRCSide(threading.Thread):
                                     if i.is_connected() == True and data["channelID"] != -1: # if we are connected and the channelID is not -1 (broken)
                                         i.privmsg(channelName_res, message)
                                         res = cursor_pull.execute("""DELETE FROM `IO_Table` WHERE `messageID` = %s;""", (data["messageID"],)) # delete the message we just processed
+                                        db_pull.commit()
                                         res = cursor_pull.execute("""INSERT INTO `IRC_channel_messages` (IRC_channels_channelID,
                                                                     fromHostmask,
                                                                     messageBody,
@@ -115,13 +117,51 @@ class IRCSide(threading.Thread):
 
                                     #TOD: FIX HARDCODED STUFF
                                     #TODO: Change booleanm processed=TRUE
+                elif data["commandType"] == "CONNECT_SERVER": # CONNECTING A NEW SERVER THAT HAS NOT BEEN ADDED TO THE LIST YET
+                    reason = data["argument1"] # should we add it to the list of servers first or is it already loaded?
+                    userID = data["userID"]
+                    serverID = data["serverID"]
+                    channelID = data["channelID"]
+                    isAlreadyConnected = None
+                    #test to see if the server is already in the list
+                    for i in self.server_list_server_objects: # loop through all the server instances this user has
+                        if(i.serverID == data["serverID"]):
+                            isAlreadyConnected = i.is_connected()
+                        else:
+                            pass
+                    if isAlreadyConnected == None:
+                        print("Ještě neni v seznamu.")
 
+                elif data["commandType"] == "JOIN_CHANNEL":
+                    for i in self.server_list_server_objects: # loop through all the server instances this user has
+                        if i.serverID == data["serverID"]: # if the server is the server we need
+                            res = cursor_pull.execute("""SELECT * FROM `IRC_channels` WHERE `IRC_servers_serverID` = %s AND `channelID` = %s;""", (i.serverID, data["channelID"])) # get the IRC channel based on the ID
+                            if res != 0:
+                                print("VíTĚZ")
+                                result = cursor_pull.fetchall()
+                                channelID_res = int(result[0][0])
+                                channelName_res = str(result[0][1]) # get the channelName from the query
+                                channelKey_res = str(result[0][2])
 
+                                if i.is_connected() == True and data["channelID"] != -1: # if we are connected and the channelID is not -1 (broken)
+                                    i.join(channelName_res, key=channelKey_res) # TODO: track channels we are in?
 
+                                res = cursor_pull.execute("""DELETE FROM `IO_Table` WHERE `messageID` = %s;""", (data["messageID"],)) # delete the message we just processed
+                                db_pull.commit()
 
             time.sleep(2)
             print("Sleep2: ", self.userID)
             db_pull.close()
+
+    def join_chnanel(self, data, cursor_pull):
+        """
+        Helper function for joining a channel
+        :param data: dict
+        """
+        print("Helper")
+
+
+
 
 
     def start_pull_thread(self):
