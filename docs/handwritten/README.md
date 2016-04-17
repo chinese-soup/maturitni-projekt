@@ -34,16 +34,27 @@ Klientská javascript část se skládá z několika funkcí a globálních prom
 ### homepage.js
 Obsahuje pouze ajax request pro registrační formulář.
 ### loginpage.js
-Obsahuje ajax request, který se vykoná při načtení stránky a odešle API serveru session cookie uživatele. 
+Obsahuje ajax request, který se vykoná při načtení stránky a odešle API serveru session cookie uživatele, pro zjištění, zda není již uživatel přihlášen. Pokud je uživatel již přihlášen, zobrazí se formulář 
+### chatpage.js
+Hlavní javascriptová část celé aplikace, používaná v souboru **chat.html**.
+Začíná několika globálními proměnnými, uchovávající informace pro správný běh jako například seznam identifikačních čísel zpráv v určitých kanálech.
+Při úspěšném načtení DOM se zavolá funkce, která zjistí, zda je uživatel přihlášen a pokud není, je poslán na přihlašovácí stránku, dále pak načte globální informace do proměnné, přiřadí funkci tlačítku pro odeslání zprávy a spustí první instanci timeru, který volá metodu ping.
 
- 
+#### Metoda ping()
+Metoda ping obsluhuje stahování nových zpráv pro kanály a servery. Je volaná každých 1500 ms.
+Dále také kontroluje, zda je uživatel stále přihlášen, pokud není, je z aplikace poslán na přihlašovácí stránku login.html.
+
+#### Ajax requesty
+V celém souboru chatpage.js se vyskytuje spousta ajax requestů, které volají API backend pro učinění nějaké operace a reagování na odpověď od API.
+Využívá se k tomu jquery metoda POST, díky které nemůžou prohlížeče cachovat výsledky a můžou posílat formdata a přijímat JSON, který API server vrací.
+
 
 ## Část druhá: API endpoint
-API 
+API endpoint využívá knihovny Flask a je rozdělen na dvě části:
+První část s pomocnými utilitními funkcemi, které jsou v druhé části. 
 
 ## Část třetí: Serverová (bouncer) část
 
+
 ## Návod k instalaci
-
-
-
+c

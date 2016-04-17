@@ -97,14 +97,15 @@ class IRCSide(threading.Thread):
 
                                     if i.is_connected() == True and data["channelID"] != -1: # if we are connected and the channelID is not -1 (broken)
                                         i.privmsg(channelName_res, message)
-                                        res = cursor_pull.execute("""DELETE FROM `IO_Table` WHERE `messageID` = %s;""", (data["messageID"],)) # delete the message we just processed
-                                        db_pull.commit()
+
                                         res = cursor_pull.execute("""INSERT INTO `IRC_channel_messages` (IRC_channels_channelID,
                                                                     fromHostmask,
                                                                     messageBody,
                                                                     commandType,
                                                                     timeReceived)
                                                                     values (%s, %s, %s, %s, %s)""", (channelID_res, "polivecka!polivecka@polivecka", message, "PUBMSG", datetime.datetime.utcnow()))
+                                        db_pull.commit()
+                                        res = cursor_pull.execute("""DELETE FROM `IO_Table` WHERE `messageID` = %s;""", (data["messageID"],)) # delete the message we just processed
                                         db_pull.commit()
                                     else:
                                         res = cursor_pull.execute("""INSERT INTO `IRC_other_messages` (IRC_servers_serverID,

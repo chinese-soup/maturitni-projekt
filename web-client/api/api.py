@@ -904,6 +904,7 @@ def send_io():
                 elif(ioType == "PART_CHANNEL"):
                     print("PART CHANNEL")
 
+
                 cursor.execute("""INSERT INTO `IO_Table` (Registred_users_userID,
                                                         commandType,
                                                         argument1,
@@ -920,7 +921,7 @@ def send_io():
                       channelID_result))
                 db.commit()
                 db.close()
-                response = {"status": "ok", "reason": "aha_obiku", "message": "UmŘÍT"}
+                response = {"status": "ok", "reason": "io_sent", "message": "DONE, I GUESS?"}
                 return jsonify(response)
 
 @app.route("/send_textbox_io", methods=["POST"])
@@ -984,7 +985,7 @@ def send_textbox_io():
                 return jsonify(response)
         else:
             return error("error", "channel_not_found", "Channel does not exist.")
-    #channelID -1 serverID 1 textBoxData asdf
+    #channelID -1 serverID 1 textBoxData somethging
     elif userID is not False and textBoxData != "" and serverID != -1:
         result_code = cursor.execute("""SELECT * FROM `IRC_servers` WHERE `serverID` = %s AND `Registred_users_userID` = %s""", (serverID, userID,))
         if result_code is not 0:

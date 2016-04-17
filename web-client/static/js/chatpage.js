@@ -8,22 +8,22 @@ $.ajaxSetup({
 
 // Global variables
 var hostname = location.hostname; // maybe temporary(?): get the current hostname so we know where to make api calls (same host, different port)
-var already_loaded_backlog = [];
-var global_settings = {"hilight_words": null, "username": null, "realname": null, "nickname": null, "show_joinpartquit_messages": null, "show_seconds": null, "show_video_previews": null, "show_image_previews": null};
-var channel_messages = [];
+var already_loaded_backlog = []; // list of channels that already have backlog pulled so that we don't pull it again
+var global_settings = {"hilight_words": null, "username": null, "realname": null, "nickname": null, "show_joinpartquit_messages": null, "show_seconds": null, "show_video_previews": null, "show_image_previews": null}; // currently inplace global settings, loaded upon loading, changed when the settings are changed
+var channel_messages = []; // list of channel messages
 
-var channel_ids = [];
-var last_message_id = {};
-var last_message_id_servers = -1;
+var channel_ids = []; // list of channel IDs of the user
+var last_message_id = {}; // dictionary, key: channelID, value: ID of the last message in a channel
+var last_message_id_servers = -1; // int; last message of the status window
 
-var current_status_window_serverID = -1;
+var current_status_window_serverID = -1; // int; current server selected in the status window (sends commands and stuff to the selected server)
+
+var currently_visible_message_window = -1; // int; which channel window is currently selected (-1 = status, always -1 upon load)
 
 
-var currently_visible_message_window = -1;
-
-
-/* maybe move to util.js? */
-/* overrides the default string function in javascript to include formatting support */
+/*
+    overrides the default string function in javascript to include formatting support
+*/
 String.prototype.format = function() {
     var formatted = this;
     for (var i = 0; i < arguments.length; i++) {
@@ -37,16 +37,14 @@ String.prototype.format = function() {
 function onChatLoad()
 {
     console.log("onChatLoad();");
-    checkIfUserIsLoggedInOnStart();
-    loadSettingsIntoVariable();
+    checkIfUserIsLoggedInOnStart(); // check if the user is logged in upon loading the DOM, if he is not, redirect him to the login page
+    loadSettingsIntoVariable(); // load settings into the global_settings variable, for further use (e.g. show seconds? show previews?)
 
-    $("#button_send_message").off("click");
-    $("#button_send_message").click({channelID:-1}, sendTextBoxCommand);
+    $("#button_send_message").off("click"); // kill the click event of the chat message, just to be sure
+    $("#button_send_message").click({channelID:-1}, sendTextBoxCommand); // bind the click event of the Send button to sendTextBoxCommand and channelID of the status window
+    $("#input-msgline").keypress({channelID:-1}, sendTextBoxCommand); // bind the same as above, but pressing enter key while the message textbox is focused
 
-
-    $("#input-msgline").keypress({channelID:-1}, sendTextBoxCommand);
-
-    setTimeout(ping, 1500);
+    setTimeout(ping, 1500); // set the initial timer to call the ping method in 1500 ms
 }
 
 
@@ -59,19 +57,18 @@ function sendTextBoxCommand(event)
     {
         console.log("Enter key");
 
-
         channelID = event.data.channelID;
-        textBoxData = $("#input-msgline").val();
+        textBoxData = $("#input-msgline").val(); // get the textbox data the user wants to send
 
         log("sendTextBoxCommand({0})".format(channelID, textBoxData));
 
-        if(channelID == -1 && current_status_window_serverID != -1)
+        if(channelID == -1 && current_status_window_serverID != -1) // if the channel is the status window
         {
-            serverID = current_status_window_serverID;
+            serverID = current_status_window_serverID; // we  need to get the current server that is selected in the status window
         }
         else
         {
-            serverID = -1;
+            serverID = -1; // otherwise we just send an invalid server value (-1 because laziness)
         }
 
         var posting = $.post("http://{0}:5000/send_textbox_io".format(hostname),
@@ -84,24 +81,21 @@ function sendTextBoxCommand(event)
 
         posting.done(function(data)
         {
-            console.log("PATRIK JE MRDKA" + data);
             console.log(data);
             if(data["reason"] == "textbox_io_server_window_inserted" || data["reason"] == "textbox_io_channel_window_inserted")
             {
-                $("#input-msgline").val("");
+                $("#input-msgline").val(""); // reset the message textbox to an empty string
 
             }
-            if(data["reason"] == "not_loggedin")
+            else if(data["reason"] == "not_loggedin")
             {
-                general_dialog("Access denied: You are not logged in.", data["message"], "error", -1);
+                general_dialog("Access denied: You are not logged in.", data["message"], "error", -1); // the user is not logged in
             }
         });
 
         posting.fail(function()
         {
-            //general_dialog("API endpoint error.", "An error occurred while trying to retrieve your account's global settings.", "error", 2);
-            toggle_center_column("messages"); // show the messages window instead of global settings, because we can't load user's settings
-            log("There was an error sendingy our textbox input.")
+            log("There was an error sending the textbox input.")
         })
 
     }
@@ -158,7 +152,7 @@ function loadSettingsIntoVariable()
 function ping()
 {
     console.log("ping()");
-    getNewMessages();
+    getNewMessages(); //
     getNewServerMessages();
 
     setTimeout(ping, 1500);
