@@ -49,6 +49,7 @@ V celém souboru chatpage.js se vyskytuje spousta ajax requestů, které volají
 Využívá se k tomu jquery asynchronní metoda post (vyvolávající metodu POST), díky které nemůžou prohlížeče cachovat výsledky a můžou posílat formdata a přijímat JSON, který API server vrací.
 Při správném vykonání se vyvolají příkazy v rámci .success(), při selhání vykonání požadavku se vyvolají příkazy v rámci .fail(). Selhání většinou nastane, pokud je API server nepřipraven přijímat požadavky, připojení k internetu není k dispozici, nebo nastala během vyvolání požadavku v API vyjímka.
 
+### asdf
 
 
 ## Část druhá: API endpoint
@@ -61,7 +62,76 @@ První část s pomocnými utilitními funkcemi, které jsou v druhé části.
 ## Návod k instalaci
 Tento návod je pro systém Debian, ovšem podobné principy a názvy balíků jsou podobné/stejné i na jiných distribucích Linuxu.
 ### 1. Instalace software
-V prvním kroku je třeba nainstalovat HTTP server apache spolu s módem WGSI pro vyvolávání API části ve Flasku a databázový server a klient MariaDB (případně MySQL).
-```sudo apt-get install apache2 libapache2-mod-wsgi-py3 mariadb-server mariadb-client```
+V prvním kroku je třeba nainstalovat HTTP server apache spolu s módem WGSI pro vyvolávání API části ve Flasku a databázový server a klient MariaDB (případně MySQL)
+Dále budeme potřebovat pip3, abychom nainstalovali některé další závislosti jak pro API část, tak i pro serverovou část.
+```
+sudo apt-get install apache2 libapache2-mod-wsgi-py3 mariadb-server mariadb-client python3-pip`python3-flask
+```
+
+### 2. Python závislosti
+* ~flask~
+* irc
+* hashlib
+* mysql-connector-python
+```sudo pip3 install hashlib mysql-connector-python irc```
+
+
+### 3. Import SQL struktury
+Před použitím musíme importovat základní SQL strukturu.
+#### Vytvoření databáze
+```
+echo "CREATE DATABASE nazev_databaze" | mysql -u username -p
+```
+případně
+```
+mysql -u username -p -e "CREATE DATABASE nazev_databaze" 
+```
+#### Importování struktury z SQL souboru
+Nyní strukturu importujeme do databáez, kterou jsme právě vytvořili:
+```
+cat struktura.sql > mysql -u username -p -D nazev_databaze
+```
+
+### 4. Apache2 konfigurace
+Pro správný běh musí wgsi API na běžet na portu 5000, je nutno změnit/založit soubor s virtuálnímy hosty.
+Následující příklad je úprava výchozího konfiguračního vhost souboru /etc/apache2/sites-available/00-default.conf
+```
+Listen 5000 # posloucháme i na portu 5000 (port 80 je v tomto příkladě již poslouchán ve výchozím apache konfiguračním souboru)
+            # pozor: pokud se Listen stejného portu vyskytuje v několika konfiguračních souborech naráz, dojde k chybě,
+            # kdy na daném portu apache nebude poslouchat vůbec!
+
+<VirtualHost *:80> # virtuální host statických stránek 
+	ServerName server.eu # hostname statických stránek
+
+	ServerAdmin webmaster@localhost
+	DocumentRoot /var/www/html
+
+</Directory>
+
+</VirtualHost>
+
+<VirtualHost *:5000> # virutální host API
+    ServerName server.eu # hostname api, musí být stejné jako hostname statických stránek       
+
+    WSGIDaemonProcess cloudchat user=user1 group=group1 threads=5
+    WSGIScriptAlias / /var/www/celo.wgsi
+    WSGIScriptReloading On
+
+    <Directory /var/www/cloudchat>
+        WSGIProcessGroup celo
+        WSGIApplicationGroup %{GLOBAL}
+        Order deny,allow
+        Allow from all
+
+    </Directory>
+</VirtualHost>
+```
+
+### 5. Vytvoření uživatelského účtu pro WGSI
+V předchozím kroku jsme nakonfigurovali WGSI s uživatelským jménem user1 a skupinou group1, musíme tohoto uživatele  a tuto skupinu vytvořit.
+```
+$ useradd user1` && groupadd group1 && usermod -g group1 user1
+```
+
 
 
