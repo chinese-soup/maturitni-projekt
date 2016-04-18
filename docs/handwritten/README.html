@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <link href="https://markable.in/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://markable.in//static/css/style.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="https://markable.in/static/editor/css/view_file.css">
+  <link rel="stylesheet" type="text/css" href="https://markable.in/static/css/code.css">
+</head>
+<body>
+  <div class="container">
+    <div id="content">
+      <h1 id="cloudchat">CloudChat</h1>
+<h2 id="maturitni-projekt-20152016">Maturitní projekt 2015/2016</h2>
+<h3 id="jakub-mach-4b">Jakub Mach, 4.B</h3>
+<p>Toto je dokumentace k maturitní práci nazvané <em>Cloudová chatovací aplikace</em>.
+Kód maturitní práce se skládá celkem ze tří částí, v této dokumentaci detailně popíši co, jak a proč v těchto třech částech funguje
+a uvedu návod k instalaci aplikace na vlastní server.</p>
+<h2 id="obsah">Obsah:</h2>
+<ul>
+<li>Část nultá: HTML &amp; CSS</li>
+<li>Část první: Klientská JavaScript část</li>
+<li>Část druhá: API endpoint</li>
+<li>Část třetí: Serverová (bouncer) část</li>
+<li>Návod k instalaci</li>
+</ul>
+<h2 id="cast-nulta-html-css">Část nultá: HTML &amp; CSS</h2>
+<p>Kód "nulté" části byl vytvořen jako první (a byl postupem času modifikován) a hlavně jako základ pro další tvorbu. Napsal jsem ho proto, že jsem chtěl stránky statické a dynamičnost těmto stránkám bude přidána až za pomocí JavaScriptu. Jelikož nejsem moc na grafiku a frontend, rozhodl jsem se si práci zjednodušit front-endovou knihovnou jménem <em>Twitter Bootstrap</em>.
+Kód této části sestává z několika HTML5 a CSS3 souborů, které nyní popíši: </p>
+<h3 id="indexhtml">index.html</h3>
+<p><strong>Hlavní stránka aplikace</strong>, rozdělena na 3 části: navigace, pod ním header s registrací nového uživatele a krátký souhrn informací o aplikaci.
+Navigace má celkem tři odkazy, první vede na počátek stránky, druhý vede na "krátký souhrn informací o aplikaci", třetí je odkaz na přihlašovací stránku.
+Část s registrací používá obrázek bouřkových mraků s volnou licencí ze služby Flickr.</p>
+<h3 id="loginhtml">login.html</h3>
+<p>Jedná se o stránku vzhledově podobnou stránce hlavní, na které i byla založena, ovšem místo registračního formuláře se zde vyskytuje <strong>formulář pro přihlášení</strong>.
+Pokud je uživatel přihlášen tak je formulář dynamicky skryt (více o tom v části první) a místo něj je zobrazeno tlačítko pro přesměrování do samotné aplikace.</p>
+<p><img alt="Tlačítko zobrazené, pokud je uživatel již přihlášen." src="1.png" /></p>
+<h3 id="chathtml">chat.html</h3>
+<p>Nejdůležitější z HTML stránek je stránka chat.html, která již má spoustu statických prvků, které se zdynamičťují JavaScriptovou logikou popsanou v části první.</p>
+<h2 id="cast-prvni-klientska-javascript-cast">Část první: Klientská JavaScript část</h2>
+<p>Klientská javascript část se skládá z několika funkcí a globálních proměnných. Využívá knihovny jQuery k práci s DOM elementy a k posílání ajax požadavků.</p>
+<h3 id="homepagejs">homepage.js</h3>
+<p>Obsahuje pouze ajax request pro registrační formulář.</p>
+<h3 id="loginpagejs">loginpage.js</h3>
+<p>Obsahuje ajax request, který se vykoná při načtení stránky a odešle API serveru session cookie uživatele, pro zjištění, zda není již uživatel přihlášen. Pokud je uživatel již přihlášen, zobrazí se formulář </p>
+<h3 id="chatpagejs">chatpage.js</h3>
+<p>Hlavní javascriptová část celé aplikace, používaná v souboru <strong>chat.html</strong>.
+Začíná několika globálními proměnnými, uchovávající informace pro správný běh jako například seznam identifikačních čísel zpráv v určitých kanálech.
+Při úspěšném načtení DOM se zavolá funkce, která zjistí, zda je uživatel přihlášen a pokud není, je poslán na přihlašovácí stránku, dále pak načte globální informace do proměnné, přiřadí funkci tlačítku pro odeslání zprávy a spustí první instanci timeru, který volá metodu ping.</p>
+<h4 id="metoda-ping">Metoda ping()</h4>
+<p>Metoda ping obsluhuje stahování nových zpráv pro kanály a servery. Je volaná každých 1500 ms.
+Dále také kontroluje, zda je uživatel stále přihlášen, pokud není, je z aplikace poslán na přihlašovácí stránku login.html.</p>
+<h4 id="ajax-requesty">Ajax requesty</h4>
+<p>V celém souboru chatpage.js se vyskytuje spousta ajax requestů, které volají API backend pro učinění nějaké operace a reagování na odpověď od API.
+Využívá se k tomu jquery asynchronní metoda post (vyvolávající metodu POST), díky které nemůžou prohlížeče cachovat výsledky a můžou posílat formdata a přijímat JSON, který API server vrací.
+Při správném vykonání se vyvolají příkazy v rámci .success(), při selhání vykonání požadavku se vyvolají příkazy v rámci .fail(). Selhání většinou nastane, pokud je API server nepřipraven přijímat požadavky, připojení k internetu není k dispozici, nebo nastala během vyvolání požadavku v API vyjímka.</p>
+<h3 id="asdf">asdf</h3>
+<h2 id="cast-druha-api-endpoint">Část druhá: API endpoint</h2>
+<p>API endpoint využívá knihovny Flask a je rozdělen na dvě části:
+První část s pomocnými utilitními funkcemi, které jsou v druhé části. </p>
+<h2 id="cast-treti-serverova-bouncer-cast">Část třetí: Serverová (bouncer) část</h2>
+<h2 id="navod-k-instalaci">Návod k instalaci</h2>
+<p>Tento návod je pro systém Debian, ovšem podobné principy a názvy balíků jsou podobné/stejné i na jiných distribucích Linuxu.</p>
+<h3 id="1-instalace-software">1. Instalace software</h3>
+<p>V prvním kroku je třeba nainstalovat HTTP server apache spolu s módem WGSI pro vyvolávání API části ve Flasku a databázový server a klient MariaDB (případně MySQL)
+Dále budeme potřebovat pip3, abychom nainstalovali některé další závislosti jak pro API část, tak i pro serverovou část.</p>
+<pre><code>sudo apt-get install apache2 libapache2-mod-wsgi-py3 mariadb-server mariadb-client python3-pip python3-flask
+</code></pre>
+
+<h3 id="2-python-zavislosti">2. Python závislosti</h3>
+<ul>
+<li>~flask~</li>
+<li>irc</li>
+<li>hashlib</li>
+<li>mysql-connector-python</li>
+</ul>
+<pre><code>sudo pip3 install hashlib mysql-connector-python irc
+</code></pre>
+
+<h3 id="3-import-sql-struktury">3. Import SQL struktury</h3>
+<p>Před použitím musíme importovat základní SQL strukturu.</p>
+<h4 id="vytvoreni-databaze">Vytvoření databáze</h4>
+<pre><code>echo &quot;CREATE DATABASE nazev_databaze&quot; | mysql -u username -p
+</code></pre>
+
+<p>případně</p>
+<pre><code>mysql -u username -p -e &quot;CREATE DATABASE nazev_databaze&quot; 
+</code></pre>
+
+<h4 id="importovani-struktury-z-sql-souboru">Importování struktury z SQL souboru</h4>
+<p>Nyní strukturu importujeme do databáez, kterou jsme právě vytvořili:</p>
+<pre><code>cat struktura.sql &gt; mysql -u username -p -D nazev_databaze
+</code></pre>
+
+<h3 id="4-apache2-konfigurace">4. Apache2 konfigurace</h3>
+<h4 id="konfiguracni-soubor-vhostu">Konfigurační soubor VHostu</h4>
+<p>Pro správný běh musí wgsi API na běžet na portu 5000, je nutno změnit/založit soubor s virtuálnímy hosty.
+Následující příklad je úprava výchozího konfiguračního vhost souboru /etc/apache2/sites-available/00-default.conf</p>
+<pre><code>Listen 5000 # posloucháme i na portu 5000 (port 80 je v tomto příkladě již poslouchán ve výchozím apache konfiguračním souboru)
+            # pozor: pokud se Listen stejného portu vyskytuje v několika konfiguračních souborech naráz, dojde k chybě,
+            # kdy na daném portu apache nebude poslouchat vůbec!
+
+&lt;VirtualHost *:80&gt; # virtuální host statických stránek 
+    ServerName server.eu # hostname statických stránek
+
+    ServerAdmin webmaster@lserver.eu
+    DocumentRoot /var/www/html
+
+    &lt;Directory /var/www/html/&gt;
+            Order deny,allow
+            Allow from all
+    &lt;/Directory&gt;
+
+
+
+&lt;/VirtualHost&gt;
+
+&lt;VirtualHost *:5000&gt; # virutální host API
+    ServerName server.eu # hostname api, musí být stejné jako hostname statických stránek       
+
+    WSGIDaemonProcess cloudchat user=user1 group=group1 threads=5
+    WSGIScriptAlias / /var/www/cchat.wgsi # VALIDNÍ CESTA K .WGSI souboru, nejlépe o úroveň výše, než je soubor api.py
+    WSGIScriptReloading On # pokud API spadne, znovu načíst
+
+    &lt;Directory /var/www/cloudchat&gt; 
+        WSGIProcessGroup celo
+        WSGIApplicationGroup %{GLOBAL}
+        Order deny,allow
+        Allow from all
+
+    &lt;/Directory&gt;
+&lt;/VirtualHost&gt;
+</code></pre>
+
+<h4 id="vytvoreni-uzivatelskeho-uctu-pro-wgsi">Vytvoření uživatelského účtu pro WGSI</h4>
+<p>V předchozím kroku jsme nakonfigurovali WGSI s uživatelským jménem user1 a skupinou group1, musíme tohoto uživatele  a tuto skupinu vytvořit.</p>
+<pre><code>$ useradd user1 &amp;&amp; groupadd group1 &amp;&amp; usermod -g group1 user1
+</code></pre>
+
+<h4 id="vytvoreni-souboru-wgsi">Vytvoření souboru wgsi</h4>
+<p>Je nutné vytvořit soubor WGSI, aby Apache vědělo, co má vlastně volat. Cesta musí být stejná jako cesta v konfiguračním souboru apache (vizte výše).
+Tedy v našem případě vytvoříme soubor /var/www/cchat.wgsi a vložíme do něj:</p>
+<pre><code>import sys, os
+sys.path.insert(0,'/var/www/cloudchat') # hackhack
+os.chdir(&quot;/var/www/cloudchat&quot;)
+from api import app as application # import samotneho api.py souboru
+</code></pre>
+
+<h3 id="5-spusteni-serverpy-na-pozadi">5. Spuštění server.py na pozadí</h3>
+<pre><code>cd server/
+python3 main.py &amp;
+</code></pre>
+
+<h3 id="6-nakopirovani-potrebnych-souboru">6. Nakopírování potřebných souborů</h3>
+<h4 id="staticke-stranky">Statické stránky</h4>
+<p>Zkopírujeme do stejné složky, kterou jsme zvolili pro statické stránky v apache2 vhost konfiguráku.</p>
+<pre><code>mkdir /var/www/html
+cp -r static/ /var/www/html
+</code></pre>
+
+<h4 id="api">API</h4>
+<p>Zkopírujeme do stejné složky, kterou jsme zvolili ve WGSI souboru!!</p>
+<pre><code>mkdir /var/www/cloudchat/
+cp api/api.py /var/www/cloudchat/
+</code></pre>
+
+<h3 id="7-spusteni-apache2">7. Spuštění apache2</h3>
+<pre><code>systemctl start apache2
+</code></pre>
+
+<h3 id="8-hotovo">8. Hotovo</h3>
+<p>Pokud se vše správně podařilo, měla by klientská část nyní běžet na portu :80 na námi nastavené doméně a na portu :5000 by měla fungovat API.
+Zda API běží můžeme zkontrolovat požadavkem http://domena:5000/, měl by se vrátit JSON s informací, že API běží.
+"Realným testem API (a následně i bouncer části)" je pak registrace klienta na http://domena/index.html.</p>
+    </div>
+  </div>
+</body>
+</html>

@@ -38,16 +38,18 @@ Obsahuje ajax request, který se vykoná při načtení stránky a odešle API s
 ### chatpage.js
 Hlavní javascriptová část celé aplikace, používaná v souboru **chat.html**.
 Začíná několika globálními proměnnými, uchovávající informace pro správný běh jako například seznam identifikačních čísel zpráv v určitých kanálech.
-Při úspěšném načtení DOM se zavolá funkce, která zjistí, zda je uživatel přihlášen a pokud není, je poslán na přihlašovácí stránku, dále pak načte globální informace do proměnné, přiřadí funkci tlačítku pro odeslání zprávy a spustí první instanci timeru, který volá metodu ping.
+Při úspěšném načtení DOM se zavolá funkce onChatLoad, která zjistí, zda je uživatel přihlášen a pokud není, je poslán na přihlašovácí stránku, dále pak načte globální informace do proměnné, přiřadí funkci tlačítku pro odeslání zprávy a spustí první instanci timeru, který volá metodu ping.
 
-#### Metoda ping()
-Metoda ping obsluhuje stahování nových zpráv pro kanály a servery. Je volaná každých 1500 ms.
+#### Funkce ping()
+Funkce ping obsluhuje stahování nových zpráv pro kanály a servery. Je volaná každých 1500 ms.
 Dále také kontroluje, zda je uživatel stále přihlášen, pokud není, je z aplikace poslán na přihlašovácí stránku login.html.
 
 #### Ajax requesty
 V celém souboru chatpage.js se vyskytuje spousta ajax requestů, které volají API backend pro učinění nějaké operace a reagování na odpověď od API.
 Využívá se k tomu jquery asynchronní metoda post (vyvolávající metodu POST), díky které nemůžou prohlížeče cachovat výsledky a můžou posílat formdata a přijímat JSON, který API server vrací.
 Při správném vykonání se vyvolají příkazy v rámci .success(), při selhání vykonání požadavku se vyvolají příkazy v rámci .fail(). Selhání většinou nastane, pokud je API server nepřipraven přijímat požadavky, připojení k internetu není k dispozici, nebo nastala během vyvolání požadavku v API vyjímka.
+
+
 
 ### asdf
 
@@ -65,7 +67,7 @@ Tento návod je pro systém Debian, ovšem podobné principy a názvy balíků j
 V prvním kroku je třeba nainstalovat HTTP server apache spolu s módem WGSI pro vyvolávání API části ve Flasku a databázový server a klient MariaDB (případně MySQL)
 Dále budeme potřebovat pip3, abychom nainstalovali některé další závislosti jak pro API část, tak i pro serverovou část.
 ```
-sudo apt-get install apache2 libapache2-mod-wsgi-py3 mariadb-server mariadb-client python3-pip`python3-flask
+sudo apt-get install apache2 libapache2-mod-wsgi-py3 mariadb-server mariadb-client python3-pip python3-flask
 ```
 
 ### 2. Python závislosti
@@ -73,7 +75,9 @@ sudo apt-get install apache2 libapache2-mod-wsgi-py3 mariadb-server mariadb-clie
 * irc
 * hashlib
 * mysql-connector-python
-```sudo pip3 install hashlib mysql-connector-python irc```
+```
+sudo pip3 install hashlib mysql-connector-python irc
+```
 
 
 ### 3. Import SQL struktury
@@ -124,7 +128,7 @@ Listen 5000 # posloucháme i na portu 5000 (port 80 je v tomto příkladě již 
     WSGIScriptReloading On # pokud API spadne, znovu načíst
 
     <Directory /var/www/cloudchat> 
-        WSGIProcessGroup celo
+        WSGIProcessGroup cchat
         WSGIApplicationGroup %{GLOBAL}
         Order deny,allow
         Allow from all

@@ -143,8 +143,7 @@ function loadSettingsIntoVariable()
 
     posting.fail(function()
     {
-        //general_dialog("API endpoint error.", "An error occurred while trying to retrieve your account's global settings.", "error", 2);
-        toggle_center_column("messages"); // show the messages window instead of global settings, because we can't load user's settings
+        toggle_center_column("messages"); // show the messages window instead of global settings, because we can't load user's current settings, so we don't want him to change them
         log("Could not load global settings.")
     })
 }
@@ -152,7 +151,7 @@ function loadSettingsIntoVariable()
 function ping()
 {
     console.log("ping()");
-    getNewMessages(); //
+    getNewMessages();
     getNewServerMessages();
 
     setTimeout(ping, 1500);
@@ -448,6 +447,8 @@ function switchCurrentChannel(toChannelID)
 
 }
 
+
+/* this function makes links clickable, creates images previews, memes */
 function linkifyMessage(messageBody)
 {
     var regexp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
@@ -468,8 +469,7 @@ function linkifyMessage(messageBody)
     return(messageBody);
 }
 
-
-
+/* this function is bound to several */
 function switchCurrentChannelEventStyle(event)
 {
     toChannelID = event.data.channelID;
