@@ -29,6 +29,10 @@ from werkzeug.exceptions import default_exceptions
 from werkzeug.exceptions import HTTPException
 
 def getDB():
+    """
+        Connects to the MySQL database and returns an SQL connection object
+    :return: MySQLdb.connections.Connection
+    """
     return MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
 
 
@@ -52,7 +56,7 @@ def error(_status, _reason, _message):
 
 def get_userIP(request):
     """
-        Gets the source IP from a request.
+    Gets the source IP from a request.
     :param request:
     :return:
     """
@@ -61,7 +65,7 @@ def get_userIP(request):
 
 def _make_login_response(data_to_send, generated_sessionID):
     """
-        This function sets a cookie header BEFORE sending off a successful /login response.
+    This function sets a cookie header BEFORE sending off a successful /login response.
     """
     response = app.make_response(data_to_send)
     response.set_cookie("sessionid", value=generated_sessionID)

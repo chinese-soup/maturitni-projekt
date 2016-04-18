@@ -51,7 +51,8 @@ from&nbsp;chat.html</tt></dd></dl>
 :param&nbsp;_reason:&nbsp;A&nbsp;one&nbsp;word&nbsp;reason&nbsp;used&nbsp;in&nbsp;the&nbsp;chat.html&nbsp;javascript&nbsp;logic<br>
 :param&nbsp;_message:&nbsp;A&nbsp;human-like&nbsp;message&nbsp;describing&nbsp;what&nbsp;went&nbsp;wrong&nbsp;(right).<br>
 :return:</tt></dd></dl>
- <dl><dt><a name="-getDB"><strong>getDB</strong></a>()</dt></dl>
+ <dl><dt><a name="-getDB"><strong>getDB</strong></a>()</dt><dd><tt>&nbsp;&nbsp;&nbsp;&nbsp;Connects&nbsp;to&nbsp;the&nbsp;MySQL&nbsp;database&nbsp;and&nbsp;returns&nbsp;an&nbsp;SQL&nbsp;connection&nbsp;object<br>
+:return:&nbsp;MySQLdb.connections.Connection</tt></dd></dl>
  <dl><dt><a name="-get_global_settings"><strong>get_global_settings</strong></a>()</dt><dd><tt>Route&nbsp;called&nbsp;to&nbsp;get&nbsp;the&nbsp;current&nbsp;global&nbsp;settings&nbsp;for&nbsp;when&nbsp;a&nbsp;user&nbsp;opens&nbsp;the&nbsp;settings&nbsp;dialog</tt></dd></dl>
  <dl><dt><a name="-get_messages"><strong>get_messages</strong></a>()</dt><dd><tt>Route&nbsp;called&nbsp;to&nbsp;get&nbsp;new&nbsp;messages&nbsp;from&nbsp;a&nbsp;channel&nbsp;since&nbsp;time<br>
 Route&nbsp;called&nbsp;to&nbsp;get&nbsp;old&nbsp;messages&nbsp;from&nbsp;a&nbsp;channel&nbsp;to&nbsp;fill&nbsp;the&nbsp;backlog<br>
@@ -72,7 +73,7 @@ aka&nbsp;if&nbsp;he's&nbsp;not&nbsp;trying&nbsp;to&nbsp;access&nbsp;data&nbsp;of
 &nbsp;<br>
 :param&nbsp;request:&nbsp;Flask&nbsp;request&nbsp;object<br>
 :return:&nbsp;userID&nbsp;if&nbsp;the&nbsp;user&nbsp;is&nbsp;loggedIn&nbsp;/&nbsp;False&nbsp;if&nbsp;the&nbsp;user&nbsp;is&nbsp;not&nbsp;logged&nbsp;in&nbsp;or&nbsp;an&nbsp;error&nbsp;occurred&nbsp;while&nbsp;trying&nbsp;to&nbsp;get&nbsp;the&nbsp;lgged&nbsp;in&nbsp;info&nbsp;from&nbsp;the&nbsp;database</tt></dd></dl>
- <dl><dt><a name="-get_userIP"><strong>get_userIP</strong></a>(request)</dt><dd><tt>&nbsp;&nbsp;&nbsp;&nbsp;Gets&nbsp;the&nbsp;source&nbsp;IP&nbsp;from&nbsp;a&nbsp;request.<br>
+ <dl><dt><a name="-get_userIP"><strong>get_userIP</strong></a>(request)</dt><dd><tt>Gets&nbsp;the&nbsp;source&nbsp;IP&nbsp;from&nbsp;a&nbsp;request.<br>
 :param&nbsp;request:<br>
 :return:</tt></dd></dl>
  <dl><dt><a name="-hello_world"><strong>hello_world</strong></a>()</dt><dd><tt>Defaultní&nbsp;routa</tt></dd></dl>

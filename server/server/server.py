@@ -37,8 +37,6 @@ class IRCSide(threading.Thread):
         self.connect_servers()
 
         self.userID = _userid
-        self.cau_ne = "cau"
-
 
         self.db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
         self.cursor = self.db.cursor()

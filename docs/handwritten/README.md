@@ -120,7 +120,7 @@ Listen 5000 # posloucháme i na portu 5000 (port 80 je v tomto příkladě již 
     ServerName server.eu # hostname api, musí být stejné jako hostname statických stránek       
 
     WSGIDaemonProcess cloudchat user=user1 group=group1 threads=5
-    WSGIScriptAlias / /var/www/cchat.wgsi # VALIDNÍ CESTA K .WGSI souboru 
+    WSGIScriptAlias / /var/www/cchat.wgsi # VALIDNÍ CESTA K .WGSI souboru, nejlépe o úroveň výše, než je soubor api.py
     WSGIScriptReloading On # pokud API spadne, znovu načíst
 
     <Directory /var/www/cloudchat> 
@@ -136,21 +136,45 @@ Listen 5000 # posloucháme i na portu 5000 (port 80 je v tomto příkladě již 
 #### Vytvoření uživatelského účtu pro WGSI
 V předchozím kroku jsme nakonfigurovali WGSI s uživatelským jménem user1 a skupinou group1, musíme tohoto uživatele  a tuto skupinu vytvořit.
 ```
-$ useradd user1` && groupadd group1 && usermod -g group1 user1
+$ useradd user1 && groupadd group1 && usermod -g group1 user1
 ```
 
 #### Vytvoření souboru wgsi
-Je nutné vytvořit soubor WGSI, aby Apache vědělo, co má vlastně volat. Cesta musí být stejná jako cesta v konfiguračním souboru apache (viz výše).
+Je nutné vytvořit soubor WGSI, aby Apache vědělo, co má vlastně volat. Cesta musí být stejná jako cesta v konfiguračním souboru apache (vizte výše).
+Tedy v našem případě vytvoříme soubor /var/www/cchat.wgsi a vložíme do něj:
+```
+import sys, os
+sys.path.insert(0,'/var/www/cloudchat') # hackhack
+os.chdir("/var/www/cloudchat")
+from api import app as application # import samotneho api.py souboru
 ```
 
-```
-
-### 6. Spuštění server.py na pozadí
+### 5. Spuštění server.py na pozadí
 ```
 cd server/
-python3 main.py
+python3 main.py &
 ```
 
+### 6. Nakopírování potřebných souborů
+#### Statické stránky
+Zkopírujeme do stejné složky, kterou jsme zvolili pro statické stránky v apache2 vhost konfiguráku.
+```
+mkdir /var/www/html
+cp -r static/ /var/www/html
+```
+#### API
+Zkopírujeme do stejné složky, kterou jsme zvolili ve WGSI souboru!!
+```
+mkdir /var/www/cloudchat/
+cp api/api.py /var/www/cloudchat/
+```
 
+### 7. Spuštění apache2
+```
+systemctl start apache2
+```
 
-
+### 8. Hotovo
+Pokud se vše správně podařilo, měla by klientská část nyní běžet na portu :80 na námi nastavené doméně a na portu :5000 by měla fungovat API.
+Zda API běží můžeme zkontrolovat požadavkem http://domena:5000/, měl by se vrátit JSON s informací, že API běží.
+"Realným testem API (a následně i bouncer části)" je pak registrace klienta na http://domena/index.html.
