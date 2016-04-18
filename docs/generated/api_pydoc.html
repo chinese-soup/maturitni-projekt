@@ -9,8 +9,7 @@
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>api</strong></big></big></font></td
 ><td align=right valign=bottom
 ><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/unko/code/maturitni-projekt/web-client/api/api.py">/home/unko/code/maturitni-projekt/web-client/api/api.py</a></font></td></tr></table>
-    <p><tt>#&nbsp;coding=utf-8<br>
-#&nbsp;TODO:&nbsp;<a href="http://flask.pocoo.org/docs/0.10/patterns/packages/">http://flask.pocoo.org/docs/0.10/patterns/packages/</a><br>
+    <p><tt>#&nbsp;TODO:&nbsp;<a href="http://flask.pocoo.org/docs/0.10/patterns/packages/">http://flask.pocoo.org/docs/0.10/patterns/packages/</a><br>
 #&nbsp;TODO2:&nbsp;<a href="http://flask.pocoo.org/docs/0.10/deploying/mod_wsgi/">http://flask.pocoo.org/docs/0.10/deploying/mod_wsgi/</a><br>
 #&nbsp;TODO3:&nbsp;Check&nbsp;for&nbsp;invalid&nbsp;data&nbsp;in&nbsp;forms</tt></p>
 <p>
@@ -52,6 +51,7 @@ from&nbsp;chat.html</tt></dd></dl>
 :param&nbsp;_reason:&nbsp;A&nbsp;one&nbsp;word&nbsp;reason&nbsp;used&nbsp;in&nbsp;the&nbsp;chat.html&nbsp;javascript&nbsp;logic<br>
 :param&nbsp;_message:&nbsp;A&nbsp;human-like&nbsp;message&nbsp;describing&nbsp;what&nbsp;went&nbsp;wrong&nbsp;(right).<br>
 :return:</tt></dd></dl>
+ <dl><dt><a name="-getDB"><strong>getDB</strong></a>()</dt></dl>
  <dl><dt><a name="-get_global_settings"><strong>get_global_settings</strong></a>()</dt><dd><tt>Route&nbsp;called&nbsp;to&nbsp;get&nbsp;the&nbsp;current&nbsp;global&nbsp;settings&nbsp;for&nbsp;when&nbsp;a&nbsp;user&nbsp;opens&nbsp;the&nbsp;settings&nbsp;dialog</tt></dd></dl>
  <dl><dt><a name="-get_messages"><strong>get_messages</strong></a>()</dt><dd><tt>Route&nbsp;called&nbsp;to&nbsp;get&nbsp;new&nbsp;messages&nbsp;from&nbsp;a&nbsp;channel&nbsp;since&nbsp;time<br>
 Route&nbsp;called&nbsp;to&nbsp;get&nbsp;old&nbsp;messages&nbsp;from&nbsp;a&nbsp;channel&nbsp;to&nbsp;fill&nbsp;the&nbsp;backlog<br>
@@ -77,8 +77,7 @@ aka&nbsp;if&nbsp;he's&nbsp;not&nbsp;trying&nbsp;to&nbsp;access&nbsp;data&nbsp;of
 :return:</tt></dd></dl>
  <dl><dt><a name="-hello_world"><strong>hello_world</strong></a>()</dt><dd><tt>Defaultní&nbsp;routa</tt></dd></dl>
  <dl><dt><a name="-is_email_valid"><strong>is_email_valid</strong></a>(email_to_check)</dt><dd><tt>Checks&nbsp;if&nbsp;a&nbsp;given&nbsp;email&nbsp;is&nbsp;valid</tt></dd></dl>
- <dl><dt><a name="-login"><strong>login</strong></a>()</dt><dd><tt>&nbsp;&nbsp;&nbsp;&nbsp;Route&nbsp;called&nbsp;upon&nbsp;clicking&nbsp;Login&nbsp;on&nbsp;login.html<br>
-:return:</tt></dd></dl>
+ <dl><dt><a name="-login"><strong>login</strong></a>()</dt><dd><tt>Route&nbsp;called&nbsp;upon&nbsp;clicking&nbsp;Login&nbsp;on&nbsp;login.html</tt></dd></dl>
  <dl><dt><a name="-logout"><strong>logout</strong></a>()</dt><dd><tt>User&nbsp;logout&nbsp;route</tt></dd></dl>
  <dl><dt><a name="-register"><strong>register</strong></a>()</dt><dd><tt>#&nbsp;routa&nbsp;volaná&nbsp;při&nbsp;registraci&nbsp;na&nbsp;index.html</tt></dd></dl>
  <dl><dt><a name="-send_io"><strong>send_io</strong></a>()</dt><dd><tt>Route&nbsp;called&nbsp;to&nbsp;add&nbsp;an&nbsp;IO&nbsp;request&nbsp;to&nbsp;the&nbsp;database&nbsp;for&nbsp;the&nbsp;server&nbsp;backend&nbsp;to&nbsp;process.<br>

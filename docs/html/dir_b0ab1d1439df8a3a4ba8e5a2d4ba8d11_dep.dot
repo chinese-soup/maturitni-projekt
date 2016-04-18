@@ -1,9 +1,0 @@
-digraph "/home/unko/code/maturitni-projekt/web-client/static/bootstrap-3.3.6-dist/js" {
-  compound=true
-  node [ fontsize="10", fontname="Helvetica"];
-  edge [ labelfontsize="10", labelfontname="Helvetica"];
-  subgraph clusterdir_3fc6c9d0d6622472eb853eb170cbeacc {
-    graph [ bgcolor="#ddddee", pencolor="black", label="bootstrap-3.3.6-dist" fontname="Helvetica", fontsize="10", URL="dir_3fc6c9d0d6622472eb853eb170cbeacc.html"]
-  dir_b0ab1d1439df8a3a4ba8e5a2d4ba8d11 [shape=box, label="js", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_b0ab1d1439df8a3a4ba8e5a2d4ba8d11.html"];
-  }
-}

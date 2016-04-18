@@ -1,9 +1,0 @@
-digraph "/home/unko/code/maturitni-projekt/web-client/api" {
-  compound=true
-  node [ fontsize="10", fontname="Helvetica"];
-  edge [ labelfontsize="10", labelfontname="Helvetica"];
-  subgraph clusterdir_db94453cf886c93dc7fede7a4467bfd0 {
-    graph [ bgcolor="#ddddee", pencolor="black", label="web-client" fontname="Helvetica", fontsize="10", URL="dir_db94453cf886c93dc7fede7a4467bfd0.html"]
-  dir_b5ff89c9d7235ef7b0fa006377ccb97e [shape=box, label="api", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_b5ff89c9d7235ef7b0fa006377ccb97e.html"];
-  }
-}
