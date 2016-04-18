@@ -46,7 +46,9 @@ Dále také kontroluje, zda je uživatel stále přihlášen, pokud není, je z 
 
 #### Ajax requesty
 V celém souboru chatpage.js se vyskytuje spousta ajax requestů, které volají API backend pro učinění nějaké operace a reagování na odpověď od API.
-Využívá se k tomu jquery metoda POST, díky které nemůžou prohlížeče cachovat výsledky a můžou posílat formdata a přijímat JSON, který API server vrací.
+Využívá se k tomu jquery asynchronní metoda post (vyvolávající metodu POST), díky které nemůžou prohlížeče cachovat výsledky a můžou posílat formdata a přijímat JSON, který API server vrací.
+Při správném vykonání se vyvolají příkazy v rámci .success(), při selhání vykonání požadavku se vyvolají příkazy v rámci .fail(). Selhání většinou nastane, pokud je API server nepřipraven přijímat požadavky, připojení k internetu není k dispozici, nebo nastala během vyvolání požadavku v API vyjímka.
+
 
 
 ## Část druhá: API endpoint
@@ -57,4 +59,9 @@ První část s pomocnými utilitními funkcemi, které jsou v druhé části.
 
 
 ## Návod k instalaci
-c
+Tento návod je pro systém Debian, ovšem podobné principy a názvy balíků jsou podobné/stejné i na jiných distribucích Linuxu.
+### 1. Instalace software
+V prvním kroku je třeba nainstalovat HTTP server apache spolu s módem WGSI pro vyvolávání API části ve Flasku a databázový server a klient MariaDB (případně MySQL).
+```sudo apt-get install apache2 libapache2-mod-wsgi-py3 mariadb-server mariadb-client```
+
+
