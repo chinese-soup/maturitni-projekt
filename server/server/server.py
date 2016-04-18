@@ -46,13 +46,18 @@ class IRCSide(threading.Thread):
         self.client.process_forever()
 
     def prepare_regexps(self):
+        """
+        Pre-compiles all regexs used on the server.
+        TODO: Move to main.py?
+        :return:
+        """
         print("Preparing regular expressions for this session.")
         privmsg_parse = re.compile("")
 
 
     def _pull_thread(self):
         """
-            Thread to pull IO data from the database to process and send to the main thread
+        Thread to pull IO data from the database to process and send to the main thread
         """
         while(True):
             db_pull = self.getDB()
@@ -163,19 +168,24 @@ class IRCSide(threading.Thread):
 
 
 
-
-
     def start_pull_thread(self):
+        """
+        Starts the slave thread for pulling/inserting/changing new client IO from the database.
+        """
         threading.Thread(target=self._pull_thread).start()
 
 
     def getDB(self):
+        """
+            Connects to the MySQL database and returns an SQL connection object
+        :return: MySQLdb.connections.Connection
+        """
         return MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
 
-    """
-        Loads user's servers from the database
-    """
     def load_servers_from_db(self):
+        """
+            Loads user's servers from the database on first load
+        """
         db = self.getDB()
         cursor = db.cursor()
         userID = 1
@@ -201,10 +211,10 @@ class IRCSide(threading.Thread):
             servers.append(server_dict_temp)
         self.server_list_text = servers
 
-    """
-        Adds IRC handlers
-    """
     def add_handlers(self):
+        """
+            Adds IRC handlers
+        """
         self.client.add_global_handler("welcome", self.on_connect)
         self.client.add_global_handler("yourhost", self.on_your_host)
         self.client.add_global_handler("created", self.on_your_host)
@@ -235,10 +245,10 @@ class IRCSide(threading.Thread):
     def nickname_in_use(self, connection, event):
         print("self.nickname_in_use")
 
-    """
-        Handles several different commands the server sends upon connecting
-    """
     def on_your_host(self, connection, event):
+        """
+            Handles several different commands the server sends upon connecting
+        """
         print(event)
         print(event.arguments)
 
@@ -267,10 +277,10 @@ class IRCSide(threading.Thread):
 
                 self.db.commit()
 
-    """
-        Called to connect to a specified server
-    """
     def connect_server(self, _serverID, _server, _port, _nickname):
+        """
+            Called to connect to a specified server
+        """
         temp_server_connection_object = self.client.server()
 
         temp_server_connection_object.serverID = _serverID # důležité: přidává serverID z databáze jako atribut do connection, které se používá při každém global_handleru definovaném o pář řádků výše
@@ -281,10 +291,11 @@ class IRCSide(threading.Thread):
         self.server_list_server_objects.append(temp_server_connection_object)
         self.server_list_instances.append(temp_server_connection_object.connect(server=_server, port=_port, nickname=_nickname, password=None, username=None, ircname=None))
 
-    """
-        Called upon starting the instance
-    """
     def connect_servers(self):
+        """
+            Called upon starting the instance
+        """
+
         for srvr in self.server_list_text:
             try:
                 self.connect_server(srvr["serverID"], srvr["serverIP"], int(srvr["serverPort"]), srvr["nickname"])
@@ -295,10 +306,10 @@ class IRCSide(threading.Thread):
     def start(self):
         pass
 
-    """
-        Fired when any client successfully connects to an IRC server
-    """
     def on_connect(self, connection, event):
+        """
+            Fired when any client successfully connects to an IRC server
+        """
         print('[{}] Connected to {}' .format(event.type.upper(), event.source))
         print("{}".format(event.arguments))
 
@@ -340,10 +351,11 @@ class IRCSide(threading.Thread):
                 else:
                     print("[WARNING on_connect]: No channels to join on this server (serverID = {})".format(serverID_res))
 
-    """
-    Fired when any client is disconnected from an IRC server
-    """
     def on_disconnect(self, connection, event):
+        """
+            Fired when any client is disconnected from an IRC server
+        """
+
         print('[{}] Disconnected from {}' .format(event.type.upper(), event.source))
         print("{}".format(event.arguments))
 
@@ -358,17 +370,17 @@ class IRCSide(threading.Thread):
             print("RES: ",res)
             print("serverID = {}".format(serverID_res))
 
-    """
-    Fired when any client gets a /ME message from any channel or query
-    """
     def on_action(self, connection, event):
+        """
+            Fired when any client gets a /ME message from any channel or query
+        """
         print('[{}] OnAction from {}' .format(event.type.upper(), event.source))
 
 
-    """
-    Fired when any client receives a message from a channel
-    """
     def on_pubmsg(self, connection, event):
+        """
+            Fired when any client receives a message from a channel
+        """
         print("CONNECTION = {}\n\n".format(connection.__dict__))
         print('[{}] Pubmsg {} {}\n' .format(event.type.upper(), event.source, str(event.__dict__)))
 
@@ -403,33 +415,25 @@ class IRCSide(threading.Thread):
                 else:
                     print("WOAH")
 
-            #print("Servers??? {0}".format(result))
-            #res2 = self.cursor.execute("""select * from `IRC_channels` where `IRC_servers_serverID` = 1;""", (self.userID,))
+                    #print("Servers??? {0}".format(result))
+                    #res2 = self.cursor.execute("""select * from `IRC_channels` where `IRC_servers_serverID` = 1;""", (self.userID,))
 
-        #connection.privmsg(event.target, str(event.__dict__))
-    """
-    Fired upon receiving a private message.
-    """
+                    #connection.privmsg(event.target, str(event.__dict__))
     def on_privmsg(self, connection, event):
+        """
+            Fired upon receiving a private message.
+        """
         print('[{}] Privmsg {}' .format(event.type.upper(), event.source))
         connection.privmsg(event.target, str(event.__dict__))
 
-    def on_join(self, connection, event):
-        print('[{}] Join {}' .format(event.type.upper(), event.source))
-        connection.privmsg(event.target, str(event.__dict__))
-
-    def on_part(self, connection, event):
-        print('[{}] Part {}' .format(event.type.upper(), event.source))
-
-    def on_quit(self, connection, event):
-        print('[{}] Quit {}' .format(event.type.upper(), event.source))
-
     def on_nick(self, connection, event):
-
         print('[{}] NickChange {}' .format(event.type.upper(), event.source))
 
     def on_nicknameinuse(self, connection, event):
         print('[{}] NickNameInUse {}' .format(event.type.upper(), event.source))
+
+    def a_lot_more_to_be_implemneted(self, connection, event):
+        print("save mefrom this nightmare")
 
 class WSocket(object):
     """WSocket"""
