@@ -93,6 +93,7 @@ cat struktura.sql > mysql -u username -p -D nazev_databaze
 ```
 
 ### 4. Apache2 konfigurace
+#### Konfigurační soubor VHostu
 Pro správný běh musí wgsi API na běžet na portu 5000, je nutno změnit/založit soubor s virtuálnímy hosty.
 Následující příklad je úprava výchozího konfiguračního vhost souboru /etc/apache2/sites-available/00-default.conf
 ```
@@ -103,10 +104,15 @@ Listen 5000 # posloucháme i na portu 5000 (port 80 je v tomto příkladě již 
 <VirtualHost *:80> # virtuální host statických stránek 
 	ServerName server.eu # hostname statických stránek
 
-	ServerAdmin webmaster@localhost
+	ServerAdmin webmaster@lserver.eu
 	DocumentRoot /var/www/html
+    
+    <Directory /var/www/html/>
+            Order deny,allow
+            Allow from all
+    </Directory>
 
-</Directory>
+
 
 </VirtualHost>
 
@@ -114,10 +120,10 @@ Listen 5000 # posloucháme i na portu 5000 (port 80 je v tomto příkladě již 
     ServerName server.eu # hostname api, musí být stejné jako hostname statických stránek       
 
     WSGIDaemonProcess cloudchat user=user1 group=group1 threads=5
-    WSGIScriptAlias / /var/www/celo.wgsi
-    WSGIScriptReloading On
+    WSGIScriptAlias / /var/www/cchat.wgsi # VALIDNÍ CESTA K .WGSI souboru 
+    WSGIScriptReloading On # pokud API spadne, znovu načíst
 
-    <Directory /var/www/cloudchat>
+    <Directory /var/www/cloudchat> 
         WSGIProcessGroup celo
         WSGIApplicationGroup %{GLOBAL}
         Order deny,allow
@@ -127,11 +133,24 @@ Listen 5000 # posloucháme i na portu 5000 (port 80 je v tomto příkladě již 
 </VirtualHost>
 ```
 
-### 5. Vytvoření uživatelského účtu pro WGSI
+#### Vytvoření uživatelského účtu pro WGSI
 V předchozím kroku jsme nakonfigurovali WGSI s uživatelským jménem user1 a skupinou group1, musíme tohoto uživatele  a tuto skupinu vytvořit.
 ```
 $ useradd user1` && groupadd group1 && usermod -g group1 user1
 ```
+
+#### Vytvoření souboru wgsi
+Je nutné vytvořit soubor WGSI, aby Apache vědělo, co má vlastně volat. Cesta musí být stejná jako cesta v konfiguračním souboru apache (viz výše).
+```
+
+```
+
+### 6. Spuštění server.py na pozadí
+```
+cd server/
+python3 main.py
+```
+
 
 
 
