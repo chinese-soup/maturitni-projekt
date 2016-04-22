@@ -1105,6 +1105,7 @@ function add_server()
     $("#save_server_settings").one("click", save_new_server);
 }
 
+/* this function is called upon clicking the save button in the global settings window*/
 function save_new_server()
 {
     serverName = $("#server-edit-form #server_edit_label").val();
@@ -1162,7 +1163,7 @@ function save_new_server()
     });
 }
 
-
+/* this function is called upon clicking the save button in an edit server window  */
 function save_server(event)
 {
     /*{"serverName":"", "nickname":"", "serverPassword":"", "serverIP":"", "serverPort":"", "useSSL":""*/
@@ -1218,7 +1219,7 @@ function save_server(event)
     });
 }
 
-
+/* this function is called upon */
 function loadSettingsIntoInputs()
 {
     console.log("loadSettingsIntoInputs();")

@@ -49,9 +49,8 @@ V celém souboru chatpage.js se vyskytuje spousta ajax requestů, které volají
 Využívá se k tomu jquery asynchronní metoda post (vyvolávající metodu POST), díky které nemůžou prohlížeče cachovat výsledky a můžou posílat formdata a přijímat JSON, který API server vrací.
 Při správném vykonání se vyvolají příkazy v rámci .success(), při selhání vykonání požadavku se vyvolají příkazy v rámci .fail(). Selhání většinou nastane, pokud je API server nepřipraven přijímat požadavky, připojení k internetu není k dispozici, nebo nastala během vyvolání požadavku v API vyjímka.
 
-
-
-### asdf
+#### Další funkce
+Funkce jsou okomentované přímo v kódu.
 
 
 ## Část druhá: API endpoint
@@ -71,7 +70,7 @@ sudo apt-get install apache2 libapache2-mod-wsgi-py3 mariadb-server mariadb-clie
 ```
 
 ### 2. Python závislosti
-* ~flask~
+* ~~flask~~
 * irc
 * hashlib
 * mysql-connector-python
