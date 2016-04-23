@@ -55,6 +55,7 @@ def _pull_thread():
             }
 
             if data["commandType"] == "NEW_USER":
+                print("NEW USER, FAM")
                 message = data["argument1"]
                 userID = data["userID"]
                 _threads.append(threading.Thread(target=server.IRCSide, args=(userID,)))

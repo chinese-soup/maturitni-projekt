@@ -90,14 +90,12 @@ def get_userID_if_loggedin(request):
     if "sessionid" in request.cookies: # checks if the request even has a session cookie, otherwise return False
         session_id_cookie = request.cookies.get("sessionid") # get sessionID from a cookie
         db = getDB()
-        print("session_id_cookie = ", session_id_cookie)
         cursor = db.cursor()
         result_code = cursor.execute("""SELECT * FROM `User_sessions` WHERE `session_id` = %s""", (session_id_cookie,)) # look up the session cookie in the database and compare it to the request one
         if result_code is not 0:
             result = cursor.fetchone()
             session_id = result[0] # session_id
             userID = result[3] # Registred_users_userID
-            print(session_id, userID)
             if session_id == session_id_cookie:
                 return userID
             else:
@@ -415,7 +413,7 @@ def add_channel():
             result = cursor.fetchone()
             serverID_result = serverID
             userID_result = userID
-            argument1 = ""
+            argument1 = channelPassword # argument1 = channelPassword
             argument2 = ""
             argument3 = ""
             timeSent = None
@@ -424,7 +422,7 @@ def add_channel():
             channelID_result = cursor.lastrowid
 
 
-            cursor.execute("""INSERT INTO `IO_Table` (Registred_users_userID,
+            cursor.execute("""INSERT INTO `IO_Table` (Registered_users_userID,
                         commandType,
                         argument1,
                         argument2,
@@ -436,14 +434,14 @@ def add_channel():
                         channelID)
 
                         values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
-            """, (userID_result, argument1, argument2, argument3, timeSent, processed, True, serverID_result, channelID_result))
+            """, (userID_result, ioType, argument1, argument2, argument3, timeSent, processed, True, serverID_result, channelID_result))
             db.commit()
 
         else:
             response = {"status": "ok", "reason": "channel_was_not_added", "message": "Channel cannot be added at this time."} # error?
-
-        return jsonify(response)
         db.close()
+        return jsonify(response)
+
     else:
         return error("error", "not_loggedin", "You are not logged in.")
 
@@ -668,7 +666,7 @@ def get_messages():
     :return:
     """
     userID = get_userID_if_loggedin(request)
-    print("UserID = ", userID)
+    #print("UserID = ", userID)
     try:
         backlog = bool(int(request.form.get("backlog"))) # rozhoduje zda budeme vracet backlog nebo nejnovější zprávy od minule
         channelID = request.form.get("channelID") # channelID
@@ -703,7 +701,7 @@ def get_messages():
                         for res in result:
                             print(res)
                             dateTime = res[4]
-                            print("dateTime = ", dateTime)
+                            #print("dateTime = ", dateTime)
                             try:
                                 utc_time = time.mktime(dateTime.timetuple()) * 1000 #  TODO: Fix UTC
                             except:
@@ -717,7 +715,7 @@ def get_messages():
                                 "seen": res[5], # TODO: useless?
                                 "IRC_channels_channelID": res[6]}
                             messages.append(server_dict_temp)
-                            print(type(res[4]))
+                            #print(type(res[4]))
                         db.close()
                         response = {"status": "ok", "reason": "listing_messages", "message": messages}
                         return jsonify(response)
@@ -786,7 +784,7 @@ def get_server_messages():
     :return:
     """
     userID = get_userID_if_loggedin(request)
-    print("UserID = ", userID)
+    #print("UserID = ", userID)
 
     backlog = bool(int(request.form.get("backlog"))) # rozhoduje zda budeme vracet backlog nebo nejnovější zprávy od minulého updatu
 
@@ -823,7 +821,7 @@ def get_server_messages():
                     for res in result:
                         if check_if_serverID_belongs_to_userID(userID, int(res[6])) is True:
                             dateTime = res[4]
-                            print("dateTime = ", dateTime)
+                            #print("dateTime = ", dateTime)
 
                             try:
                                 utc_time = time.mktime(dateTime.timetuple()) * 1000 #  TODO: Fix UTC
@@ -839,7 +837,7 @@ def get_server_messages():
                                 "IRC_servers_serverID": res[6],
                                 "serverName": serverName_result}
                             messages.append(server_dict_temp)
-                            print(type(res[4]))
+                            #print(type(res[4]))
 
                 else:
                     pass # PASS HERE, BECAUSE THE SERVER MIGHT NOT HAVE ANY MESSAGES YET
@@ -937,7 +935,7 @@ def send_io():
                     print("PART CHANNEL")
 
 
-                cursor.execute("""INSERT INTO `IO_Table` (Registred_users_userID,
+                cursor.execute("""INSERT INTO `IO_Table` (Registered_users_userID,
                                                         commandType,
                                                         argument1,
                                                         argument2,
@@ -949,7 +947,7 @@ def send_io():
                                                         channelID)
 
                                                         values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
-                """, (userID_result, argument1, argument2, argument3, timeSent, processed, True, serverID_result,
+                """, (userID_result, ioType, argument1, argument2, argument3, timeSent, processed, True, serverID_result,
                       channelID_result))
                 db.commit()
                 db.close()
@@ -975,7 +973,7 @@ def send_textbox_io():
     cursor = db.cursor()
     #channelID -1 serverID 1 textBoxData asdf
     if userID is not False and textBoxData != "" and channelID != -1: # if user is logged in & textboxdata has content and channelID was sent and serverID was not send (aka the command was sent while a channel or a query was open)
-
+        print("ChannelID NENÍ -1")
         result_code = cursor.execute("""SELECT * FROM `IRC_channels` WHERE `channelID` = %s;""", (channelID,)) #query to find the serverID so we can check if the user owns this serverID and is not trying to read something that is not his
         if result_code is not 0:
             chaninfo = cursor.fetchone()

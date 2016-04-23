@@ -425,6 +425,8 @@ function switchCurrentChannel(toChannelID)
 
     $("#button_send_message").off("click");
     $("#button_send_message").click({channelID:toChannelID}, sendTextBoxCommand);
+    $("#input-msgline").keypress({channelID:toChannelID}, sendTextBoxCommand);
+
     currently_visible_message_window = toChannelID;
 
     if(toChannelID == -1 && event.data.clickedServerID != null)
@@ -476,7 +478,8 @@ function switchCurrentChannelEventStyle(event)
     toChannelName = event.data.channelName;
 
     $("#button_send_message").off("click");
-    $("#button_send_message").click({channelID:toChannelID}, sendTextBoxCommand);
+    $("#button_send_message").click({channelID:toChannelID}, sendTextBoxCommand); // set the  click event with the new channelID
+    $("#input-msgline").keypress({channelID:toChannelID}, sendTextBoxCommand); // set the keypress event with the new channelID
 
     log("Switching channel window to {0} ({1})".format(toChannelID, toChannelName));
 
@@ -884,7 +887,6 @@ function join_channel(event)
                 general_dialog("Channel added", data["message"], "ok", 2);
                 log(data["message"]);
                 /* TODO: call join from here */
-                /* TODO: call join from here */
                 toggle_center_column("messages");
                 loadServers();
            }
@@ -906,11 +908,7 @@ function join_channel(event)
 
 
     // empty fields
-
-
 }
-
-
 /* function to reload the server and channel list */
 /* called when servers or channels are changed/added/removed */
 /* called when user first loads chat.html */
