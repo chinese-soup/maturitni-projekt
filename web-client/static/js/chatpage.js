@@ -104,6 +104,61 @@ function sendTextBoxCommand(event)
 
 
 /*
+    called in order to send an IO message (any non-textbox one)
+     "userID": result[0],
+                    "commandType": result[1],
+                    "argument1": result[2],
+                    "argument2": result[3],
+                    "argument3": result[4],
+                    "timeSent": result[5],
+                    "processed": bool(result[6]),
+                    "timeReceived": result[7],
+                    "fromClient": bool(result[8]),
+                    "serverID": result[9],
+                    "channelID": result[10],
+                    "messageID": result[11]
+*//
+function sendCommand(userID, commandType, argument1, argument2, argument3, serverID, channelID)
+{
+
+    var posting = $.post("http://{0}:5000/send_io".format(hostname),
+    {
+       userID: userID,
+       commandType: commandType,
+       argument1: argument1,
+       argument2: argument2,
+       argument3: argument3,
+       serverID: serverID,
+       channelID: channelID,
+    }, dataType="text"
+    );
+
+    posting.done(function(data)
+    {
+        console.log(data);
+        log(data);
+        if(data["reason"] == "textbox_io_server_window_inserted" || data["reason"] == "textbox_io_channel_window_inserted")
+        {
+
+        }
+        else if(data["reason"] == "not_loggedin")
+        {
+            general_dialog("Access denied: You are not logged in.", data["message"], "error", -1); // the user is not logged in
+        }
+    });
+
+    posting.fail(function()
+    {
+        log("There was an error sending the textbox input.")
+    })
+
+    }
+
+}
+
+
+
+/*
    loading settings into variables
    for when the user opens the edit global settings window
 */
@@ -959,6 +1014,7 @@ function loadServers()
                 //$(".channel_list #server_{0} .dropdown .dropdown-menu .disconnect_link".format(serverID)).on("click", {serverName: serverName, serverID: serverID,  });
                 //$(".channel_list #server_{0} .dropdown .dropdown-menu .remove_server_link".format(serverID)).on("click", remove_server_dialog(serverName, serverID));
                 $(".channel_list #server_{0} .dropdown .dropdown-menu .edit_server_link".format(serverID)).click({serverName:serverName, serverID:serverID, isAnEdit: true}, edit_server);
+                $(".channel_list #server_{0} .dropdown .dropdown-menu .disconnect_link".format(serverID)).click({serverName:serverName, serverID:serverID}, disconnect_server);
                 $(".channel_list #server_{0} .dropdown .dropdown-menu .join_another_channel_link".format(serverID)).click({serverName:serverName, serverID:serverID}, join_channel_dialog);
                 $(".channel_list #server_{0} .network_name_link".format(serverID)).click({channelID:-1,
                 channelName:"Status window", clickedServerID:serverID, clickedServerName:serverName},
@@ -1032,6 +1088,17 @@ function loadServers()
         log("Failed to load servers.");
     })
 }
+
+/*toggle_center_column(\'edit_server\');*/
+/* isAnEdit  =  a boolean value deciding if we are adding a new server or not */
+function disconnect_server(event)
+{
+    serverName = event.data.serverName;
+    serverID = event.data.serverID;
+    channelID = -1;
+
+}
+
 /*toggle_center_column(\'edit_server\');*/
 /* isAnEdit  =  a boolean value deciding if we are adding a new server or not */
 function edit_server(event)

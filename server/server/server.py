@@ -63,7 +63,6 @@ class IRCSide(threading.Thread):
             pull_result_code = cursor_pull.execute("""SELECT * FROM `IO_Table` WHERE `Registered_users_userID` = %s;""", (self.userID,))
             pull_result = cursor_pull.fetchall()
             for result in pull_result:
-                print(result)
                 #(1, 'TEXTBOX', 'AHOJ', '', '', None, 0, None, 1, 2, -1, 73)
                 data = {
                     "userID": result[0],
@@ -80,6 +79,7 @@ class IRCSide(threading.Thread):
                     "messageID": result[11]
                 }
 
+
                 if data["commandType"] == "TEXTBOX":
                     message = data["argument1"]
                     if message[0] == "/" : # if the first character is a slash the user is trying to exec a command
@@ -87,7 +87,7 @@ class IRCSide(threading.Thread):
 
                     elif message[0] != "/":
                         print("Not command.")
-
+                        print(data)
                         for i in self.server_list_server_objects: # loop through all the server instances this user has
                             if(i.serverID == data["serverID"]): # if the server is the server we need
                                 res = cursor_pull.execute("""SELECT * FROM `IRC_channels` WHERE `IRC_servers_serverID` = %s AND `channelID` = %s;""", (i.serverID, data["channelID"])) # get the IRC channel based on the ID
@@ -115,7 +115,7 @@ class IRCSide(threading.Thread):
                                                         messageBody,
                                                         commandType,
                                                         timeReceived)
-                                                        values (%s, %s, %s, %s, %s)""", (i.serverID, i.real_server_name, "You cannot write into server windows. If you want to send raw IRC use /RAW. If you want to message someone use /MSG or /PRIVMSG.", "CMD_ERROR" , datetime.datetime.utcnow()))
+                                                        values (%s, %s, %s, %s, %s)""", (i.serverID, i.real_server_name, "You cannot write messages into server windows. If you want to send raw IRC use /RAW. If you want to message someone use /MSG or /PRIVMSG.", "CMD_ERROR" , datetime.datetime.utcnow()))
                                         db_pull.commit()
 
                                     #TOD: FIX HARDCODED STUFF
@@ -138,19 +138,23 @@ class IRCSide(threading.Thread):
                 elif data["commandType"] == "JOIN_CHANNEL":
                     for i in self.server_list_server_objects: # loop through all the server instances this user has
                         if i.serverID == data["serverID"]: # if the server is the server we need
-                            res = cursor_pull.execute("""SELECT * FROM `IRC_channels` WHERE `IRC_servers_serverID` = %s AND `channelID` = %s;""", (i.serverID, data["channelID"])) # get the IRC channel based on the ID
-                            if res != 0:
-                                print("VíTĚZ")
-                                result = cursor_pull.fetchall()
-                                channelID_res = int(result[0][0])
-                                channelName_res = str(result[0][1]) # get the channelName from the query
-                                channelKey_res = str(result[0][2])
+                            #res = cursor_pull.execute("""SELECT * FROM `IRC_channels` WHERE `IRC_servers_serverID` = %s AND `channelID` = %s;""", (i.serverID, data["channelID"])) # get the IRC channel based on the ID
+                            #if res != 0:
+                            #print("VíTĚZ")
+                            #result = cursor_pull.fetchall()
+                            #channelID_res = int(result[0][0])
+                            #channelName_res = str(result[0][1]) # get the channelName from the query
+                            #channelKey_res = str(result[0][2])
 
-                                if i.is_connected() == True and data["channelID"] != -1: # if we are connected and the channelID is not -1 (broken)
-                                    i.join(channelName_res, key=channelKey_res) # TODO: track channels we are in?
+                            channelID_res = data["channelID"]
+                            channelKey_res = data["argument1"] # argument1 = channelPassword
+                            channelName_res = data["argument2"] # argument2 = channelNameě
 
-                                res = cursor_pull.execute("""DELETE FROM `IO_Table` WHERE `messageID` = %s;""", (data["messageID"],)) # delete the message we just processed
-                                db_pull.commit()
+                            if i.is_connected() == True and data["channelID"] != -1: # if we are connected and the channelID is not -1 (broken)
+                                i.join(channelName_res, key=channelKey_res) # TODO: track channels we are in?
+
+                            res = cursor_pull.execute("""DELETE FROM `IO_Table` WHERE `messageID` = %s;""", (data["messageID"],)) # delete the message we just processed
+                            db_pull.commit()
 
             time.sleep(2)
             print("Sleep2: ", self.userID)

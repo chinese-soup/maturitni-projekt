@@ -405,7 +405,7 @@ def add_channel():
 
         # přidáme server
         res = cursor.execute("""INSERT INTO `IRC_channels` (channelName, channelPassword, IRC_servers_serverID, isJoined, lastOpened)
-        values(%s, %s, %s, %s, CURRENT_TIMESTAMP) ON DUPLICATE KEY UPDATE `channelName` = `channelName`;""", (channelName, channelPassword, serverID, False))
+        values(%s, %s, %s, %s, CURRENT_TIMESTAMP);""", (channelName, channelPassword, serverID, False))
         db.commit()
 
         if res == 1:
@@ -414,7 +414,7 @@ def add_channel():
             serverID_result = serverID
             userID_result = userID
             argument1 = channelPassword # argument1 = channelPassword
-            argument2 = ""
+            argument2 = channelName # argument2 = channelName
             argument3 = ""
             timeSent = None
             processed = None
@@ -901,6 +901,9 @@ def send_io():
     ioType = request.form.get("ioType") or "error"
     channelID = request.form.get("channelID") or -1 # channelID
     serverID = request.form.get("serverID") or -1
+    argument1 = request.form.get("argument1") or -1
+    argument2 = request.form.get("argument2") or -1
+    argument3 = request.form.get("argument3") or -1
 
     if userID is not False:
         db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
@@ -918,11 +921,11 @@ def send_io():
                 result = cursor.fetchone()
                 serverID_result = result[0]
                 userID_result = result[5]
-                argument1 = ""
-                argument2 = ""
-                argument3 = ""
+                argument1 = argument1
+                argument2 = argument2
+                argument3 = argument3
                 timeSent = None
-                processed = None
+                processed = False
 
 
                 if(ioType == "CONNECT_SERVER"):
@@ -966,7 +969,7 @@ def send_textbox_io():
     print("SERVER ID JE {0}".format(serverID))
     textBoxData = str(request.form.get("textBoxData")) or "" # textBoxData
 
-    print("do kundy: channelID {} serverID {} textBoxData {}".format(channelID, serverID, textBoxData))
+    print("SEND_TEXTBOX_IO: channelID {} serverID {} textBoxData {}".format(channelID, serverID, textBoxData))
 
     print("UserID = ", userID)
     db = getDB()
