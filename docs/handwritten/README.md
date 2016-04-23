@@ -58,6 +58,8 @@ API endpoint využívá knihovny Flask a je rozdělen na dvě části:
 První část s pomocnými utilitními funkcemi, které jsou v druhé části. 
 
 ## Část třetí: Serverová (bouncer) část
+Serverová část se spouští souborem main.py ve složce server. Automaticky načte všechny uživatele v databázi a spustí pro každého jejich vlstní vlákno.
+Toto vlákno se dále dělí na hlavní vlákno, kde probíhá komunikace s IRC serverem a na vlákno druhé, kde probíhá komunikace s databází v tabulce obsahující příkazy z klienta.
 
 
 ## Návod k instalaci
@@ -83,11 +85,11 @@ sudo pip3 install hashlib mysql-connector-python irc
 Před použitím musíme importovat základní SQL strukturu.
 #### Vytvoření databáze
 ```
-echo "CREATE DATABASE nazev_databaze" | mysql -u username -p
+echo "CREATE DATABASE `cloudchatdb` CHARACTER SET utf8 COLLATE utf8_general_ci;" | mysql -u username -p
 ```
 případně
 ```
-mysql -u username -p -e "CREATE DATABASE nazev_databaze" 
+mysql -u username -p -e "CREATE DATABASE `cloudchatdb` CHARACTER SET utf8 COLLATE utf8_general_ci;" 
 ```
 #### Importování struktury z SQL souboru
 Nyní strukturu importujeme do databáez, kterou jsme právě vytvořili:

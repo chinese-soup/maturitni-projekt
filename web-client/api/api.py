@@ -409,8 +409,36 @@ def add_channel():
         res = cursor.execute("""INSERT INTO `IRC_channels` (channelName, channelPassword, IRC_servers_serverID, isJoined, lastOpened)
         values(%s, %s, %s, %s, CURRENT_TIMESTAMP) ON DUPLICATE KEY UPDATE `channelName` = `channelName`;""", (channelName, channelPassword, serverID, False))
         db.commit()
+
         if res == 1:
             response = {"status": "ok", "reason": "channel_added_sucessfully", "message": "Channel added successfully."}
+            result = cursor.fetchone()
+            serverID_result = serverID
+            userID_result = userID
+            argument1 = ""
+            argument2 = ""
+            argument3 = ""
+            timeSent = None
+            processed = None
+            ioType = "JOIN_CHANNEL"
+            channelID_result = cursor.lastrowid
+
+
+            cursor.execute("""INSERT INTO `IO_Table` (Registred_users_userID,
+                        commandType,
+                        argument1,
+                        argument2,
+                        argument3,
+                        timeSent,
+                        processed,
+                        fromClient,
+                        serverID,
+                        channelID)
+
+                        values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+            """, (userID_result, argument1, argument2, argument3, timeSent, processed, True, serverID_result, channelID_result))
+            db.commit()
+
         else:
             response = {"status": "ok", "reason": "channel_was_not_added", "message": "Channel cannot be added at this time."} # error?
 

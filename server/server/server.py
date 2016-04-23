@@ -85,7 +85,6 @@ class IRCSide(threading.Thread):
                     if message[0] == "/" : # if the first character is a slash the user is trying to exec a command
                         print("Command.")
 
-
                     elif message[0] != "/":
                         print("Not command.")
 

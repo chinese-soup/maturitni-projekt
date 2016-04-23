@@ -2,9 +2,12 @@ show databases;
 #drop database `cloudchatdb`;
 use `cloudchatdb`;
 #select * from `IRC_servers` INNER JOIN `IRC_channels` ON `Registred_users_userID`;
-select * from `Registered_users`;
-select * from `IRC_channels`;
-select * from `IRC_channel_messages` where `IRC_channels_channelID` = 1;
+#select * from `Registered_users`;
+#select * from `IRC_channels`;
+#select * from `IRC_channel_messages` where `IRC_channels_channelID` = 1;
+SET SQL_SAFE_UPDATES = 0;
+delete from `IO_Table`;
+
 #select * from `IRC_servers`;
 
 #insert into `IRC_servers` (serverSessionID, nickname, isAway, isConnected, serverName, serverIP, serverPort, useSSL, serverPassword, Registred_users_userID)
