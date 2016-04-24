@@ -97,7 +97,7 @@ class IRCSide(threading.Thread):
                                     result = cursor_pull.fetchall()
                                     channelID_res = int(result[0][0])
                                     channelName_res = str(result[0][1]) # get the channelName from the query
-                                    nickname = data["argument2"] + "!unknown@unknown"
+                                    nickname = data["argument2"] + "!unknown@unknown.cz"
 
                                     if i.is_connected() == True and data["channelID"] != -1: # if we are connected and the channelID is not -1 (broken)
                                         i.privmsg(channelName_res, message)
@@ -147,8 +147,17 @@ class IRCSide(threading.Thread):
                                                         "serverPort": result[0][8],
                                                         "useSSL": result[0][9]}
                                     if(server_info["userID"] == userID): # if the server corresponds to the userID we have been given (this should never happen, but just to be sure)
+
                                         i.connect(server=server_info["serverIP"], port=int(server_info["serverPort"]), nickname=server_info["nickname"],
                                                   password=None, username=server_info["nickname"], ircname=server_info["nickname"])
+                                        res = cursor_pull.execute("""INSERT INTO `IRC_other_messages` (IRC_servers_serverID,
+                                                        fromHostmask,
+                                                        messageBody,
+                                                        commandType,
+                                                        timeReceived)
+                                                        values (%s, %s, %s, %s, %s)""", (i.serverID, server_info["serverName"],
+                                                        "Attempting to connect to {0}...".format(server_info["serverName"]), "CLOUDCHAT_INFO", datetime.datetime.utcnow()))
+                                        db_pull.commit()
 
                                 #connect(server=_server, port=_port, nickname=_nickname, password=None, username=None, ircname=None
                         else:
@@ -275,6 +284,7 @@ class IRCSide(threading.Thread):
         self.client.add_global_handler("notonchannel", self.on_your_host)
         self.client.add_global_handler("useronchannel", self.on_your_host)
 
+        self.client.add_global_handler("namreply", self.on_names_reply)
 
         self.client.add_global_handler("disconnect", self.on_disconnect)
         self.client.add_global_handler("nicknameinuse", self.on_nicknameinuse)
@@ -285,6 +295,7 @@ class IRCSide(threading.Thread):
         self.client.add_global_handler("quit", self.on_pubmsg)
         self.client.add_global_handler("nick", self.on_nick)
         self.client.add_global_handler("action", self.on_pubmsg)
+
 
     def on_your_host(self, connection, event):
         """
@@ -456,25 +467,65 @@ class IRCSide(threading.Thread):
             Fired upon receiving a private message.
         """
         print('[{}] Privmsg {}' .format(event.type.upper(), event.source))
-        connection.privmsg(event.target, str(event.__dict__))
+        message = event.arguments[0]
+
+        res = self.cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s AND `serverID` = %s;""", (self.userID, connection.serverID))
+        if res != 0:
+            result = self.cursor.fetchall()
+            serverID_res = int(result[0][0])
+            print("serverID = {}".format(serverID_res))
+
+            if serverID_res == int(connection.serverID):
+                res = self.cursor.execute("""INSERT INTO `IRC_other_messages` (IRC_servers_serverID,
+                fromHostmask,
+                messageBody,
+                commandType,
+                timeReceived)
+                values (%s, %s, %s, %s, %s)""", (serverID_res, event.source, message, event.type.upper(),
+                                                 datetime.datetime.utcnow()))
+
+
+                self.db.commit()
 
     def on_nick(self, connection, event):
         print('[{}] NickChange {}' .format(event.type.upper(), event.source))
 
+
     def on_nicknameinuse(self, connection, event):
         print('[{}] NickNameInUse {}' .format(event.type.upper(), event.source))
         current_nick = connection.get_nickname()
-        connection.nick("{0}_".format(current_nick))
+        connection.nick("{0}_".format(current_nick)) # change the nickname to user's + a "_" so he is allowed to connect
+        #connection.reconnect()
 
-    def a_lot_more_to_be_implemneted(self, connection, event):
-        print("save mefrom this nightmare")
+    def on_names_reply(self, connection, event):
+        print('[{}] Pubmsg {} {}\n' .format(event.type.upper(), event.source, str(event.__dict__)))
 
-class WSocket(object):
-    """WSocket"""
-    def __init__(self, arg):
-        super(WSocket, self).__init__()
-        self.arg = arg
+        if(event.arguments[0] == "="):
+            channelName_src = event.arguments[1]
+            nicknames_list = event.arguments[2]
+            final = "NAMES in {0}: {1}".format(channelName_src, nicknames_list)
+        else:
+            final = str(event.arguments)
 
+        res = self.cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s AND `serverID` = %s;""", (self.userID, connection.serverID))
+        if res != 0:
+            result = self.cursor.fetchall()
+            serverID_res = int(result[0][0])
+
+            if serverID_res == int(connection.serverID):
+                res = self.cursor.execute("""SELECT * FROM `IRC_channels` WHERE `IRC_servers_serverID` = %s AND `channelName` = %s;""", (serverID_res, channelName_src))
+                if res != 0:
+                    result = self.cursor.fetchall()
+                    channelID_res = int(result[0][0])
+                    channelName_res = str(result[0][1])
+
+                    res = self.cursor.execute("""INSERT INTO `IRC_channel_messages` (IRC_channels_channelID,
+                    fromHostmask,
+                    messageBody,
+                    commandType,
+                    timeReceived)
+                    values (%s, %s, %s, %s, %s)""", (channelID_res, event.source, final, event.type.upper(), datetime.datetime.utcnow()))
+                    self.db.commit()
 
 """
 TODO: DELETE THIS

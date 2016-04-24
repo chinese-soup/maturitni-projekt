@@ -520,7 +520,10 @@ function linkifyMessage(messageBody)
     });
     if(image_url != "")
     {
-        messageBody = messageBody + "<span class=\"message-image-preview\"><a href=\"#\" onclick=\"preview_images('{0}');\"><img alt=\"Image preview\" title=\"Image\" src=\"{0}\" target=\"_blank\"></a></span>".format(image_url);
+        if(image_url.endsWith(".png") || image_url.endsWith(".jpg") || image_url.endsWith(".gif") || image_url.endsWith(".jpeg"))
+        {
+            messageBody = messageBody + "<span class=\"message-image-preview\"><a href=\"#\" onclick=\"preview_images('{0}');\"><img alt=\"Image preview\" title=\"Image\" src=\"{0}\" target=\"_blank\"></a></span>".format(image_url);
+        }
     }
     return(messageBody);
 }
