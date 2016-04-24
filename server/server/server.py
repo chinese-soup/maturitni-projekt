@@ -43,6 +43,8 @@ class IRCSide(threading.Thread):
         self.cursor = self.db.cursor()
         self.start_pull_thread()
         self.client.process_forever()
+        self.last_pull_msg_id = -1
+
 
     def prepare_regexps(self):
         """
@@ -59,208 +61,237 @@ class IRCSide(threading.Thread):
         Thread to pull IO data from the database to process and send to the main thread
         """
         while(True):
-            db_pull = self.getDB()
-            cursor_pull = db_pull.cursor()
-            pull_result_code = cursor_pull.execute("""SELECT * FROM `IO_Table` WHERE `Registered_users_userID` = %s;""", (self.userID,))
-            pull_result = cursor_pull.fetchall()
-            for result in pull_result:
-                #(1, 'TEXTBOX', 'AHOJ', '', '', None, 0, None, 1, 2, -1, 73)
-                data = {
-                    "userID": result[0],
-                    "commandType": result[1],
-                    "argument1": result[2],
-                    "argument2": result[3],
-                    "argument3": result[4],
-                    "timeSent": result[5],
-                    "processed": bool(result[6]),
-                    "timeReceived": result[7],
-                    "fromClient": bool(result[8]),
-                    "serverID": result[9],
-                    "channelID": result[10],
-                    "messageID": result[11]
-                }
+            try:
+                db_pull = self.getDB()
+                cursor_pull = db_pull.cursor()
+                pull_result_code = cursor_pull.execute("""SELECT * FROM `IO_Table` WHERE `Registered_users_userID` = %s;""", (self.userID,))
+                pull_result = cursor_pull.fetchall()
+                for result in pull_result:
+                    #(1, 'TEXTBOX', 'AHOJ', '', '', None, 0, None, 1, 2, -1, 73)
+                    data = {
+                        "userID": result[0],
+                        "commandType": result[1],
+                        "argument1": result[2],
+                        "argument2": result[3],
+                        "argument3": result[4],
+                        "timeSent": result[5],
+                        "processed": bool(result[6]),
+                        "timeReceived": result[7],
+                        "fromClient": bool(result[8]),
+                        "serverID": result[9],
+                        "channelID": result[10],
+                        "messageID": result[11]
+                    }
+                    self.last_pull_msg_id = data["messageID"] # used if a command fails in order to remove it in except()
 
+                    if data["commandType"] == "TEXTBOX":
+                        message = data["argument1"]
+                        if message[0] == "/" : # if the first character is a slash the user is trying to exec a command
+                            print("Command.")
 
-                if data["commandType"] == "TEXTBOX":
-                    message = data["argument1"]
-                    if message[0] == "/" : # if the first character is a slash the user is trying to exec a command
-                        print("Command.")
-                        RAW_MATCH = re.match("/raw (.*)", message.lower()) # RAW MATCH
+                            # REGEXP MATCHES FOR COMMANDS #
+                            RAW_MATCH = re.match("^/raw (.*)$", message.lower()) # RAW MATCH
+                            PRIVMSG_MATCH = re.match("^\/(privmsg|msg)\s(.*)\s(.*)$", message.lower())
 
-                        if RAW_MATCH != None:
-                            for i in self.server_list_server_objects: # loop through all the server instances this user has
-                                if i.serverID == data["serverID"]:
-                                    RAW_MESSAGE = str(RAW_MATCH.group(1))
-                                    i.send_raw()
-                                    res = cursor_pull.execute("""INSERT INTO `IRC_other_messages` (IRC_servers_serverID,
-                                                        fromHostmask,
-                                                        messageBody,
-                                                        commandType,
-                                                        timeReceived)
-                                                        values (%s, %s, %s, %s, %s)""", (i.serverID, server_info["serverName"],
-                                                        "-> You sent a RAW message to {0}: {1}...".format(server_info["serverName"], RAW_MESSAGE), "CLOUDCHAT_INFO", datetime.datetime.utcnow()))
-                                    db_pull.commit()
-
-
-                    elif message[0] != "/":
-                        print("Not command.")
-                        print(data)
-                        for i in self.server_list_server_objects: # loop through all the server instances this user has
-                            if(i.serverID == data["serverID"]): # if the server is the server we need
-                                res = cursor_pull.execute("""SELECT * FROM `IRC_channels` WHERE `IRC_servers_serverID` = %s AND `channelID` = %s;""", (i.serverID, data["channelID"])) # get the IRC channel based on the ID
-                                if res != 0:
-                                    print("VíTĚZ")
-                                    result = cursor_pull.fetchall()
-                                    channelID_res = int(result[0][0])
-                                    channelName_res = str(result[0][1]) # get the channelName from the query
-                                    nickname = data["argument2"] + "!unknown@unknown.cz"
-
-                                    if i.is_connected() == True and data["channelID"] != -1: # if we are connected and the channelID is not -1 (broken)
-                                        i.privmsg(channelName_res, message)
-
-                                        res = cursor_pull.execute("""INSERT INTO `IRC_channel_messages` (IRC_channels_channelID,
-                                                                    fromHostmask,
-                                                                    messageBody,
-                                                                    commandType,
-                                                                    timeReceived)
-                                                                    values (%s, %s, %s, %s, %s)""", (channelID_res, nickname, message, "PUBMSG", datetime.datetime.utcnow()))
-                                        db_pull.commit()
-
-                                    elif data["channelID"] == -1:
-                                        try:
-                                            res = cursor_pull.execute("""INSERT INTO `IRC_other_messages` (IRC_servers_serverID,
-                                                        fromHostmask,
-                                                        messageBody,
-                                                        commandType,
-                                                        timeReceived)
-                                                        values (%s, %s, %s, %s, %s)""", (i.serverID, i.real_server_name, "You cannot write messages into server windows. If you want to send raw IRC use /RAW. If you want to message someone use /MSG or /PRIVMSG.", "CMD_ERROR" , datetime.datetime.utcnow()))
-                                            db_pull.commit()
-                                        except Exception as ex:
-                                            print("Probably not connected" + str(ex))
-
-                                    #TOD: FIX HARDCODED STUFF
-                                    #TODO: Change booleanm processed=TRUE
-                elif data["commandType"] == "CONNECT_SERVER":
-                    reason = data["argument1"] # should we add it to the list of servers first or is it already loaded?
-                    userID = data["userID"]
-                    serverID = data["serverID"]
-                    channelID = data["channelID"]
-                    isAlreadyConnected = None
-                    #test to see if the server is already in the list
-                    for i in self.server_list_server_objects: # loop through all the server instances this user has
-                        if(i.serverID == data["serverID"]): # CONNECTING A  SERVER THAT HAS BEEN ADDED TO THE LIST ALREADY!!!
-                            isAlreadyConnected = i.is_connected()
-                            if(isAlreadyConnected == False): # if the server is in the server list back when the bouncer started, but it is not connected (i.e. disconnected after a while)
-                                res = cursor_pull.execute("""SELECT * FROM `IRC_servers` WHERE `serverID` = %s;""", (i.serverID,)) # get the IRC channel based on the ID
-                                if res != 0:
-                                    result = cursor_pull.fetchall()
-                                    print("PREJ JO" , result)
-                                    server_info = {"nickname": result[0][2],
-                                                        "userID": result[0][5],
-                                                        "serverName": result[0][6],
-                                                        "serverIP": result[0][7],
-                                                        "serverPort": result[0][8],
-                                                        "useSSL": result[0][9]}
-                                    if(server_info["userID"] == userID): # if the server corresponds to the userID we have been given (this should never happen, but just to be sure)
-
-                                        i.connect(server=server_info["serverIP"], port=int(server_info["serverPort"]), nickname=server_info["nickname"],
-                                                  password=None, username=server_info["nickname"], ircname=server_info["nickname"])
+                            if RAW_MATCH != None:
+                                for i in self.server_list_server_objects: # loop through all the server instances this user has
+                                    if i.serverID == data["serverID"]:
+                                        RAW_MESSAGE = str(RAW_MATCH.group(1))
+                                        i.send_raw(RAW_MESSAGE)
                                         res = cursor_pull.execute("""INSERT INTO `IRC_other_messages` (IRC_servers_serverID,
-                                                        fromHostmask,
-                                                        messageBody,
-                                                        commandType,
-                                                        timeReceived)
-                                                        values (%s, %s, %s, %s, %s)""", (i.serverID, server_info["serverName"],
-                                                        "Attempting to connect to {0}...".format(server_info["serverName"]), "CLOUDCHAT_INFO", datetime.datetime.utcnow()))
+                                                            fromHostmask,
+                                                            messageBody,
+                                                            commandType,
+                                                            timeReceived)
+                                                            values (%s, %s, %s, %s, %s)""", (i.serverID, server_info["serverName"],
+                                                            "-> You sent a RAW message to {0}: {1}...".format(server_info["serverName"], RAW_MESSAGE), "CLOUDCHAT_INFO", datetime.datetime.utcnow()))
                                         db_pull.commit()
-
-                        else:
-                            pass # nothing to disconnect, to be honest
-                    if isAlreadyConnected == None: # CONNECTING A NEW SERVER THAT HAS  BEEN ADDED TO THE SERVER-SIDE LIST (server_list_server_objects) YET !!!!
-                        print("Ještě neni v seznamu.")
-
-                        res = cursor_pull.execute("""SELECT * FROM `IRC_servers` WHERE `serverID` = %s;""", (serverID,)) # get the IRC channel based on the ID
-
-                        if res != 0:
-                            result = cursor_pull.fetchall()
-                            print("PREJ JO" , result)
-                            server_info = { "serverID": result[0][0],
-                                                "nickname": result[0][2],
-                                                "userID": result[0][5],
-                                                "serverName": result[0][6],
-                                                "serverIP": result[0][7],
-                                                "serverPort": result[0][8],
-                                                "useSSL": result[0][9]}
-                            if(server_info["userID"] == userID): # if the server corresponds to the userID we have been given (this should never happen, but just to be sure)
-                                temp_server_connection_object = self.client.server()
-                                temp_server_connection_object.serverID = server_info["serverID"] # důležité: přidává serverID z databáze jako atribut do connection, které se používá při každém global_handleru definovaném o pář řádků výše
-                                print("temp_serverID:", temp_server_connection_object.serverID)
-
-                                self.server_list_server_objects.append(temp_server_connection_object)
-
-                                temp_server_connection_object.connect(server=server_info["serverIP"], port=int(server_info["serverPort"]), nickname=server_info["nickname"],
-                                          password=None, username=server_info["nickname"], ircname=server_info["nickname"])
+                            elif PRIVMSG_MATCH != None:
+                                TYPE = PRIVMSG_MATCH.group(1)
+                                TARGET = PRIVMSG_MATCH.group(2)
+                                MESSAGE = PRIVMSG_MATCH.group(3)
+                                i.privmsg(TARGET, MESSAGE)
+                                print( "{0}: PRIVMSG({1}): {2}".format(server_info["serverName"], TARGET, MESSAGE))
                                 res = cursor_pull.execute("""INSERT INTO `IRC_other_messages` (IRC_servers_serverID,
-                                                fromHostmask,
-                                                messageBody,
-                                                commandType,
-                                                timeReceived)
-                                                values (%s, %s, %s, %s, %s)""", (server_info["serverID"], server_info["serverName"],
-                                                "Attempting to connect to {0}...".format(server_info["serverName"]), "CLOUDCHAT_INFO", datetime.datetime.utcnow()))
+                                                            fromHostmask,
+                                                            messageBody,
+                                                            commandType,
+                                                            timeReceived)
+                                                            values (%s, %s, %s, %s, %s)""", (i.serverID, server_info["serverName"],
+                                                            "{0}: PRIVMSG({1}): {2}".format(server_info["serverName"], TARGET, MESSAGE), "CLOUDCHAT_INFO", datetime.datetime.utcnow()))
                                 db_pull.commit()
 
 
-                elif data["commandType"] == "DISCONNECT_SERVER": # CONNECTING A NEW SERVER THAT HAS NOT BEEN ADDED TO THE LIST YET
-                    reason = data["argument1"] # should we add it to the list of servers first or is it already loaded?
-                    userID = data["userID"]
-                    serverID = data["serverID"]
-                    channelID = data["channelID"]
-                    isAlreadyConnected = None
+                        elif message[0] != "/":
+                            print("Not command.")
+                            print(data)
+                            for i in self.server_list_server_objects: # loop through all the server instances this user has
+                                if(i.serverID == data["serverID"]): # if the server is the server we need
+                                    res = cursor_pull.execute("""SELECT * FROM `IRC_channels` WHERE `IRC_servers_serverID` = %s AND `channelID` = %s;""", (i.serverID, data["channelID"])) # get the IRC channel based on the ID
+                                    if res != 0:
+                                        print("VíTĚZ")
+                                        result = cursor_pull.fetchall()
+                                        channelID_res = int(result[0][0])
+                                        channelName_res = str(result[0][1]) # get the channelName from the query
+                                        nickname = data["argument2"] + "!unknown@unknown.cz"
 
-                    for i in self.server_list_server_objects: # loop through all the server instances this user has
-                        if(i.serverID == data["serverID"]):
-                            isAlreadyConnected = i.is_connected()
-                            if(isAlreadyConnected == True): # if the server is in the server list back when the bouncer started, but it is not connected (i.e. disconnected after a while)
+                                        if i.is_connected() == True and data["channelID"] != -1: # if we are connected and the channelID is not -1 (broken)
+                                            i.privmsg(channelName_res, message)
 
-                                res = cursor_pull.execute("""SELECT * FROM `IRC_servers` WHERE `serverID` = %s;""", (i.serverID,)) # get the IRC channel based on the ID
-                                if res != 0:
-                                    result = cursor_pull.fetchall()
-                                    print("PREJ JO" , result)
-                                    server_info = {"nickname": result[0][2],
-                                                        "userID": result[0][5],
-                                                        "serverName": result[0][6],
-                                                        "serverIP": result[0][7],
-                                                        "serverPort": result[0][8],
-                                                        "useSSL": result[0][9]}
-                                    if(server_info["userID"] == userID): # if the server corresponds to the userID we have been given (this should never happen, but just to be sure)
-                                        i.disconnect("LEAVING")
+                                            res = cursor_pull.execute("""INSERT INTO `IRC_channel_messages` (IRC_channels_channelID,
+                                                                        fromHostmask,
+                                                                        messageBody,
+                                                                        commandType,
+                                                                        timeReceived)
+                                                                        values (%s, %s, %s, %s, %s)""", (channelID_res, nickname, message, "PUBMSG", datetime.datetime.utcnow()))
+                                            db_pull.commit()
 
-                                        db_pull.commit()
-                        else:
-                            pass
-                    if isAlreadyConnected == None:
-                        print("Ještě neni v seznamu.") # if this happens then all hope is lost
+                                        elif data["channelID"] == -1:
+                                            try:
+                                                res = cursor_pull.execute("""INSERT INTO `IRC_other_messages` (IRC_servers_serverID,
+                                                            fromHostmask,
+                                                            messageBody,
+                                                            commandType,
+                                                            timeReceived)
+                                                            values (%s, %s, %s, %s, %s)""", (i.serverID, i.real_server_name, "You cannot write messages into server windows. If you want to send raw IRC use /RAW. If you want to message someone use /MSG or /PRIVMSG.", "CMD_ERROR" , datetime.datetime.utcnow()))
+                                                db_pull.commit()
+                                            except Exception as ex:
+                                                print("Probably not connected" + str(ex))
 
-                elif data["commandType"] == "JOIN_CHANNEL":
-                    for i in self.server_list_server_objects: # loop through all the server instances this user has
-                        if i.serverID == data["serverID"]: # if the server is the server we need
-                            channelID_res = data["channelID"]
-                            channelKey_res = data["argument1"] # argument1 = channelPassword
-                            channelName_res = data["argument2"] # argument2 = channelNameě
+                                        #TOD: FIX HARDCODED STUFF
+                                        #TODO: Change booleanm processed=TRUE
+                    elif data["commandType"] == "CONNECT_SERVER":
+                        reason = data["argument1"] # should we add it to the list of servers first or is it already loaded?
+                        userID = data["userID"]
+                        serverID = data["serverID"]
+                        channelID = data["channelID"]
+                        isAlreadyConnected = None
+                        #test to see if the server is already in the list
+                        for i in self.server_list_server_objects: # loop through all the server instances this user has
+                            if(i.serverID == data["serverID"]): # CONNECTING A  SERVER THAT HAS BEEN ADDED TO THE LIST ALREADY!!!
+                                isAlreadyConnected = i.is_connected()
+                                if(isAlreadyConnected == False): # if the server is in the server list back when the bouncer started, but it is not connected (i.e. disconnected after a while)
+                                    res = cursor_pull.execute("""SELECT * FROM `IRC_servers` WHERE `serverID` = %s;""", (i.serverID,)) # get the IRC channel based on the ID
+                                    if res != 0:
+                                        result = cursor_pull.fetchall()
+                                        print("PREJ JO" , result)
+                                        server_info = {"nickname": result[0][2],
+                                                            "userID": result[0][5],
+                                                            "serverName": result[0][6],
+                                                            "serverIP": result[0][7],
+                                                            "serverPort": result[0][8],
+                                                            "useSSL": result[0][9]}
+                                        if(server_info["userID"] == userID): # if the server corresponds to the userID we have been given (this should never happen, but just to be sure)
 
-                            if i.is_connected() == True and data["channelID"] != -1: # if we are connected and the channelID is not -1 (broken)
-                                i.join(channelName_res, key=channelKey_res) # TODO: track channels we are in?
+                                            i.connect(server=server_info["serverIP"], port=int(server_info["serverPort"]), nickname=server_info["nickname"],
+                                                      password=None, username=server_info["nickname"], ircname=server_info["nickname"])
+                                            res = cursor_pull.execute("""INSERT INTO `IRC_other_messages` (IRC_servers_serverID,
+                                                            fromHostmask,
+                                                            messageBody,
+                                                            commandType,
+                                                            timeReceived)
+                                                            values (%s, %s, %s, %s, %s)""", (i.serverID, server_info["serverName"],
+                                                            "Attempting to connect to {0}...".format(server_info["serverName"]), "CLOUDCHAT_INFO", datetime.datetime.utcnow()))
+                                            db_pull.commit()
+
+                            else:
+                                pass # nothing to disconnect, to be honest
+                        if isAlreadyConnected == None: # CONNECTING A NEW SERVER THAT HAS  BEEN ADDED TO THE SERVER-SIDE LIST (server_list_server_objects) YET !!!!
+                            print("Ještě neni v seznamu.")
+
+                            res = cursor_pull.execute("""SELECT * FROM `IRC_servers` WHERE `serverID` = %s;""", (serverID,)) # get the IRC channel based on the ID
+
+                            if res != 0:
+                                result = cursor_pull.fetchall()
+                                print("PREJ JO" , result)
+                                server_info = { "serverID": result[0][0],
+                                                    "nickname": result[0][2],
+                                                    "userID": result[0][5],
+                                                    "serverName": result[0][6],
+                                                    "serverIP": result[0][7],
+                                                    "serverPort": result[0][8],
+                                                    "useSSL": result[0][9]}
+                                if(server_info["userID"] == userID): # if the server corresponds to the userID we have been given (this should never happen, but just to be sure)
+                                    temp_server_connection_object = self.client.server()
+                                    temp_server_connection_object.serverID = server_info["serverID"] # důležité: přidává serverID z databáze jako atribut do connection, které se používá při každém global_handleru definovaném o pář řádků výše
+                                    print("temp_serverID:", temp_server_connection_object.serverID)
+
+                                    self.server_list_server_objects.append(temp_server_connection_object)
+
+                                    temp_server_connection_object.connect(server=server_info["serverIP"], port=int(server_info["serverPort"]), nickname=server_info["nickname"],
+                                              password=None, username=server_info["nickname"], ircname=server_info["nickname"])
+                                    res = cursor_pull.execute("""INSERT INTO `IRC_other_messages` (IRC_servers_serverID,
+                                                    fromHostmask,
+                                                    messageBody,
+                                                    commandType,
+                                                    timeReceived)
+                                                    values (%s, %s, %s, %s, %s)""", (server_info["serverID"], server_info["serverName"],
+                                                    "Attempting to connect to {0}...".format(server_info["serverName"]), "CLOUDCHAT_INFO", datetime.datetime.utcnow()))
+                                    db_pull.commit()
 
 
-                            res = cursor_pull.execute("""DELETE FROM `IO_Table` WHERE `messageID` = %s;""", (data["messageID"],)) # delete the message we just processed
-                            db_pull.commit()
+                    elif data["commandType"] == "DISCONNECT_SERVER": # CONNECTING A NEW SERVER THAT HAS NOT BEEN ADDED TO THE LIST YET
+                        reason = data["argument1"] # should we add it to the list of servers first or is it already loaded?
+                        userID = data["userID"]
+                        serverID = data["serverID"]
+                        channelID = data["channelID"]
+                        isAlreadyConnected = None
 
-                # HOWEVER IT ENDS, LET'S JUST DELETE THE MESSAGE
-                res = cursor_pull.execute("""DELETE FROM `IO_Table` WHERE `messageID` = %s;""", (data["messageID"],)) # delete the message we just processed
+                        for i in self.server_list_server_objects: # loop through all the server instances this user has
+                            if(i.serverID == data["serverID"]):
+                                isAlreadyConnected = i.is_connected()
+                                if(isAlreadyConnected == True): # if the server is in the server list back when the bouncer started, but it is not connected (i.e. disconnected after a while)
+
+                                    res = cursor_pull.execute("""SELECT * FROM `IRC_servers` WHERE `serverID` = %s;""", (i.serverID,)) # get the IRC channel based on the ID
+                                    if res != 0:
+                                        result = cursor_pull.fetchall()
+                                        print("PREJ JO" , result)
+                                        server_info = {"nickname": result[0][2],
+                                                            "userID": result[0][5],
+                                                            "serverName": result[0][6],
+                                                            "serverIP": result[0][7],
+                                                            "serverPort": result[0][8],
+                                                            "useSSL": result[0][9]}
+                                        if(server_info["userID"] == userID): # if the server corresponds to the userID we have been given (this should never happen, but just to be sure)
+                                            i.disconnect("LEAVING")
+
+                                            db_pull.commit()
+                            else:
+                                pass
+                        if isAlreadyConnected == None:
+                            print("Ještě neni v seznamu.") # if this happens then all hope is lost
+
+                    elif data["commandType"] == "JOIN_CHANNEL":
+                        for i in self.server_list_server_objects: # loop through all the server instances this user has
+                            if i.serverID == data["serverID"]: # if the server is the server we need
+                                channelID_res = data["channelID"]
+                                channelKey_res = data["argument1"] # argument1 = channelPassword
+                                channelName_res = data["argument2"] # argument2 = channelNameě
+
+                                if i.is_connected() == True and data["channelID"] != -1: # if we are connected and the channelID is not -1 (broken)
+                                    i.join(channelName_res, key=channelKey_res) # TODO: track channels we are in?
+
+
+                                res = cursor_pull.execute("""DELETE FROM `IO_Table` WHERE `messageID` = %s;""", (data["messageID"],)) # delete the message we just processed
+                                db_pull.commit()
+
+                    # HOWEVER IT ENDS, LET'S JUST DELETE THE MESSAGE
+                    res = cursor_pull.execute("""DELETE FROM `IO_Table` WHERE `messageID` = %s;""", (data["messageID"],)) # delete the message we just processed
+                    db_pull.commit()
+
+                time.sleep(2)
+                db_pull.close()
+            except Exception as exp:
+
+                print("EXCEPTION IN THREAD", exp)
+                #let's delete the message, because it probably broke our code
+                db_pull = self.getDB()
+                cursor_pull = db_pull.cursor()
+                res = cursor_pull.execute("""DELETE FROM `IO_Table` WHERE `messageID` = %s;""", (self.last_pull_msg_id)) # delete the message we just processed
                 db_pull.commit()
+                db_pull.close()
 
-            time.sleep(2)
-            db_pull.close()
+                time.sleep(2)
 
     def join_chnanel(self, data, cursor_pull):
         """
@@ -321,7 +352,7 @@ class IRCSide(threading.Thread):
         self.client.add_global_handler("yourhost", self.on_your_host)
         self.client.add_global_handler("created", self.on_your_host)
         self.client.add_global_handler("myinfo", self.on_your_host)
-
+        self.client.add_global_handler("featurelist", self.on_your_host)
 
         self.client.add_global_handler("nosuchnick", self.on_your_host)
         self.client.add_global_handler("nosuchcannel", self.on_your_host)

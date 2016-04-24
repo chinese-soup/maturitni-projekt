@@ -178,7 +178,7 @@ function loadSettingsIntoVariable()
             console.log(settings);
 
 
-            global_settings["hilfromMsgIDight_words"] = settings[0];
+            global_settings["hilight_words"] = settings[0];
             global_settings["username"] = settings[1];
             global_settings["realname"] = settings[2];
             global_settings["nickname"] = settings[3];
@@ -474,9 +474,30 @@ function addMessageToChannel(messageID, timestamp, sender, senderColor, message,
 {
     var colorHash = new ColorHash({lightness: [0.65, 0.65, 0.65]});
     senderColor = colorHash.hex(sender);
+    var MsgBGstyle = "odd";
+    try
+    {
+        if(global_settings["hilight_words"] != "")
+        {
+            var hilight_words_array = global_settings["hilight_words"].split(";");
+            console.log("hilight words array: ");
+            console.log(hilight_words_array);
 
+            for (i = 0; i < hilight_words_array.length; i++)
+            {
+                if(message.search(hilight_words_array[i]) != -1)
+                {
+                    MsgBGstyle = "hilight";
+                }
+            }
+        }
+    }
+    catch(err)
+    {
+        MsgBGstyle = "odd";
+    }
     var html =
-    '<div class="log_message log_message_even">' +
+    '<div class="log_message log_message_{0}">'.format(MsgBGstyle) +
     '    <span class="timestamp">{0}</span>'.format(timestamp) +
     '    <span class="message-body"><span class="message-sender message-sender-0" style="color: {0} !important;">{1}</span>: {2}</span>'.format(senderColor, sender, message) +
     '</div>';
@@ -503,7 +524,7 @@ function switchCurrentChannel(toChannelID)
 
     if(toChannelID == -1 && event.data.clickedServerID != null)
     {
-        $(".current_server_div").show();
+        //$(".current_server_div").show();
         current_status_window_serverID = event.data.clickedServerID;
         $(".current_server_div_serverid").html(current_status_window_serverID);
         $(".current_server_div_servername").html(event.data.clickedServerName);
@@ -606,7 +627,7 @@ function switchCurrentChannelEventStyle(event)
 
     if(toChannelID == -1 && event.data.clickedServerID != null)
     {
-        $(".current_server_div").show();
+        //$(".current_server_div").show();
         current_status_window_serverID = event.data.clickedServerID;
         $(".current_server_div_serverid").html(current_status_window_serverID);
         $(".current_server_div_servername").html(event.data.clickedServerName);

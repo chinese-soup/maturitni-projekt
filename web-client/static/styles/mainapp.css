@@ -223,6 +223,12 @@ html, body
 	background-color: inherit;
 }
 
+.log_message_hilight
+{
+	background-color: #1F2035;
+}
+
+
 .log_message .timestamp
 {
 	color: #bebebe;
