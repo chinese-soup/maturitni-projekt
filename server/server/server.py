@@ -190,6 +190,7 @@ class IRCSide(threading.Thread):
                                     if(server_info["userID"] == userID): # if the server corresponds to the userID we have been given (this should never happen, but just to be sure)
                                         i.disconnect("LEAVING")
 
+                                        db_pull.commit()
                         else:
                             pass
                     if isAlreadyConnected == None:
@@ -407,11 +408,21 @@ class IRCSide(threading.Thread):
             result = self.cursor.fetchall()
             print(result)
             serverID_res = int(result[0][0])
+            serverName_res = str(result[0][6])
 
             res = self.cursor.execute("""UPDATE `IRC_servers` SET `isConnected` = %s WHERE `serverID` = %s;""", (0, serverID_res))
 
             print("RES: ",res)
             print("serverID = {}".format(serverID_res))
+            res = self.cursor.execute("""INSERT INTO `IRC_other_messages` (IRC_servers_serverID,
+                fromHostmask,
+                messageBody,
+                commandType,
+                timeReceived)
+                values (%s, %s, %s, %s, %s)""", (serverID_res, event.source,
+                "Disconnected from {0}...".format(serverName_res), "CLOUDCHAT_INFO", datetime.datetime.utcnow()))
+            self.db.commit()
+
 
     def on_action(self, connection, event):
         """
@@ -517,7 +528,6 @@ class IRCSide(threading.Thread):
                 if res != 0:
                     result = self.cursor.fetchall()
                     channelID_res = int(result[0][0])
-                    channelName_res = str(result[0][1])
 
                     res = self.cursor.execute("""INSERT INTO `IRC_channel_messages` (IRC_channels_channelID,
                     fromHostmask,
@@ -526,6 +536,7 @@ class IRCSide(threading.Thread):
                     timeReceived)
                     values (%s, %s, %s, %s, %s)""", (channelID_res, event.source, final, event.type.upper(), datetime.datetime.utcnow()))
                     self.db.commit()
+                    print("FINAL = ", final)
 
 """
 TODO: DELETE THIS

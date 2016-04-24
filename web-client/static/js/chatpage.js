@@ -326,6 +326,18 @@ function getNewMessages()
                                     messages[i]["IRC_channels_channelID"]
                                 );
                             }
+                            else if(messages[i]["commandType"] == "NAMREPLY") // pokud se jedná /me zprávu
+                            {
+                                 addActionMessage(
+                                    messages[i]["messageID"],
+                                    convertDBTimeToLocalTime(messages[i]["timeReceived"]),
+                                    messages[i]["fromHostmask"],
+                                    "ok",
+                                    messages[i]["messageBody"],
+                                    messages[i]["IRC_channels_channelID"]
+                                );
+
+                            }
                             last_message_id[messages[i]["IRC_channels_channelID"]] = messages[i]["messageID"];
 
 
@@ -757,6 +769,18 @@ function getBacklogForChannel(channelID, limit)
                             getNicknameFromHostmask(messages[i]["fromHostmask"]),
                             "ok",
                             linkifyMessage(messages[i]["messageBody"]),
+                            messages[i]["IRC_channels_channelID"]
+                        );
+
+                    }
+                    else if(messages[i]["commandType"] == "NAMREPLY") // pokud se jedná /me zprávu
+                    {
+                         addActionMessage(
+                            messages[i]["messageID"],
+                            convertDBTimeToLocalTime(messages[i]["timeReceived"]),
+                            messages[i]["fromHostmask"],
+                            "ok",
+                            messages[i]["messageBody"],
                             messages[i]["IRC_channels_channelID"]
                         );
 
