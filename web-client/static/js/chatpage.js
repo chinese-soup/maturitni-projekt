@@ -806,7 +806,7 @@ function getBacklogForChannel(channelID, limit)
                 }
                 else
                 {
-                    log("not adding to the meme array (that is only temporary and needs a proper fix) because it already is in there");
+                    log("not adding to the array because it already is in there");
                 }
            }
         }

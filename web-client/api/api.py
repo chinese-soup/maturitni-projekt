@@ -806,6 +806,7 @@ def get_server_messages():
                 print("CURRENT_SERVER = ", current_server)
                 serverID_result = int(current_server[0]) # 0 = serverID
                 serverName_result = str(current_server[1]) # 1 = serverName
+                print("serverName_result = ", serverName_result)
 
                 res = cursor.execute("""
                 (SELECT *

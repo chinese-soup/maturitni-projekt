@@ -169,22 +169,24 @@ class IRCSide(threading.Thread):
                     if isAlreadyConnected == None: # CONNECTING A NEW SERVER THAT HAS  BEEN ADDED TO THE SERVER-SIDE LIST (server_list_server_objects) YET !!!!
                         print("Ještě neni v seznamu.")
 
-                        temp_server_connection_object = self.client.server()
-                        temp_server_connection_object.serverID = _serverID # důležité: přidává serverID z databáze jako atribut do connection, které se používá při každém global_handleru definovaném o pář řádků výše
-                        print("temp_serverID:", temp_server_connection_object.serverID)
-                        self.server_list_server_objects.append(temp_server_connection_object)
-                        res = cursor_pull.execute("""SELECT * FROM `IRC_servers` WHERE `serverID` = %s;""", (i.serverID,)) # get the IRC channel based on the ID
+                        res = cursor_pull.execute("""SELECT * FROM `IRC_servers` WHERE `serverID` = %s;""", (serverID,)) # get the IRC channel based on the ID
 
                         if res != 0:
                             result = cursor_pull.fetchall()
                             print("PREJ JO" , result)
-                            server_info = {"nickname": result[0][2],
+                            server_info = { "serverID": result[0][0],
+                                                "nickname": result[0][2],
                                                 "userID": result[0][5],
                                                 "serverName": result[0][6],
                                                 "serverIP": result[0][7],
                                                 "serverPort": result[0][8],
                                                 "useSSL": result[0][9]}
                             if(server_info["userID"] == userID): # if the server corresponds to the userID we have been given (this should never happen, but just to be sure)
+                                temp_server_connection_object = self.client.server()
+                                temp_server_connection_object.serverID = server_info["serverID"] # důležité: přidává serverID z databáze jako atribut do connection, které se používá při každém global_handleru definovaném o pář řádků výše
+                                print("temp_serverID:", temp_server_connection_object.serverID)
+
+                                self.server_list_server_objects.append(temp_server_connection_object)
 
                                 temp_server_connection_object.connect(server=server_info["serverIP"], port=int(server_info["serverPort"]), nickname=server_info["nickname"],
                                           password=None, username=server_info["nickname"], ircname=server_info["nickname"])
