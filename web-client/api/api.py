@@ -137,7 +137,7 @@ def after_request(response):
     :param response: Flask response object
     :return: response: Flask response object with added CORS allowing headers
     """
-    response.headers.add("Access-Control-Allow-Origin", "http://localhost") #TODO: localhost fix
+    response.headers.add("Access-Control-Allow-Origin",  request.headers.get('Origin','*')) #TODO: localhost fix
     response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization,Cookies")
     response.headers.add("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE")
     response.headers.add("Access-Control-Allow-Credentials", "true")
@@ -671,7 +671,7 @@ def add_new_server_settings():
                                 values(%s, %s, %s, %s, %s, %s, %s, -1, 0, 0);""",
                              (userID, klice["serverName"], klice["nickname"], klice["serverPassword"], klice["serverIP"], klice["serverPort"], klice["useSSL"]))
         db.commit()
-        
+
         if res == 1:
             response = {"status": "ok", "reason": "server_settings_edited_successfully", "message": "Server settings edited successfully.<br>Please connect for the new settings to apply.."}
         else:
