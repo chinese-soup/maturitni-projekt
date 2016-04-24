@@ -137,7 +137,7 @@ def after_request(response):
     :param response: Flask response object
     :return: response: Flask response object with added CORS allowing headers
     """
-    response.headers.add("Access-Control-Allow-Origin",  request.headers.get('Origin','*')) #TODO: localhost fix
+    response.headers.add("Access-Control-Allow-Origin", request.headers.get('Origin','*')) # TODO: SECURITY flaw
     response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization,Cookies")
     response.headers.add("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE")
     response.headers.add("Access-Control-Allow-Credentials", "true")

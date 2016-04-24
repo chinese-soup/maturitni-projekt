@@ -203,7 +203,7 @@ function loadSettingsIntoVariable()
 
 function ping()
 {
-    console.log("ping()");
+    //console.log("ping()");
     getNewMessages();
     getNewServerMessages();
 
@@ -492,8 +492,6 @@ function addMessageToChannel(messageID, timestamp, sender, senderColor, message,
         if(global_settings["hilight_words"] != "")
         {
             var hilight_words_array = global_settings["hilight_words"].split(";");
-            console.log("hilight words array: ");
-            console.log(hilight_words_array);
 
             for (i = 0; i < hilight_words_array.length; i++)
             {
@@ -589,7 +587,7 @@ function linkifyMessage(messageBody)
         var match = youtube_url.match(regExp);
         if (match && match[2].length == 11)
         {
-            messageBody = messageBody + '<iframe width="560" height="315" src="https://www.youtube.com/embed/{0}?rel=0" frameborder="0" allowfullscreen></iframe>'.format(match[2]);
+            messageBody = messageBody + '<br><iframe width="560" height="315" src="https://www.youtube.com/embed/{0}?rel=0" frameborder="0" allowfullscreen></iframe>'.format(match[2]);
         }
         else
         {
@@ -602,12 +600,13 @@ function linkifyMessage(messageBody)
 /* this function is bound to several */
 function switchCurrentChannelEventStyle(event)
 {
-    toChannelID = event.data.channelID;
-    toChannelName = event.data.channelName;
+    toChannelID = event.data.channelID; // get the channelID to change to from the event
+    toChannelName = event.data.channelName; // get the name of the channel to change to from the event
 
-    $("#button_send_message").off("click");
+    $("#button_send_message").off("click"); // reset click bind
     $("#button_send_message").click({channelID:toChannelID}, sendTextBoxCommand); // set the  click event with the new channelID
-    $("#input-msgline").off("keypress");
+
+    $("#input-msgline").off("keypress"); // reset enter key bind
     $("#input-msgline").keypress({channelID:toChannelID}, sendTextBoxCommand); // set the keypress event with the new channelID
 
     log("Switching channel window to {0} ({1})".format(toChannelID, toChannelName));
@@ -658,12 +657,11 @@ function switchCurrentChannelEventStyle(event)
     // load backlog if it has not been loaded yet
     if($.inArray(toChannelID, already_loaded_backlog) == -1)
     {
-        console.log("Getting backlog");
         getBacklogForChannel(toChannelID, 50);
     }
     else
     {
-        console.log("NOT getting backlog");
+
     }
 
 }
@@ -748,7 +746,7 @@ function getBacklogForServers(limit)
                         -1
                     );
 
-                        last_message_id_servers = messages[i]["messageID"];
+                    last_message_id_servers = messages[i]["messageID"];
 
                 }
            }
@@ -861,7 +859,7 @@ function getBacklogForChannel(channelID, limit)
                     last_message_id[messages[i]["IRC_channels_channelID"]] = messages[i]["messageID"]; // cut off 3 zeros at the end
                 }
 
-                if($.inArray(channelID, already_loaded_backlog) == -1)
+                if($.inArray(channelID, already_loaded_backlog) == -1 && messages.length != 0)
                 {
                     already_loaded_backlog.push(channelID);
                 }
