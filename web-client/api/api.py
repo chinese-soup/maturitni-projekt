@@ -904,58 +904,52 @@ def send_io():
     argument1 = request.form.get("argument1") or -1
     argument2 = request.form.get("argument2") or -1
     argument3 = request.form.get("argument3") or -1
+    #(userID, commandType, argument1, argument2, argument3, serverID, channelID)
 
     if userID is not False:
         db=MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
         cursor = db.cursor()
 
-        res = cursor.execute("""SELECT * FROM `IRC_channels` WHERE `channelID` = %s;""", (channelID,)) #query to find the serverID so we can check if the user owns this serverID and is not trying to read something that is not his
-        if res != 0:
-            chaninfo = cursor.fetchone()
-
-            channelID_result = chaninfo[0] #channelID
-            serverID = chaninfo[5] #ServerID
-
-            result_code = cursor.execute("""SELECT * FROM `IRC_servers` WHERE `serverID` = %s AND `Registred_users_userID` = %s""", (serverID, userID,))
-            if result_code is not 0:
-                result = cursor.fetchone()
-                serverID_result = result[0]
-                userID_result = result[5]
-                argument1 = argument1
-                argument2 = argument2
-                argument3 = argument3
-                timeSent = None
-                processed = False
+        result_code = cursor.execute("""SELECT * FROM `IRC_servers` WHERE `serverID` = %s AND `Registred_users_userID` = %s""", (serverID, userID,))
+        if result_code is not 0:
+            result = cursor.fetchone()
+            serverID_result = result[0]
+            userID_result = result[5]
+            argument1 = argument1
+            argument2 = argument2
+            argument3 = argument3
+            timeSent = None
+            processed = False
 
 
-                if(ioType == "CONNECT_SERVER"):
-                    argument1 = ""
-                elif(ioType == "RECONNECT_SERVER"):
-                    argument1 = ""
-                elif(ioType == "REMOVE_SERVER"):
-                    print("REMOVE_SERVER")
-                elif(ioType == "PART_CHANNEL"):
-                    print("PART CHANNEL")
+            if(ioType == "CONNECT_SERVER"):
+                argument1 = ""
+            elif(ioType == "DISCONNECT_SERVER"):
+                print("DISCONNECT_SERVER")
+            elif(ioType == "REMOVE_SERVER"):
+                print("REMOVE_SERVER")
+            elif(ioType == "PART_CHANNEL"):
+                print("PART CHANNEL")
 
 
-                cursor.execute("""INSERT INTO `IO_Table` (Registered_users_userID,
-                                                        commandType,
-                                                        argument1,
-                                                        argument2,
-                                                        argument3,
-                                                        timeSent,
-                                                        processed,
-                                                        fromClient,
-                                                        serverID,
-                                                        channelID)
+            cursor.execute("""INSERT INTO `IO_Table` (Registered_users_userID,
+                                                    commandType,
+                                                    argument1,
+                                                    argument2,
+                                                    argument3,
+                                                    timeSent,
+                                                    processed,
+                                                    fromClient,
+                                                    serverID,
+                                                    channelID)
 
-                                                        values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
-                """, (userID_result, ioType, argument1, argument2, argument3, timeSent, processed, True, serverID_result,
-                      channelID_result))
-                db.commit()
-                db.close()
-                response = {"status": "ok", "reason": "io_sent", "message": "DONE, I GUESS?"}
-                return jsonify(response)
+                                                    values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+            """, (userID_result, ioType, argument1, argument2, argument3, timeSent, processed, True, serverID_result,
+                  channelID))
+            db.commit()
+            db.close()
+            response = {"status": "ok", "reason": "io_sent", "message": "DONE, I GUESS?"}
+            return jsonify(response)
 
 @app.route("/send_textbox_io", methods=["POST"])
 def send_textbox_io():
@@ -987,12 +981,13 @@ def send_textbox_io():
             result_code = cursor.execute("""SELECT * FROM `IRC_servers` WHERE `serverID` = %s AND `Registred_users_userID` = %s""", (serverID, userID,))
             if result_code is not 0:
                 result = cursor.fetchone()
+
                 serverID_result = result[0]
                 userID_result = result[5]
                 commandType = "TEXTBOX"
 
                 argument1 = textBoxData
-                argument2 = ""
+                argument2 = result[2]
                 argument3 = ""
                 timeSent = None
                 processed = False

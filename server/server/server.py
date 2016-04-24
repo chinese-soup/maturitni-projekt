@@ -26,6 +26,9 @@ class IRCSide(threading.Thread):
         #super(IRCSide, self).__init__()
         threading.Thread.__init__(self)
 
+
+        self.userID = _userid
+
         self.client = client.Reactor()
         self.add_handlers()
 
@@ -35,8 +38,6 @@ class IRCSide(threading.Thread):
         self.load_servers_from_db()
 
         self.connect_servers()
-
-        self.userID = _userid
 
         self.db = MySQLdb.connect(user="root", passwd="asdf", db="cloudchatdb", connect_timeout=30, charset="utf8")
         self.cursor = self.db.cursor()
@@ -96,6 +97,7 @@ class IRCSide(threading.Thread):
                                     result = cursor_pull.fetchall()
                                     channelID_res = int(result[0][0])
                                     channelName_res = str(result[0][1]) # get the channelName from the query
+                                    nickname = data["argument2"] + "!unknown@unknown"
 
                                     if i.is_connected() == True and data["channelID"] != -1: # if we are connected and the channelID is not -1 (broken)
                                         i.privmsg(channelName_res, message)
@@ -105,18 +107,20 @@ class IRCSide(threading.Thread):
                                                                     messageBody,
                                                                     commandType,
                                                                     timeReceived)
-                                                                    values (%s, %s, %s, %s, %s)""", (channelID_res, "polivecka!polivecka@polivecka", message, "PUBMSG", datetime.datetime.utcnow()))
+                                                                    values (%s, %s, %s, %s, %s)""", (channelID_res, nickname, message, "PUBMSG", datetime.datetime.utcnow()))
                                         db_pull.commit()
-                                        res = cursor_pull.execute("""DELETE FROM `IO_Table` WHERE `messageID` = %s;""", (data["messageID"],)) # delete the message we just processed
-                                        db_pull.commit()
-                                    else:
-                                        res = cursor_pull.execute("""INSERT INTO `IRC_other_messages` (IRC_servers_serverID,
+
+                                    elif data["channelID"] == -1:
+                                        try:
+                                            res = cursor_pull.execute("""INSERT INTO `IRC_other_messages` (IRC_servers_serverID,
                                                         fromHostmask,
                                                         messageBody,
                                                         commandType,
                                                         timeReceived)
                                                         values (%s, %s, %s, %s, %s)""", (i.serverID, i.real_server_name, "You cannot write messages into server windows. If you want to send raw IRC use /RAW. If you want to message someone use /MSG or /PRIVMSG.", "CMD_ERROR" , datetime.datetime.utcnow()))
-                                        db_pull.commit()
+                                            db_pull.commit()
+                                        except Exception as ex:
+                                            print("Probably not connected" + str(ex))
 
                                     #TOD: FIX HARDCODED STUFF
                                     #TODO: Change booleanm processed=TRUE
@@ -130,22 +134,61 @@ class IRCSide(threading.Thread):
                     for i in self.server_list_server_objects: # loop through all the server instances this user has
                         if(i.serverID == data["serverID"]):
                             isAlreadyConnected = i.is_connected()
+                            if(isAlreadyConnected == False): # if the server is in the server list back when the bouncer started, but it is not connected (i.e. disconnected after a while)
+
+                                res = cursor_pull.execute("""SELECT * FROM `IRC_servers` WHERE `serverID` = %s;""", (i.serverID,)) # get the IRC channel based on the ID
+                                if res != 0:
+                                    result = cursor_pull.fetchall()
+                                    print("PREJ JO" , result)
+                                    server_info = {"nickname": result[0][2],
+                                                        "userID": result[0][5],
+                                                        "serverName": result[0][6],
+                                                        "serverIP": result[0][7],
+                                                        "serverPort": result[0][8],
+                                                        "useSSL": result[0][9]}
+                                    if(server_info["userID"] == userID): # if the server corresponds to the userID we have been given (this should never happen, but just to be sure)
+                                        i.connect(server=server_info["serverIP"], port=int(server_info["serverPort"]), nickname=server_info["nickname"],
+                                                  password=None, username=server_info["nickname"], ircname=server_info["nickname"])
+
+                                #connect(server=_server, port=_port, nickname=_nickname, password=None, username=None, ircname=None
                         else:
                             pass
                     if isAlreadyConnected == None:
                         print("Ještě neni v seznamu.")
 
+                elif data["commandType"] == "DISCONNECT_SERVER": # CONNECTING A NEW SERVER THAT HAS NOT BEEN ADDED TO THE LIST YET
+                    reason = data["argument1"] # should we add it to the list of servers first or is it already loaded?
+                    userID = data["userID"]
+                    serverID = data["serverID"]
+                    channelID = data["channelID"]
+                    isAlreadyConnected = None
+
+                    for i in self.server_list_server_objects: # loop through all the server instances this user has
+                        if(i.serverID == data["serverID"]):
+                            isAlreadyConnected = i.is_connected()
+                            if(isAlreadyConnected == True): # if the server is in the server list back when the bouncer started, but it is not connected (i.e. disconnected after a while)
+
+                                res = cursor_pull.execute("""SELECT * FROM `IRC_servers` WHERE `serverID` = %s;""", (i.serverID,)) # get the IRC channel based on the ID
+                                if res != 0:
+                                    result = cursor_pull.fetchall()
+                                    print("PREJ JO" , result)
+                                    server_info = {"nickname": result[0][2],
+                                                        "userID": result[0][5],
+                                                        "serverName": result[0][6],
+                                                        "serverIP": result[0][7],
+                                                        "serverPort": result[0][8],
+                                                        "useSSL": result[0][9]}
+                                    if(server_info["userID"] == userID): # if the server corresponds to the userID we have been given (this should never happen, but just to be sure)
+                                        i.disconnect("LEAVING")
+
+                        else:
+                            pass
+                    if isAlreadyConnected == None:
+                        print("Ještě neni v seznamu.") # if this happens then all hope is lost
+
                 elif data["commandType"] == "JOIN_CHANNEL":
                     for i in self.server_list_server_objects: # loop through all the server instances this user has
                         if i.serverID == data["serverID"]: # if the server is the server we need
-                            #res = cursor_pull.execute("""SELECT * FROM `IRC_channels` WHERE `IRC_servers_serverID` = %s AND `channelID` = %s;""", (i.serverID, data["channelID"])) # get the IRC channel based on the ID
-                            #if res != 0:
-                            #print("VíTĚZ")
-                            #result = cursor_pull.fetchall()
-                            #channelID_res = int(result[0][0])
-                            #channelName_res = str(result[0][1]) # get the channelName from the query
-                            #channelKey_res = str(result[0][2])
-
                             channelID_res = data["channelID"]
                             channelKey_res = data["argument1"] # argument1 = channelPassword
                             channelName_res = data["argument2"] # argument2 = channelNameě
@@ -156,8 +199,11 @@ class IRCSide(threading.Thread):
                             res = cursor_pull.execute("""DELETE FROM `IO_Table` WHERE `messageID` = %s;""", (data["messageID"],)) # delete the message we just processed
                             db_pull.commit()
 
+                # HOWEVER IT ENDS, LET'S JUST DELETE THE MESSAGE
+                res = cursor_pull.execute("""DELETE FROM `IO_Table` WHERE `messageID` = %s;""", (data["messageID"],)) # delete the message we just processed
+                db_pull.commit()
+
             time.sleep(2)
-            print("Sleep2: ", self.userID)
             db_pull.close()
 
     def join_chnanel(self, data, cursor_pull):
@@ -189,9 +235,8 @@ class IRCSide(threading.Thread):
         """
         db = self.getDB()
         cursor = db.cursor()
-        userID = 1
 
-        res = cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s;""", (userID,))
+        res = cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s;""", (self.userID,))
 
         result = cursor.fetchall()
         db.close()
@@ -230,8 +275,6 @@ class IRCSide(threading.Thread):
         self.client.add_global_handler("notonchannel", self.on_your_host)
         self.client.add_global_handler("useronchannel", self.on_your_host)
 
-        self.client.add_global_handler("nicknameinuse", self.on_your_host)
-
 
         self.client.add_global_handler("disconnect", self.on_disconnect)
         self.client.add_global_handler("nicknameinuse", self.on_nicknameinuse)
@@ -242,9 +285,6 @@ class IRCSide(threading.Thread):
         self.client.add_global_handler("quit", self.on_pubmsg)
         self.client.add_global_handler("nick", self.on_nick)
         self.client.add_global_handler("action", self.on_pubmsg)
-
-    def nickname_in_use(self, connection, event):
-        print("self.nickname_in_use")
 
     def on_your_host(self, connection, event):
         """
@@ -261,7 +301,6 @@ class IRCSide(threading.Thread):
         res = self.cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s AND `serverID` = %s;""", (self.userID, connection.serverID))
         if res != 0:
             result = self.cursor.fetchall()
-            print(result)
             serverID_res = int(result[0][0])
             print("serverID = {}".format(serverID_res))
 
@@ -286,11 +325,10 @@ class IRCSide(threading.Thread):
 
         temp_server_connection_object.serverID = _serverID # důležité: přidává serverID z databáze jako atribut do connection, které se používá při každém global_handleru definovaném o pář řádků výše
 
-        print(temp_server_connection_object.serverID)
-        #temp_server_connection_object.setServerID(_serverID)
+        print("temp_serverID:", temp_server_connection_object.serverID)
 
         self.server_list_server_objects.append(temp_server_connection_object)
-        self.server_list_instances.append(temp_server_connection_object.connect(server=_server, port=_port, nickname=_nickname, password=None, username=None, ircname=None))
+        #self.server_list_instances.append(temp_server_connection_object.connect(server=_server, port=_port, nickname=_nickname, password=None, username=None, ircname=None))
 
     def connect_servers(self):
         """
@@ -309,7 +347,7 @@ class IRCSide(threading.Thread):
 
     def on_connect(self, connection, event):
         """
-            Fired when any client successfully connects to an IRC server
+        Fired when any client successfully connects to an IRC server
         """
         print('[{}] Connected to {}' .format(event.type.upper(), event.source))
         print("{}".format(event.arguments))
@@ -317,32 +355,25 @@ class IRCSide(threading.Thread):
         res = self.cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s AND `serverID` = %s;""", (self.userID, connection.serverID))
         if res != 0:
             result = self.cursor.fetchall()
-            print(result)
-
             serverID_res = int(result[0][0])
-
-            res = self.cursor.execute("""UPDATE `IRC_servers` SET `isConnected` = %s WHERE `serverID` = %s;""", (1, serverID_res))
-
-            print("RES: ",res)
-            print("serverID = {}".format(serverID_res))
+            #res = self.cursor.execute("""UPDATE `IRC_servers` SET `isConnected` = %s WHERE `serverID` = %s;""", (1, serverID_res))
 
             if serverID_res == int(connection.serverID): # pokud se získané ID z databáze rovná tomu, které v sobě uchovává connection, redundantní check, ale JTS
                 res = self.cursor.execute("""SELECT * FROM `IRC_channels` WHERE `IRC_servers_serverID` = %s;""", (serverID_res,))
                 if res != 0:
                     result = self.cursor.fetchall()
-                    print("Channmessage_windowels for serverID={}: {}".format(serverID_res, result))
+                    print("For serverID = {}: {}".format(serverID_res, result))
 
                     channels = list()
+                    for resa in result:
+                        channelID = resa[0]
+                        channelName = resa[1]
+                        channelPassword = resa[2]
+                        lastOpened = resa[3]
+                        channel_serverID = resa[4]
 
-                    for res in result:
-                        channelID = res[0]
-                        channelName = res[1]
-                        channelPassword = res[2]
-                        lastOpened = res[3]
-                        channel_serverID = res[4]
                         temp_dict = {"channelName": channelName, "channelPassword": channelPassword}
                         channels.append(temp_dict)
-
 
                     for channel in channels:
                         if client.is_channel(channel["channelName"]):
@@ -432,6 +463,8 @@ class IRCSide(threading.Thread):
 
     def on_nicknameinuse(self, connection, event):
         print('[{}] NickNameInUse {}' .format(event.type.upper(), event.source))
+        current_nick = connection.get_nickname()
+        connection.nick("{0}_".format(current_nick))
 
     def a_lot_more_to_be_implemneted(self, connection, event):
         print("save mefrom this nightmare")

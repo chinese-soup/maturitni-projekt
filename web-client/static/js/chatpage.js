@@ -42,6 +42,8 @@ function onChatLoad()
 
     $("#button_send_message").off("click"); // kill the click event of the chat message, just to be sure
     $("#button_send_message").click({channelID:-1}, sendTextBoxCommand); // bind the click event of the Send button to sendTextBoxCommand and channelID of the status window
+
+    $("#input-msgline").off("keypress");
     $("#input-msgline").keypress({channelID:-1}, sendTextBoxCommand); // bind the same as above, but pressing enter key while the message textbox is focused
 
     setTimeout(ping, 1500); // set the initial timer to call the ping method in 1500 ms
@@ -117,14 +119,12 @@ function sendTextBoxCommand(event)
                     "serverID": result[9],
                     "channelID": result[10],
                     "messageID": result[11]
-*//
-function sendCommand(userID, commandType, argument1, argument2, argument3, serverID, channelID)
+*/
+function sendCommand(ioType, argument1, argument2, argument3, serverID, channelID)
 {
-
     var posting = $.post("http://{0}:5000/send_io".format(hostname),
     {
-       userID: userID,
-       commandType: commandType,
+       ioType: ioType,
        argument1: argument1,
        argument2: argument2,
        argument3: argument3,
@@ -151,8 +151,6 @@ function sendCommand(userID, commandType, argument1, argument2, argument3, serve
     {
         log("There was an error sending the textbox input.")
     })
-
-    }
 
 }
 
@@ -480,6 +478,7 @@ function switchCurrentChannel(toChannelID)
 
     $("#button_send_message").off("click");
     $("#button_send_message").click({channelID:toChannelID}, sendTextBoxCommand);
+    $("#input-msgline").off("keypress");
     $("#input-msgline").keypress({channelID:toChannelID}, sendTextBoxCommand);
 
     currently_visible_message_window = toChannelID;
@@ -534,6 +533,7 @@ function switchCurrentChannelEventStyle(event)
 
     $("#button_send_message").off("click");
     $("#button_send_message").click({channelID:toChannelID}, sendTextBoxCommand); // set the  click event with the new channelID
+    $("#input-msgline").off("keypress");
     $("#input-msgline").keypress({channelID:toChannelID}, sendTextBoxCommand); // set the keypress event with the new channelID
 
     log("Switching channel window to {0} ({1})".format(toChannelID, toChannelName));
@@ -617,14 +617,14 @@ function convertDBTimeToLocalTime(dbUTCtime)
 function getNicknameFromHostmask(hostmask)
 {
     var regexp = /(.*)\!(~{0,1}.*)\@(.*)/;
-    var asdf = hostmask.match(regexp)[1];
+    var asdf = hostmask.match(regexp);
     if(asdf == null)
     {
         return(hostmask);
     }
     else
     {
-        return(asdf);
+        return(asdf[1]);
     }
 
 }
@@ -874,6 +874,7 @@ function generateServerHTML(serverID)
             '<ul class="dropdown-menu dropdown-menu-right">' +
                 '<li><a class="join_another_channel_link" href="#">Join another channel&hellip;</a></li>' + /* join_channel_dialog(\'Freenode\',\'ID\' ); */
                 '<li><a class="disconnect_link">Disconnect</a></li>' + /* disconnect_dialog(\'Freenode\', \'ID\');*/
+                '<li><a class="connect_link">Connect</a></li>' + /* disconnect_dialog(\'Freenode\', \'ID\');*/
                 '<li role="separator" class="divider"></li>' +
                 '<li><a class="remove_server_link"><i class="icon-remove"></i> Remove this server</a></li>' +
                 '<li><a class="edit_server_link"><i class="icon-edit"></i> Edit</a></li>' +
@@ -1014,7 +1015,8 @@ function loadServers()
                 //$(".channel_list #server_{0} .dropdown .dropdown-menu .disconnect_link".format(serverID)).on("click", {serverName: serverName, serverID: serverID,  });
                 //$(".channel_list #server_{0} .dropdown .dropdown-menu .remove_server_link".format(serverID)).on("click", remove_server_dialog(serverName, serverID));
                 $(".channel_list #server_{0} .dropdown .dropdown-menu .edit_server_link".format(serverID)).click({serverName:serverName, serverID:serverID, isAnEdit: true}, edit_server);
-                $(".channel_list #server_{0} .dropdown .dropdown-menu .disconnect_link".format(serverID)).click({serverName:serverName, serverID:serverID}, disconnect_server);
+                $(".channel_list #server_{0} .dropdown .dropdown-menu .disconnect_link".format(serverID)).click({serverName:serverName, serverID:serverID, connect:false}, disconnect_server);
+                $(".channel_list #server_{0} .dropdown .dropdown-menu .connect_link".format(serverID)).click({serverName:serverName, serverID:serverID, connect:true}, disconnect_server);
                 $(".channel_list #server_{0} .dropdown .dropdown-menu .join_another_channel_link".format(serverID)).click({serverName:serverName, serverID:serverID}, join_channel_dialog);
                 $(".channel_list #server_{0} .network_name_link".format(serverID)).click({channelID:-1,
                 channelName:"Status window", clickedServerID:serverID, clickedServerName:serverName},
@@ -1095,8 +1097,16 @@ function disconnect_server(event)
 {
     serverName = event.data.serverName;
     serverID = event.data.serverID;
+    connect = event.data.connect;
     channelID = -1;
-
+    if(connect == true)
+    {
+        sendCommand("CONNECT_SERVER", "", "", "", serverID, channelID);
+    }
+    else
+    {
+        sendCommand("DISCONNECT_SERVER", "", "", "", serverID, channelID);
+    }
 }
 
 /*toggle_center_column(\'edit_server\');*/
