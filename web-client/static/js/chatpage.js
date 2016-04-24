@@ -288,11 +288,11 @@ function getNewMessages()
                    if(data["reason"] == "listing_new_messages")
                    {
                         var messages = data["message"];
-                        if(currently_visible_message_window != channelID)
+                        if(currently_visible_message_window != channelID && currently_visible_message_window != -1)
                         {
-                            $("#channel_{0} .channel_item_active_msg_count".format(channelID)).show(); // show new message count in the channel list
-                            var current_count = parseInt($("#channel_{0} .channel_item_active_msg_count".format(channelID)).text()); // get the current_count
-                            $("#channel_{0} .channel_item_active_msg_count".format(channelID)).text("{0}".format(current_count + messages.length)); // set the new message count in the channel list
+                            $("#channel_{0}".format(channelID)).find(".channel_item_active_msg_count").show(); // show new message count in the channel list
+                            var current_count = parseInt($("#channel_{0}".format(channelID)).find(".channel_item_active_msg_count").text()); // get the current_count
+                            $("#channel_{0}".format(channelID)).find(".channel_item_active_msg_count").text("{0}".format(current_count + messages.length)); // set the new message count in the channel list
                         }
 
                         for (var i=0; i < messages.length; i++)
@@ -527,11 +527,16 @@ function linkifyMessage(messageBody)
 {
     var regexp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
     var image_url = "";
+    var youtube_url = "";
     messageBody = messageBody.replace(regexp, function(url)
     {
         if(global_settings["show_image_previews"] == true)
         {
             image_url = url;
+        }
+        if(global_settings["show_video_previews"] == true)
+        {
+            youtube_url = url;
         }
         return("<a href=\"{0}\">{0}</a>".format(url));
 
@@ -541,6 +546,21 @@ function linkifyMessage(messageBody)
         if(image_url.endsWith(".png") || image_url.endsWith(".jpg") || image_url.endsWith(".gif") || image_url.endsWith(".jpeg"))
         {
             messageBody = messageBody + "<span class=\"message-image-preview\"><a href=\"#\" onclick=\"preview_images('{0}');\"><img alt=\"Image preview\" title=\"Image\" src=\"{0}\" target=\"_blank\"></a></span>".format(image_url);
+        }
+    }
+    if(youtube_url != "")
+    {
+
+        /* http://stackoverflow.com/questions/3452546/javascript-regex-how-to-get-youtube-video-id-from-url */
+        var regExp = /.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        var match = youtube_url.match(regExp);
+        if (match && match[2].length == 11)
+        {
+            messageBody = messageBody + '<iframe width="560" height="315" src="https://www.youtube.com/embed/{0}?rel=0" frameborder="0" allowfullscreen></iframe>'.format(match[2]);
+        }
+        else
+        {
+
         }
     }
     return(messageBody);
@@ -572,18 +592,16 @@ function switchCurrentChannelEventStyle(event)
     $("#channel_{0}".format(toChannelID)).toggleClass("channel_item_focused", true);
 
     // change header room name TODO: Fix
-    $(".header_room_name").html("{0} <small>({1} @ {2})</small>".format(toChannelName, toChannelID, "FIXME"))
-
-
+    $(".header_room_name").html("{0} <small>({1})</small>".format(toChannelName, toChannelID))
 
     // save channelID to a variable
     currently_visible_message_window = toChannelID;
 
     // hide NEW MESSAGES count span
-    $("#channel_{0} .channel_item_active_msg_count".format(toChannelID)).hide();
+    $("#channel_{0}".format(toChannelID)).find(".channel_item_active_msg_count").hide();
 
     // reset the value
-    $("#channel_{0} .channel_item_active_msg_count".format(toChannelID)).text("0"); // set the new message count in the channel list
+    $("#channel_{0}".format(toChannelID)).find(".channel_item_active_msg_count").text("0"); // set the new message count in the channel list
 
 
     if(toChannelID == -1 && event.data.clickedServerID != null)
@@ -622,7 +640,7 @@ function convertDBTimeToLocalTime(dbUTCtime)
     var date = new Date(dbUTCtime);
     var date_now = new Date();
 
-    if(date.toLocaleDateString() ==  date_now.toLocaleDateString()) // zkontrolujeme, jestli daný čas je dnes, pokud ne, vrátíme i datum
+    if(date.toLocaleDateString() == date_now.toLocaleDateString()) // zkontrolujeme, jestli daný čas je dnes, pokud ne, vrátíme i datum
     {
         var local_date = date.toLocaleTimeString();
         if(global_settings["show_seconds"] == false)
@@ -634,7 +652,6 @@ function convertDBTimeToLocalTime(dbUTCtime)
     {
         var local_date = date.toLocaleString();
     }
-
 
     return(local_date);
 }
@@ -738,7 +755,6 @@ function getBacklogForChannel(channelID, limit)
         {
            if(data["reason"] == "listing_messages")
            {
-                log(data["message"]);
                 console.log(data["message"]);
 
                 var messages = data["message"];
@@ -925,7 +941,7 @@ function generateServerHTML(serverID)
 
 function generateChannelHTML(channelID)
 {
-    var html =  '<li id="channel_{0}" class="left_channels_flex_item channel_item"><div class="channel_item_active_msg_count"></div>'.format(channelID) +
+    var html =  '<li id="channel_{0}" class="left_channels_flex_item channel_item"><div class="channel_item_active_msg_count">0</div>'.format(channelID) +
                 '   <a href="#" class="channelName">#channelName</a>' +
                 '</li>';
     return(html);
@@ -945,7 +961,6 @@ function join_channel_dialog(event)
     $("#channel-join-form #channel_to_join_submit_button").one("click", {serverName:serverName, serverID:serverID}, join_channel);
     console.log("join_channel_dialog();");
 }
-
 
 /* actually call to join the channel */
 function join_channel(event)

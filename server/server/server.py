@@ -90,7 +90,17 @@ class IRCSide(threading.Thread):
                         if RAW_MATCH != None:
                             for i in self.server_list_server_objects: # loop through all the server instances this user has
                                 if i.serverID == data["serverID"]:
-                                    i.send_raw(str(RAW_MATCH.group(1)))
+                                    RAW_MESSAGE = str(RAW_MATCH.group(1))
+                                    i.send_raw()
+                                    res = cursor_pull.execute("""INSERT INTO `IRC_other_messages` (IRC_servers_serverID,
+                                                        fromHostmask,
+                                                        messageBody,
+                                                        commandType,
+                                                        timeReceived)
+                                                        values (%s, %s, %s, %s, %s)""", (i.serverID, server_info["serverName"],
+                                                        "-> You sent a RAW message to {0}: {1}...".format(server_info["serverName"], RAW_MESSAGE), "CLOUDCHAT_INFO", datetime.datetime.utcnow()))
+                                    db_pull.commit()
+
 
                     elif message[0] != "/":
                         print("Not command.")
@@ -195,7 +205,7 @@ class IRCSide(threading.Thread):
                                                 messageBody,
                                                 commandType,
                                                 timeReceived)
-                                                values (%s, %s, %s, %s, %s)""", (i.serverID, server_info["serverName"],
+                                                values (%s, %s, %s, %s, %s)""", (server_info["serverID"], server_info["serverName"],
                                                 "Attempting to connect to {0}...".format(server_info["serverName"]), "CLOUDCHAT_INFO", datetime.datetime.utcnow()))
                                 db_pull.commit()
 

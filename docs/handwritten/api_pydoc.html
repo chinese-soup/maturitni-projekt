@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module api</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>api</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/unko/code/maturitni-projekt/web-client/api/api.py">/home/unko/code/maturitni-projekt/web-client/api/api.py</a></font></td></tr></table>
+    <p><tt>#&nbsp;TODO:&nbsp;<a href="http://flask.pocoo.org/docs/0.10/patterns/packages/">http://flask.pocoo.org/docs/0.10/patterns/packages/</a><br>
+#&nbsp;TODO2:&nbsp;<a href="http://flask.pocoo.org/docs/0.10/deploying/mod_wsgi/">http://flask.pocoo.org/docs/0.10/deploying/mod_wsgi/</a><br>
+#&nbsp;TODO3:&nbsp;Check&nbsp;for&nbsp;invalid&nbsp;data&nbsp;in&nbsp;forms</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="MySQLdb.html">MySQLdb</a><br>
+</td><td width="25%" valign=top><a href="datetime.html">datetime</a><br>
+</td><td width="25%" valign=top><a href="re.html">re</a><br>
+</td><td width="25%" valign=top><a href="time.html">time</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-add_channel"><strong>add_channel</strong></a>()</dt><dd><tt>Routa&nbsp;called&nbsp;upon&nbsp;joining&nbsp;(adding)&nbsp;a&nbsp;new&nbsp;channel<br>
+TODO:&nbsp;MOVE&nbsp;TO&nbsp;SERVER&nbsp;SIDE?<br>
+:return:&nbsp;channel_added_sucessfully&nbsp;/&nbsp;channel_was_not_added&nbsp;/&nbsp;not_loggedin</tt></dd></dl>
+ <dl><dt><a name="-add_new_server_settings"><strong>add_new_server_settings</strong></a>()</dt><dd><tt>Called&nbsp;upon&nbsp;saving&nbsp;a&nbsp;new&nbsp;IRC&nbsp;server&nbsp;in&nbsp;the&nbsp;add&nbsp;server&nbsp;dialog.</tt></dd></dl>
+ <dl><dt><a name="-after_request"><strong>after_request</strong></a>(response)</dt><dd><tt>Adds&nbsp;CORS&nbsp;allowing&nbsp;headers&nbsp;to&nbsp;the&nbsp;response&nbsp;before&nbsp;sending&nbsp;it&nbsp;to&nbsp;the&nbsp;client.<br>
+:param&nbsp;response:&nbsp;Flask&nbsp;response&nbsp;object<br>
+:return:&nbsp;response:&nbsp;Flask&nbsp;response&nbsp;object&nbsp;with&nbsp;added&nbsp;CORS&nbsp;allowing&nbsp;headers</tt></dd></dl>
+ <dl><dt><a name="-check_if_serverID_belongs_to_userID"><strong>check_if_serverID_belongs_to_userID</strong></a>(userID, serverID)</dt><dd><tt>Checks&nbsp;if&nbsp;a&nbsp;given&nbsp;serverID&nbsp;belongs&nbsp;to&nbsp;a&nbsp;given&nbsp;userID&nbsp;and&nbsp;returns&nbsp;True/False<br>
+:param&nbsp;userID:<br>
+:param&nbsp;serverID:<br>
+:return:</tt></dd></dl>
+ <dl><dt><a name="-check_session"><strong>check_session</strong></a>()</dt><dd><tt>Route&nbsp;called&nbsp;upon&nbsp;loading&nbsp;login.html&nbsp;to&nbsp;check&nbsp;if&nbsp;the&nbsp;API&nbsp;is&nbsp;alive&nbsp;and&nbsp;if&nbsp;the&nbsp;user&nbsp;is&nbsp;logged&nbsp;in.<br>
+Used&nbsp;to&nbsp;replace&nbsp;the&nbsp;login&nbsp;form&nbsp;on&nbsp;login.html&nbsp;with&nbsp;a&nbsp;button&nbsp;to&nbsp;continue&nbsp;to&nbsp;the&nbsp;main&nbsp;app&nbsp;site.<br>
+Used&nbsp;to&nbsp;periodically&nbsp;check&nbsp;if&nbsp;the&nbsp;user&nbsp;is&nbsp;still&nbsp;logged&nbsp;in&nbsp;and&nbsp;does&nbsp;not&nbsp;need&nbsp;to&nbsp;be&nbsp;redirected&nbsp;away<br>
+from&nbsp;chat.html</tt></dd></dl>
+ <dl><dt><a name="-edit_server_settings"><strong>edit_server_settings</strong></a>()</dt><dd><tt>Called&nbsp;to&nbsp;prefill&nbsp;the&nbsp;inputs&nbsp;when&nbsp;user&nbsp;edits&nbsp;a&nbsp;server<br>
+:return:&nbsp;g</tt></dd></dl>
+ <dl><dt><a name="-error"><strong>error</strong></a>(_status, _reason, _message)</dt><dd><tt>:param&nbsp;_status:&nbsp;Status&nbsp;code&nbsp;(ok/error)<br>
+:param&nbsp;_reason:&nbsp;A&nbsp;one&nbsp;word&nbsp;reason&nbsp;used&nbsp;in&nbsp;the&nbsp;chat.html&nbsp;javascript&nbsp;logic<br>
+:param&nbsp;_message:&nbsp;A&nbsp;human-like&nbsp;message&nbsp;describing&nbsp;what&nbsp;went&nbsp;wrong&nbsp;(right).<br>
+:return:</tt></dd></dl>
+ <dl><dt><a name="-getDB"><strong>getDB</strong></a>()</dt><dd><tt>&nbsp;&nbsp;&nbsp;&nbsp;Connects&nbsp;to&nbsp;the&nbsp;MySQL&nbsp;database&nbsp;and&nbsp;returns&nbsp;an&nbsp;SQL&nbsp;connection&nbsp;object<br>
+:return:&nbsp;MySQLdb.connections.Connection</tt></dd></dl>
+ <dl><dt><a name="-get_global_settings"><strong>get_global_settings</strong></a>()</dt><dd><tt>Route&nbsp;called&nbsp;to&nbsp;get&nbsp;the&nbsp;current&nbsp;global&nbsp;settings&nbsp;for&nbsp;when&nbsp;a&nbsp;user&nbsp;opens&nbsp;the&nbsp;settings&nbsp;dialog</tt></dd></dl>
+ <dl><dt><a name="-get_messages"><strong>get_messages</strong></a>()</dt><dd><tt>Route&nbsp;called&nbsp;to&nbsp;get&nbsp;new&nbsp;messages&nbsp;from&nbsp;a&nbsp;channel&nbsp;since&nbsp;time<br>
+Route&nbsp;called&nbsp;to&nbsp;get&nbsp;old&nbsp;messages&nbsp;from&nbsp;a&nbsp;channel&nbsp;to&nbsp;fill&nbsp;the&nbsp;backlog<br>
+:param&nbsp;backlog:&nbsp;true/false<br>
+:param&nbsp;channelID:&nbsp;which&nbsp;channel&nbsp;should&nbsp;we&nbsp;get&nbsp;the&nbsp;messages&nbsp;for<br>
+:param&nbsp;messageLimit:&nbsp;change&nbsp;the&nbsp;amount&nbsp;of&nbsp;messages&nbsp;if&nbsp;loading&nbsp;backlog<br>
+:return:</tt></dd></dl>
+ <dl><dt><a name="-get_server_list"><strong>get_server_list</strong></a>()</dt><dd><tt>Route&nbsp;called&nbsp;upon&nbsp;loading&nbsp;chat.html,&nbsp;adding,&nbsp;removing&nbsp;and&nbsp;editing&nbsp;servers.<br>
+:return:</tt></dd></dl>
+ <dl><dt><a name="-get_server_messages"><strong>get_server_messages</strong></a>()</dt><dd><tt>Route&nbsp;called&nbsp;to&nbsp;get&nbsp;new&nbsp;server&nbsp;messages&nbsp;for&nbsp;all&nbsp;servers&nbsp;since&nbsp;time<br>
+Route&nbsp;called&nbsp;to&nbsp;get&nbsp;old&nbsp;server&nbsp;messages&nbsp;for&nbsp;all&nbsp;serversto&nbsp;fill&nbsp;the&nbsp;backlog<br>
+:return:</tt></dd></dl>
+ <dl><dt><a name="-get_server_settings"><strong>get_server_settings</strong></a>()</dt><dd><tt>Route&nbsp;called&nbsp;to&nbsp;prefill&nbsp;the&nbsp;inputs&nbsp;when&nbsp;a&nbsp;user&nbsp;edits&nbsp;a&nbsp;server.<br>
+:return:&nbsp;listing_server_info&nbsp;/&nbsp;not_loggedin</tt></dd></dl>
+ <dl><dt><a name="-get_userID_if_loggedin"><strong>get_userID_if_loggedin</strong></a>(request)</dt><dd><tt>This&nbsp;function&nbsp;checks&nbsp;for&nbsp;a&nbsp;sessionID&nbsp;in&nbsp;the&nbsp;database&nbsp;and&nbsp;joins&nbsp;it&nbsp;with&nbsp;the&nbsp;userID&nbsp;of&nbsp;a&nbsp;user<br>
+this&nbsp;is&nbsp;used&nbsp;to&nbsp;check&nbsp;if&nbsp;the&nbsp;user&nbsp;is&nbsp;allowed&nbsp;to&nbsp;request&nbsp;the&nbsp;data&nbsp;he's&nbsp;requesting<br>
+aka&nbsp;if&nbsp;he's&nbsp;not&nbsp;trying&nbsp;to&nbsp;access&nbsp;data&nbsp;of&nbsp;a&nbsp;user&nbsp;with&nbsp;a&nbsp;different&nbsp;ID.<br>
+&nbsp;<br>
+:param&nbsp;request:&nbsp;Flask&nbsp;request&nbsp;object<br>
+:return:&nbsp;userID&nbsp;if&nbsp;the&nbsp;user&nbsp;is&nbsp;loggedIn&nbsp;/&nbsp;False&nbsp;if&nbsp;the&nbsp;user&nbsp;is&nbsp;not&nbsp;logged&nbsp;in&nbsp;or&nbsp;an&nbsp;error&nbsp;occurred&nbsp;while&nbsp;trying&nbsp;to&nbsp;get&nbsp;the&nbsp;lgged&nbsp;in&nbsp;info&nbsp;from&nbsp;the&nbsp;database</tt></dd></dl>
+ <dl><dt><a name="-get_userIP"><strong>get_userIP</strong></a>(request)</dt><dd><tt>Gets&nbsp;the&nbsp;source&nbsp;IP&nbsp;from&nbsp;a&nbsp;request.<br>
+:param&nbsp;request:<br>
+:return:</tt></dd></dl>
+ <dl><dt><a name="-hello_world"><strong>hello_world</strong></a>()</dt><dd><tt>Defaultní&nbsp;routa</tt></dd></dl>
+ <dl><dt><a name="-is_email_valid"><strong>is_email_valid</strong></a>(email_to_check)</dt><dd><tt>Checks&nbsp;if&nbsp;a&nbsp;given&nbsp;email&nbsp;is&nbsp;valid</tt></dd></dl>
+ <dl><dt><a name="-login"><strong>login</strong></a>()</dt><dd><tt>Route&nbsp;called&nbsp;upon&nbsp;clicking&nbsp;Login&nbsp;on&nbsp;login.html</tt></dd></dl>
+ <dl><dt><a name="-logout"><strong>logout</strong></a>()</dt><dd><tt>User&nbsp;logout&nbsp;route</tt></dd></dl>
+ <dl><dt><a name="-register"><strong>register</strong></a>()</dt><dd><tt>#&nbsp;routa&nbsp;volaná&nbsp;při&nbsp;registraci&nbsp;na&nbsp;index.html</tt></dd></dl>
+ <dl><dt><a name="-send_io"><strong>send_io</strong></a>()</dt><dd><tt>Route&nbsp;called&nbsp;to&nbsp;add&nbsp;an&nbsp;IO&nbsp;request&nbsp;to&nbsp;the&nbsp;database&nbsp;for&nbsp;the&nbsp;server&nbsp;backend&nbsp;to&nbsp;process.<br>
+:return:</tt></dd></dl>
+ <dl><dt><a name="-send_textbox_io"><strong>send_textbox_io</strong></a>()</dt><dd><tt>Route&nbsp;called&nbsp;to&nbsp;add&nbsp;an&nbsp;IO&nbsp;request&nbsp;invoked&nbsp;from&nbsp;the&nbsp;textbox&nbsp;to&nbsp;the&nbsp;database&nbsp;for&nbsp;the&nbsp;server&nbsp;backend&nbsp;to&nbsp;process.<br>
+:return:</tt></dd></dl>
+ <dl><dt><a name="-set_global_settings"><strong>set_global_settings</strong></a>()</dt><dd><tt>Route&nbsp;called&nbsp;upon&nbsp;clicking&nbsp;the&nbsp;save&nbsp;button&nbsp;in&nbsp;the&nbsp;global&nbsp;settings&nbsp;dialog.<br>
+:return:&nbsp;global_settings_saved&nbsp;/&nbsp;global_settings_not_saved&nbsp;/&nbsp;not_loggedin</tt></dd></dl>
+ <dl><dt><a name="-upon_login"><strong>upon_login</strong></a>()</dt><dd><tt>Route&nbsp;called&nbsp;upon&nbsp;loading&nbsp;chat.html.<br>
+Returns&nbsp;the&nbsp;email&nbsp;of&nbsp;the&nbsp;user&nbsp;if&nbsp;they&nbsp;are&nbsp;logged&nbsp;in.<br>
+Returns&nbsp;a&nbsp;not_loggedin&nbsp;response&nbsp;if&nbsp;the&nbsp;user&nbsp;is&nbsp;not&nbsp;logged&nbsp;in.</tt></dd></dl>
+ <dl><dt><a name="-urandom"><strong>urandom</strong></a>(...)</dt><dd><tt><a href="#-urandom">urandom</a>(n)&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Return&nbsp;n&nbsp;random&nbsp;bytes&nbsp;suitable&nbsp;for&nbsp;cryptographic&nbsp;use.</tt></dd></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>app</strong> = &lt;Flask 'api'&gt;<br>
+<strong>default_exceptions</strong> = {400: &lt;class 'werkzeug.exceptions.BadRequest'&gt;, 401: &lt;class 'werkzeug.exceptions.Unauthorized'&gt;, 403: &lt;class 'werkzeug.exceptions.Forbidden'&gt;, 404: &lt;class 'werkzeug.exceptions.NotFound'&gt;, 405: &lt;class 'werkzeug.exceptions.MethodNotAllowed'&gt;, 406: &lt;class 'werkzeug.exceptions.NotAcceptable'&gt;, 408: &lt;class 'werkzeug.exceptions.RequestTimeout'&gt;, 409: &lt;class 'werkzeug.exceptions.Conflict'&gt;, 410: &lt;class 'werkzeug.exceptions.Gone'&gt;, 411: &lt;class 'werkzeug.exceptions.LengthRequired'&gt;, ...}<br>
+<strong>request</strong> = &lt;LocalProxy unbound&gt;</td></tr></table>
+</body></html>

@@ -34,11 +34,10 @@ def _pull_thread():
     while(True):
         db_pull = getDB()
         cursor_pull = db_pull.cursor()
-        pull_result_code = cursor_pull.execute("""SELECT * FROM `IO_Table` WHERE `commandType` = 'NEW_SERVER';""", ())
+        pull_result_code = cursor_pull.execute("""SELECT * FROM `IO_Table` WHERE `commandType` = 'NEW_USER';""", ())
         pull_result = cursor_pull.fetchall()
         for result in pull_result:
             print(result)
-            #(1, 'TEXTBOX', 'AHOJ', '', '', None, 0, None, 1, 2, -1, 73)
             data = {
                 "userID": result[0],
                 "commandType": result[1],
@@ -58,9 +57,14 @@ def _pull_thread():
                 print("NEW USER, FAM")
                 message = data["argument1"]
                 userID = data["userID"]
-                _threads.append(threading.Thread(target=server.IRCSide, args=(userID,)))
-                _threads[-1:][0].start()
 
+                res = cursor_pull.execute("""DELETE FROM `IO_Table` WHERE `messageID` = %s;""", (data["messageID"],)) # delete the message we just processed
+                db_pull.commit() # HOWEVER IT ENDS, LET'S JUST DELETE THE MESSAGE
+
+                _threads.append(threading.Thread(target=server.IRCSide, args=(userID,)))
+                _threads[-1:][0].start() # start the new user thread (because it was created after the bouncer was already in place)
+        print("SLEEP MAIN.PY PULL: 2")
+        time.sleep(2)
 
 def start_pull_thread():
     threading.Thread(target=_pull_thread).start()
@@ -70,6 +74,8 @@ if __name__ == "__main__":
     aparser = argparse.ArgumentParser()
     aparser.add_argument("--config", "-c", help="Select an alternative config file.")
     args = aparser.parse_args()
+
+    start_pull_thread()
 
     db = getDB()
     cursor_pull = db.cursor()

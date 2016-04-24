@@ -56,6 +56,7 @@ Funkce jsou okomentované přímo v kódu.
 ## Část druhá: API endpoint
 API endpoint využívá knihovny Flask a je rozdělen na dvě části:
 První část s pomocnými utilitními funkcemi, které jsou v druhé části. 
+A druhá část s funkcemi, které se volají při vyvolání určitých Flask uRI a vrací JSON odpovědi na daný request (seznam vizte [zde](api_pydoc.html))
 
 ## Část třetí: Serverová (bouncer) část
 Serverová část se spouští souborem main.py ve složce server. Automaticky načte všechny uživatele v databázi a spustí pro každého jejich vlstní vlákno.

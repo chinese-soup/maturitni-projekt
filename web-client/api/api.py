@@ -312,7 +312,34 @@ def register():
         _result = cursor.execute("""INSERT INTO `Registered_users` (email, password, isActivated) values (%s, %s, %s);""", (_email, _hashed_password, 1),)
         db.commit()
 
-        if _result == 1:
+        if _result == 1: # if we succesfully registered
+            serverID_result = -1
+            userID_result = cursor.lastrowid
+            argument1 = ""
+            argument2 = ""
+            argument3 = ""
+            timeSent = None
+            processed = None
+            ioType = "NEW_USER"
+            channelID_result = -1
+
+            # add a request to start a new thread in the bouncer:
+
+            cursor.execute("""INSERT INTO `IO_Table` (Registered_users_userID,
+                        commandType,
+                        argument1,
+                        argument2,
+                        argument3,
+                        timeSent,
+                        processed,
+                        fromClient,
+                        serverID,
+                        channelID)
+
+                        values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+            """, (userID_result, ioType, argument1, argument2, argument3, timeSent, processed, True, serverID_result, channelID_result))
+            db.commit()
+
             return jsonify(status="ok", reason="reg_success", message="Your account was sucessfully registered. You can now login.")
         else:
             return jsonify(status="error", reason="insert_failed", message="Account registration failed.")
@@ -949,7 +976,7 @@ def send_io():
                   channelID))
             db.commit()
             db.close()
-            response = {"status": "ok", "reason": "io_sent", "message": "DONE, I GUESS?"}
+            response = {"status": "ok", "reason": "io_sent", "message": "Request sent. {0} | {1} | {2} | {3}".format(ioType, argument1, argument2, argument3)}
             return jsonify(response)
 
 @app.route("/send_textbox_io", methods=["POST"])
