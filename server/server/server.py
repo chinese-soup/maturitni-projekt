@@ -368,17 +368,47 @@ class IRCSide(threading.Thread):
         self.client.add_global_handler("currenttopic", self.on_topic_info)
         self.client.add_global_handler("topicinfo", self.on_topic_info)
 
-
+        self.client.add_global_handler("mode", self.on_mode)
+        self.client.add_global_handler("kick", self.on_pubmsg)
 
         self.client.add_global_handler("disconnect", self.on_disconnect)
         self.client.add_global_handler("nicknameinuse", self.on_nicknameinuse)
         self.client.add_global_handler("pubmsg", self.on_pubmsg)
         self.client.add_global_handler("privmsg", self.on_privmsg)
+
         self.client.add_global_handler("join", self.on_pubmsg)
         self.client.add_global_handler("part", self.on_pubmsg)
         self.client.add_global_handler("quit", self.on_pubmsg)
         self.client.add_global_handler("nick", self.on_nick)
         self.client.add_global_handler("action", self.on_pubmsg)
+
+    def on_mode(self, connection, event):
+        print("ARGUMENTS ON MODE:", event.arguments)
+
+
+    def on_kick(self, connection, event):
+        print("ARGUMENTS ON_KICK:", event.arguments)
+
+        res = self.cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s AND `serverID` = %s;""", (self.userID, connection.serverID))
+        if res != 0:
+            result = self.cursor.fetchall()
+
+            serverID_res = int(result[0][0])
+
+            if serverID_res == int(connection.serverID):
+                res = self.cursor.execute("""SELECT * FROM `IRC_channels` WHERE `IRC_servers_serverID` = %s AND `channelName` = %s;""", (serverID_res, event.target))
+                if res != 0:
+                    result = self.cursor.fetchall()
+
+                    channelID_res = int(result[0][0])
+
+                    res = self.cursor.execute("""INSERT INTO `IRC_channel_messages` (IRC_channels_channelID,
+                    fromHostmask,
+                    messageBody,
+                    commandType,
+                    timeReceived)
+                    values (%s, %s, %s, %s, %s)""", (channelID_res, event.source, message, event.type.upper(), datetime.datetime.utcnow()))
+                    self.db.commit()
 
 
     def on_your_host(self, connection, event):
@@ -553,10 +583,6 @@ class IRCSide(threading.Thread):
                 else:
                     print("WOAH")
 
-                    #print("Servers??? {0}".format(result))
-                    #res2 = self.cursor.execute("""select * from `IRC_channels` where `IRC_servers_serverID` = 1;""", (self.userID,))
-
-                    #connection.privmsg(event.target, str(event.__dict__))
     def on_privmsg(self, connection, event):
         """
             Fired upon receiving a private message.
@@ -597,7 +623,7 @@ class IRCSide(threading.Thread):
         channelName_src = ""
         nicknames_list = ""
 
-        if(event.arguments[0] == "=" or event.arguments[0] == "@"):
+        if(event.arguments[0] == "=" or event.arguments[0] == "@" or event.arguments[0] == "*"):
             channelName_src = event.arguments[1]
             nicknames_list = event.arguments[2]
             final = "NAMES in {0}: {1}".format(channelName_src, nicknames_list)

@@ -344,6 +344,18 @@ function getNewMessages()
                                 );
 
                             }
+                            else if(messages[i]["commandType"] == "KICK") // pokud se jedná /me zprávu
+                            {
+                                  addActionMessage(
+                                    messages[i]["messageID"],
+                                    convertDBTimeToLocalTime(messages[i]["timeReceived"]),
+                                    getNicknameFromHostmask(messages[i]["fromHostmask"]),
+                                    "ok",
+                                    "has kicked {0} from this channel.".format(messages[i]["messageBody"]),
+                                    messages[i]["IRC_channels_channelID"]
+                                );
+
+                            }
                             last_message_id[messages[i]["IRC_channels_channelID"]] = messages[i]["messageID"];
 
 
@@ -829,6 +841,18 @@ function getBacklogForChannel(channelID, limit)
                             messages[i]["fromHostmask"],
                             "ok",
                             messages[i]["messageBody"],
+                            messages[i]["IRC_channels_channelID"]
+                        );
+
+                    }
+                    else if(messages[i]["commandType"] == "KICK") // pokud se jedná /me zprávu
+                    {
+                         addActionMessage(
+                            messages[i]["messageID"],
+                            convertDBTimeToLocalTime(messages[i]["timeReceived"]),
+                            getNicknameFromHostmask(messages[i]["fromHostmask"]),
+                            "ok",
+                            "has kicked {0} from this channel.".format(messages[i]["messageBody"]),
                             messages[i]["IRC_channels_channelID"]
                         );
 

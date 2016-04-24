@@ -643,7 +643,7 @@ def edit_server_settings():
 
             db.commit()
             if res == 1:
-                response = {"status": "ok", "reason": "server_settings_edited_successfully", "message": "Server settings edited successfully.<br>Sending reconnect request."}
+                response = {"status": "ok", "reason": "server_settings_edited_successfully", "message": "Server settings edited successfully.<br>Please reconnect for the new settings to apply."}
             else:
                 response = {"status": "ok", "reason": "server_settings_not_edited", "message": "Server settings were not updated."} # error?
 
@@ -671,9 +671,9 @@ def add_new_server_settings():
                                 values(%s, %s, %s, %s, %s, %s, %s, -1, 0, 0);""",
                              (userID, klice["serverName"], klice["nickname"], klice["serverPassword"], klice["serverIP"], klice["serverPort"], klice["useSSL"]))
         db.commit()
-
+        
         if res == 1:
-            response = {"status": "ok", "reason": "server_settings_edited_successfully", "message": "Server settings edited successfully.<br>Sending reconnect request."}
+            response = {"status": "ok", "reason": "server_settings_edited_successfully", "message": "Server settings edited successfully.<br>Please connect for the new settings to apply.."}
         else:
             response = {"status": "ok", "reason": "server_settings_not_edited", "message": "Server settings were not updated."} # error?
 

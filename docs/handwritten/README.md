@@ -56,7 +56,7 @@ Funkce jsou okomentované přímo v kódu.
 ## Část druhá: API endpoint
 API endpoint využívá knihovny Flask a je rozdělen na dvě části:
 První část s pomocnými utilitními funkcemi, které jsou v druhé části. 
-A druhá část s funkcemi, které se volají při vyvolání určitých Flask uRI a vrací JSON odpovědi na daný request (seznam vizte [zde](api_pydoc.html))
+A druhá část s funkcemi, které se volají při vyvolání určitých Flask URI a vrací JSON odpovědi na daný request (seznam vizte [zde](api_pydoc.html))
 
 ## Část třetí: Serverová (bouncer) část
 Serverová část se spouští souborem main.py ve složce server. Automaticky načte všechny uživatele v databázi a spustí pro každého jejich vlstní vlákno.
@@ -64,7 +64,7 @@ Toto vlákno se dále dělí na hlavní vlákno, kde probíhá komunikace s IRC 
 
 
 ## Návod k instalaci
-Tento návod je pro systém Debian, ovšem podobné principy a názvy balíků jsou podobné/stejné i na jiných distribucích Linuxu.
+Tento návod je určen pro systém Debian, ovšem principy a názvy balíků jsou podobné/stejné i na jiných distribucích Linuxu.
 ### 1. Instalace software
 V prvním kroku je třeba nainstalovat HTTP server apache spolu s módem WGSI pro vyvolávání API části ve Flasku a databázový server a klient MariaDB (případně MySQL)
 Dále budeme potřebovat pip3, abychom nainstalovali některé další závislosti jak pro API část, tak i pro serverovou část.
