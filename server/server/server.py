@@ -85,6 +85,12 @@ class IRCSide(threading.Thread):
                     message = data["argument1"]
                     if message[0] == "/" : # if the first character is a slash the user is trying to exec a command
                         print("Command.")
+                        RAW_MATCH = re.match("/raw (.*)", message.lower()) # RAW MATCH
+
+                        if RAW_MATCH != None:
+                            for i in self.server_list_server_objects: # loop through all the server instances this user has
+                                if i.serverID == data["serverID"]:
+                                    i.send_raw(str(RAW_MATCH.group(1)))
 
                     elif message[0] != "/":
                         print("Not command.")
@@ -124,7 +130,7 @@ class IRCSide(threading.Thread):
 
                                     #TOD: FIX HARDCODED STUFF
                                     #TODO: Change booleanm processed=TRUE
-                elif data["commandType"] == "CONNECT_SERVER": # CONNECTING A NEW SERVER THAT HAS NOT BEEN ADDED TO THE LIST YET
+                elif data["commandType"] == "CONNECT_SERVER":
                     reason = data["argument1"] # should we add it to the list of servers first or is it already loaded?
                     userID = data["userID"]
                     serverID = data["serverID"]
@@ -132,10 +138,9 @@ class IRCSide(threading.Thread):
                     isAlreadyConnected = None
                     #test to see if the server is already in the list
                     for i in self.server_list_server_objects: # loop through all the server instances this user has
-                        if(i.serverID == data["serverID"]):
+                        if(i.serverID == data["serverID"]): # CONNECTING A  SERVER THAT HAS BEEN ADDED TO THE LIST ALREADY!!!
                             isAlreadyConnected = i.is_connected()
                             if(isAlreadyConnected == False): # if the server is in the server list back when the bouncer started, but it is not connected (i.e. disconnected after a while)
-
                                 res = cursor_pull.execute("""SELECT * FROM `IRC_servers` WHERE `serverID` = %s;""", (i.serverID,)) # get the IRC channel based on the ID
                                 if res != 0:
                                     result = cursor_pull.fetchall()
@@ -159,11 +164,39 @@ class IRCSide(threading.Thread):
                                                         "Attempting to connect to {0}...".format(server_info["serverName"]), "CLOUDCHAT_INFO", datetime.datetime.utcnow()))
                                         db_pull.commit()
 
-                                #connect(server=_server, port=_port, nickname=_nickname, password=None, username=None, ircname=None
                         else:
-                            pass
-                    if isAlreadyConnected == None:
+                            pass # nothing to disconnect, to be honest
+                    if isAlreadyConnected == None: # CONNECTING A NEW SERVER THAT HAS  BEEN ADDED TO THE SERVER-SIDE LIST (server_list_server_objects) YET !!!!
                         print("Ještě neni v seznamu.")
+
+                        temp_server_connection_object = self.client.server()
+                        temp_server_connection_object.serverID = _serverID # důležité: přidává serverID z databáze jako atribut do connection, které se používá při každém global_handleru definovaném o pář řádků výše
+                        print("temp_serverID:", temp_server_connection_object.serverID)
+                        self.server_list_server_objects.append(temp_server_connection_object)
+                        res = cursor_pull.execute("""SELECT * FROM `IRC_servers` WHERE `serverID` = %s;""", (i.serverID,)) # get the IRC channel based on the ID
+
+                        if res != 0:
+                            result = cursor_pull.fetchall()
+                            print("PREJ JO" , result)
+                            server_info = {"nickname": result[0][2],
+                                                "userID": result[0][5],
+                                                "serverName": result[0][6],
+                                                "serverIP": result[0][7],
+                                                "serverPort": result[0][8],
+                                                "useSSL": result[0][9]}
+                            if(server_info["userID"] == userID): # if the server corresponds to the userID we have been given (this should never happen, but just to be sure)
+
+                                temp_server_connection_object.connect(server=server_info["serverIP"], port=int(server_info["serverPort"]), nickname=server_info["nickname"],
+                                          password=None, username=server_info["nickname"], ircname=server_info["nickname"])
+                                res = cursor_pull.execute("""INSERT INTO `IRC_other_messages` (IRC_servers_serverID,
+                                                fromHostmask,
+                                                messageBody,
+                                                commandType,
+                                                timeReceived)
+                                                values (%s, %s, %s, %s, %s)""", (i.serverID, server_info["serverName"],
+                                                "Attempting to connect to {0}...".format(server_info["serverName"]), "CLOUDCHAT_INFO", datetime.datetime.utcnow()))
+                                db_pull.commit()
+
 
                 elif data["commandType"] == "DISCONNECT_SERVER": # CONNECTING A NEW SERVER THAT HAS NOT BEEN ADDED TO THE LIST YET
                     reason = data["argument1"] # should we add it to the list of servers first or is it already loaded?
