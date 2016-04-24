@@ -136,7 +136,7 @@ function sendCommand(ioType, argument1, argument2, argument3, serverID, channelI
     posting.done(function(data)
     {
         console.log(data);
-        log(data);
+        log(data["message"]);
         if(data["reason"] == "textbox_io_server_window_inserted" || data["reason"] == "textbox_io_channel_window_inserted")
         {
 
@@ -288,6 +288,12 @@ function getNewMessages()
                    if(data["reason"] == "listing_new_messages")
                    {
                         var messages = data["message"];
+                        if(currently_visible_message_window != channelID)
+                        {
+                            $("#channel_{0} .channel_item_active_msg_count".format(channelID)).show(); // show new message count in the channel list
+                            var current_count = parseInt($("#channel_{0} .channel_item_active_msg_count".format(channelID)).text()); // get the current_count
+                            $("#channel_{0} .channel_item_active_msg_count".format(channelID)).text("{0}".format(current_count + messages.length)); // set the new message count in the channel list
+                        }
 
                         for (var i=0; i < messages.length; i++)
                         {
@@ -576,6 +582,10 @@ function switchCurrentChannelEventStyle(event)
     // hide NEW MESSAGES count span
     $("#channel_{0} .channel_item_active_msg_count".format(toChannelID)).hide();
 
+    // reset the value
+    $("#channel_{0} .channel_item_active_msg_count".format(toChannelID)).text("0"); // set the new message count in the channel list
+
+
     if(toChannelID == -1 && event.data.clickedServerID != null)
     {
         $(".current_server_div").show();
@@ -687,7 +697,9 @@ function getBacklogForServers(limit)
                         "({0}): {1}".format(messages[i]["commandType"], messages[i]["messageBody"]),
                         -1
                     );
-                    last_message_id_servers = messages[i]["messageID"];
+
+                        last_message_id_servers = messages[i]["messageID"];
+
                 }
            }
         }
@@ -733,7 +745,6 @@ function getBacklogForChannel(channelID, limit)
 
                	for (var i=0; i < messages.length; i++)
                 {
-                    log(i);
                     // pokud se jedná o zprávu z kanálu
                     if(messages[i]["commandType"] == "PRIVMSG" || messages[i]["commandType"] == "PUBMSG")
                     {

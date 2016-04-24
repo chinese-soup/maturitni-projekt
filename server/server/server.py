@@ -206,6 +206,7 @@ class IRCSide(threading.Thread):
                             if i.is_connected() == True and data["channelID"] != -1: # if we are connected and the channelID is not -1 (broken)
                                 i.join(channelName_res, key=channelKey_res) # TODO: track channels we are in?
 
+
                             res = cursor_pull.execute("""DELETE FROM `IO_Table` WHERE `messageID` = %s;""", (data["messageID"],)) # delete the message we just processed
                             db_pull.commit()
 
@@ -286,6 +287,12 @@ class IRCSide(threading.Thread):
         self.client.add_global_handler("useronchannel", self.on_your_host)
 
         self.client.add_global_handler("namreply", self.on_names_reply)
+
+        self.client.add_global_handler("notopic", self.on_topic_info)
+        self.client.add_global_handler("currenttopic", self.on_topic_info)
+        self.client.add_global_handler("topicinfo", self.on_topic_info)
+
+
 
         self.client.add_global_handler("disconnect", self.on_disconnect)
         self.client.add_global_handler("nicknameinuse", self.on_nicknameinuse)
@@ -438,6 +445,7 @@ class IRCSide(threading.Thread):
         print("CONNECTION = {}\n\n".format(connection.__dict__))
         print('[{}] Pubmsg {} {}\n' .format(event.type.upper(), event.source, str(event.__dict__)))
 
+
         if(len(event.arguments) != 0):
             message = event.arguments[0]
         else:
@@ -509,9 +517,11 @@ class IRCSide(threading.Thread):
         #connection.reconnect()
 
     def on_names_reply(self, connection, event):
-        print('[{}] Pubmsg {} {}\n' .format(event.type.upper(), event.source, str(event.__dict__)))
+        print('[{}] NAMES REPLY: {} {}\n' .format(event.type.upper(), event.source, str(event.__dict__)))
+        channelName_src = ""
+        nicknames_list = ""
 
-        if(event.arguments[0] == "="):
+        if(event.arguments[0] == "=" or event.arguments[0] == "@"):
             channelName_src = event.arguments[1]
             nicknames_list = event.arguments[2]
             final = "NAMES in {0}: {1}".format(channelName_src, nicknames_list)
@@ -537,6 +547,11 @@ class IRCSide(threading.Thread):
                     values (%s, %s, %s, %s, %s)""", (channelID_res, event.source, final, event.type.upper(), datetime.datetime.utcnow()))
                     self.db.commit()
                     print("FINAL = ", final)
+
+    def on_topic_info(self, connection, event):
+        print('[{}] TOPICINFO/NOTOPIC/CURRENTTOPIC {} {}\n' .format(event.type.upper(), event.source, str(event.__dict__)))
+
+
 
 """
 TODO: DELETE THIS
