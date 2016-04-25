@@ -235,6 +235,7 @@ function getNewServerMessages()
                 var messages = data["message"];
                 for (var i=0; i < messages.length; i++)
                 {
+                    last_message_id_servers = messages[i]["messageID"];
                     var msgid = messages[i]["messageID"];
                     if( $("div#server_log_msgid_{0}".format(msgid)).length ) // check if the msg isnt already printed out to prevent double posting
                     {
@@ -249,7 +250,6 @@ function getNewServerMessages()
                         "({0}): {1}".format(messages[i]["commandType"], messages[i]["messageBody"]),
                         -1
                     );
-                    last_message_id_servers = messages[i]["messageID"];
 
 
                 }
@@ -595,6 +595,7 @@ function switchCurrentChannel(toChannelID)
         $(".current_server_div_servername").html(event.data.clickedServerName);
         $("#input-group-msgline .dark_input").prop("placeholder", "Send a command to {0}".format(event.data.clickedServerName));
         log("Server changed to {0}".format(event.data.clickedServerName));
+        $(".header_room_topic").text("Send a command to {0}".format(event.data.clickedServerName));
     }
     else if(toChannelID != -1)
     {
@@ -602,6 +603,7 @@ function switchCurrentChannel(toChannelID)
 
         // change placeholder of the input textbox
         $("#input-group-msgline .dark_input").prop("placeholder", "Chat in {0}".format(toChannelName));
+        $(".header_room_topic").text("Topic for {0}: {1}".format(toChannelName, "N/A"));
 
     }
 
@@ -699,6 +701,8 @@ function switchCurrentChannelEventStyle(event)
         $(".current_server_div_servername").html(event.data.clickedServerName);
         $("#input-group-msgline .dark_input").prop("placeholder", "Send a command to {0}".format(event.data.clickedServerName));
         log("Server changed to {0}".format(event.data.clickedServerName));
+        $(".header_room_topic").text("Send a command to {0}".format(event.data.clickedServerName));
+
     }
     else if(toChannelID != -1)
     {
@@ -706,6 +710,7 @@ function switchCurrentChannelEventStyle(event)
 
         // change placeholder of the input textbox
         $("#input-group-msgline .dark_input").prop("placeholder", "Chat in {0}".format(toChannelName));
+        $(".header_room_topic").text("Topic for {0}: {1}".format(toChannelName, "N/A"));
 
     }
 
