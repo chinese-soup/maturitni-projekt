@@ -10,9 +10,10 @@ $.ajaxSetup({
 var hostname = location.hostname; // maybe temporary(?): get the current hostname so we know where to make api calls (same host, different port)
 var already_loaded_backlog = []; // list of channels that already have backlog pulled so that we don't pull it again
 var global_settings = {"hilight_words": null, "username": null, "realname": null, "nickname": null, "show_joinpartquit_messages": null, "show_seconds": null, "show_video_previews": null, "show_image_previews": null}; // currently inplace global settings, loaded upon loading, changed when the settings are changed
-var channel_messages = []; // list of channel messages
+var channel_messages = {}; // list of channel messages
 
 var channel_ids = []; // list of channel IDs of the user
+
 var last_message_id = {}; // dictionary, key: channelID, value: ID of the last message in a channel
 var last_message_id_servers = -1; // int; last message of the status window
 
@@ -20,8 +21,6 @@ var current_status_window_serverID = -1; // int; current server selected in the 
 
 var currently_visible_message_window = -1; // int; which channel window is currently selected (-1 = status, always -1 upon load)
 
-
-var channel_messages_lockvar = false;
 
 /*
     overrides the default string function in javascript to include formatting support
@@ -158,7 +157,6 @@ function sendCommand(ioType, argument1, argument2, argument3, serverID, channelI
 }
 
 
-
 /*
    loading settings into variables
    for when the user opens the edit global settings window
@@ -237,7 +235,13 @@ function getNewServerMessages()
                 var messages = data["message"];
                 for (var i=0; i < messages.length; i++)
                 {
-                     addMessageToChannel(
+                    var msgid = messages[i]["messageID"];
+                    if( $("div#server_log_msgid_{0}".format(msgid)).length ) // check if the msg isnt already printed out to prevent double posting
+                    {
+                        continue;
+                    }
+
+                     addMessageToServerChannel(
                         messages[i]["messageID"],
                         convertDBTimeToLocalTime(messages[i]["timeReceived"]),
                         "-!- [{0}] {1}".format(messages[i]["serverName"], messages[i]["fromHostmask"]),
@@ -298,6 +302,13 @@ function getNewMessages()
 
                         for (var i=0; i < messages.length; i++)
                         {
+                            var msgid = messages[i]["messageID"];
+                            if( $("div#log_msgid_{0}".format(msgid)).length ) // check if the msg isnt already printed out to prevent double posting
+                            {
+                                console.log("UŽ EXISTUJE");
+                                continue;
+                            }
+
                             if(messages[i]["commandType"] == "PRIVMSG" || messages[i]["commandType"] == "PUBMSG")
                             {
                                 addMessageToChannel(
@@ -435,7 +446,7 @@ function isUserLoggedIn()
 function addActionMessage(messageID, timestamp, sender, senderColor, message, channelID)
 {
     var html =
-    '<div class="log_message log_message_even">' +
+    '<div class="log_message log_message_even" id="log_msgid_{0}">'.format(messageID) +
     '    <span class="timestamp">{0}</span>'.format(timestamp) +
     '    <span class="message-body"><span class="message-sender message-sender-{0}">* {1}</span> {2}</span>'.format(senderColor, sender, message) +
     '</div>';
@@ -472,7 +483,7 @@ function addJoinPartQuitToChannel(messageID, timestamp, messageType, sender, mes
             message = "&lt;no reason&gt;";
 
         var html =
-        '<div class="log_message log_message_odd">' +
+        '<div class="log_message log_message_odd" id="log_msgid_{0}">'.format(messageID) +
         '    <span class="timestamp">{0}</span>'.format(timestamp) +
         '    <span class="message-body"><span class="message-sender message-sender-{0}">{1}</span> <small>[{2}]</small> has {3} ({4})</span>'.format(2, nickname, hostmask, verb, message) +
         '</div>';
@@ -511,7 +522,47 @@ function addMessageToChannel(messageID, timestamp, sender, senderColor, message,
         MsgBGstyle = "odd";
     }
     var html =
-    '<div class="log_message log_message_{0}">'.format(MsgBGstyle) +
+    '<div class="log_message log_message_{0}" id="log_msgid_{1}">'.format(MsgBGstyle, messageID) +
+    '    <span class="timestamp">{0}</span>'.format(timestamp) +
+    '    <span class="message-body"><span class="message-sender message-sender-0" style="color: {0} !important;">{1}</span>: {2}</span>'.format(senderColor, sender, message) +
+    '</div>';
+
+
+    var element = $("#channel_window_{0}".format(channelID));
+    element.append(html);
+
+    var element2 = $(".center_messages_container");
+    element2.prop("scrollTop", 500000000000); // scrollneme dolů, protože máme nové
+}
+
+
+function addMessageToServerChannel(messageID, timestamp, sender, senderColor, message, channelID)
+{
+    var colorHash = new ColorHash({lightness: [0.65, 0.65, 0.65]});
+    senderColor = colorHash.hex(sender);
+    var MsgBGstyle = "odd";
+    try
+    {
+        if(global_settings["hilight_words"] != "")
+        {
+            var hilight_words_array = global_settings["hilight_words"].split(";");
+
+            for (i = 0; i < hilight_words_array.length; i++)
+            {
+                if(message.search(hilight_words_array[i]) != -1)
+                {
+                    MsgBGstyle = "hilight";
+                }
+            }
+        }
+    }
+    catch(err)
+    {
+        MsgBGstyle = "odd";
+    }
+
+    var html =
+    '<div class="log_message log_message_{0}" id="server_log_msgid_{1}">'.format(MsgBGstyle, messageID) +
     '    <span class="timestamp">{0}</span>'.format(timestamp) +
     '    <span class="message-body"><span class="message-sender message-sender-0" style="color: {0} !important;">{1}</span>: {2}</span>'.format(senderColor, sender, message) +
     '</div>';
@@ -741,7 +792,7 @@ function getBacklogForServers(limit)
                	for (var i=0; i < messages.length; i++)
                 {
 
-                    addMessageToChannel(
+                    addMessageToServerChannel(
                         messages[i]["messageID"],
                         convertDBTimeToLocalTime(messages[i]["timeReceived"]),
                         "-!- [{0}] {1}".format(messages[i]["serverName"], messages[i]["fromHostmask"]),
@@ -797,6 +848,9 @@ function getBacklogForChannel(channelID, limit)
                	for (var i=0; i < messages.length; i++)
                 {
                     // pokud se jedná o zprávu z kanálu
+
+
+
                     if(messages[i]["commandType"] == "PRIVMSG" || messages[i]["commandType"] == "PUBMSG")
                     {
                         addMessageToChannel(
@@ -1163,6 +1217,7 @@ function loadServers()
                     channelServerID:channelServerID}, switchCurrentChannelEventStyle)
 
                     channel_ids.push(channelID);
+
                 }
             }
 
