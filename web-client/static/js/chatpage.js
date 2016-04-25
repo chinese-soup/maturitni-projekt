@@ -21,6 +21,8 @@ var current_status_window_serverID = -1; // int; current server selected in the 
 var currently_visible_message_window = -1; // int; which channel window is currently selected (-1 = status, always -1 upon load)
 
 
+var channel_messages_lockvar = false;
+
 /*
     overrides the default string function in javascript to include formatting support
 */
@@ -61,45 +63,46 @@ function sendTextBoxCommand(event)
 
         channelID = event.data.channelID;
         textBoxData = $("#input-msgline").val(); // get the textbox data the user wants to send
-
-        log("sendTextBoxCommand({0})".format(channelID, textBoxData));
-
-        if(channelID == -1 && current_status_window_serverID != -1) // if the channel is the status window
+        if(textBoxData != "" && textBoxData != null)
         {
-            serverID = current_status_window_serverID; // we  need to get the current server that is selected in the status window
-        }
-        else
-        {
-            serverID = -1; // otherwise we just send an invalid server value (-1 because laziness)
-        }
+            log("sendTextBoxCommand({0})".format(channelID, textBoxData));
 
-        var posting = $.post("http://{0}:5000/send_textbox_io".format(hostname),
-        {
-           serverID: serverID,
-           channelID: channelID,
-           textBoxData: textBoxData
-        }, dataType="text"
-        );
-
-        posting.done(function(data)
-        {
-            console.log(data);
-            if(data["reason"] == "textbox_io_server_window_inserted" || data["reason"] == "textbox_io_channel_window_inserted")
+            if(channelID == -1 && current_status_window_serverID != -1) // if the channel is the status window
             {
-                $("#input-msgline").val(""); // reset the message textbox to an empty string
-
+                serverID = current_status_window_serverID; // we  need to get the current server that is selected in the status window
             }
-            else if(data["reason"] == "not_loggedin")
+            else
             {
-                general_dialog("Access denied: You are not logged in.", data["message"], "error", -1); // the user is not logged in
+                serverID = -1; // otherwise we just send an invalid server value (-1 because laziness)
             }
-        });
 
-        posting.fail(function()
-        {
-            log("There was an error sending the textbox input.")
+            var posting = $.post("http://{0}:5000/send_textbox_io".format(hostname),
+            {
+               serverID: serverID,
+               channelID: channelID,
+               textBoxData: textBoxData
+            }, dataType="text"
+            );
+
+            posting.done(function(data)
+            {
+                console.log(data);
+                if(data["reason"] == "textbox_io_server_window_inserted" || data["reason"] == "textbox_io_channel_window_inserted")
+                {
+                    $("#input-msgline").val(""); // reset the message textbox to an empty string
+
+                }
+                else if(data["reason"] == "not_loggedin")
+                {
+                    general_dialog("Access denied: You are not logged in.", data["message"], "error", -1); // the user is not logged in
+                }
+            });
+
+            posting.fail(function()
+            {
+                log("There was an error sending the textbox input.")
         })
-
+        }
     }
 
 }
@@ -207,7 +210,6 @@ function ping()
     getNewMessages();
     getNewServerMessages();
 
-    setTimeout(ping, 1500);
 }
 
 
@@ -260,7 +262,7 @@ function getNewServerMessages()
 
 
 
-function getNewMessages()
+function getNewMessages(callback)
 {
     for(var i=0; i < channel_ids.length; i++)
     {
@@ -278,7 +280,6 @@ function getNewMessages()
 
             posting.done(function(data)
             {
-                console.log(data);
                 if(data["status"] == "error")
                 {
                     log(data["reason"]);
@@ -360,9 +361,10 @@ function getNewMessages()
 
 
                         }
-                   }
-                }
 
+                   }
+
+                }
 
 
             });
@@ -370,9 +372,12 @@ function getNewMessages()
             posting.fail(function()
             {
                  log("An error occurred while trying to contact the API server. Try reloading the page.", "error");
+
+
             });
         }
     }
+
 }
 
 
@@ -998,6 +1003,7 @@ function join_channel_dialog(event)
     serverName = event.data.serverName;
     toggle_center_column("join_channel");
 
+    $(".header_room_topic").val("Join another channel on this network")
     // empty fields
     $("#channel-join-form #channel_to_join_input_channel").val("");
     $("#channel-join-form #channel_to_join_input_password").val("");

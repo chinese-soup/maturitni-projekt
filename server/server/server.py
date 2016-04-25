@@ -92,6 +92,7 @@ class IRCSide(threading.Thread):
                             # REGEXP MATCHES FOR COMMANDS #
                             RAW_MATCH = re.match("^/raw (.*)$", message.lower()) # RAW MATCH
                             PRIVMSG_MATCH = re.match("^\/(privmsg|msg)\s(.*)\s(.*)$", message.lower())
+                            WHOIS_MATCH = re.match("^\/(WHOIS)\s(.*)$", message.lower())
 
                             if RAW_MATCH != None:
                                 for i in self.server_list_server_objects: # loop through all the server instances this user has
@@ -112,6 +113,19 @@ class IRCSide(threading.Thread):
                                 MESSAGE = PRIVMSG_MATCH.group(3)
                                 i.privmsg(TARGET, MESSAGE)
                                 print( "{0}: PRIVMSG({1}): {2}".format(server_info["serverName"], TARGET, MESSAGE))
+                                res = cursor_pull.execute("""INSERT INTO `IRC_other_messages` (IRC_servers_serverID,
+                                                            fromHostmask,
+                                                            messageBody,
+                                                            commandType,
+                                                            timeReceived)
+                                                            values (%s, %s, %s, %s, %s)""", (i.serverID, server_info["serverName"],
+                                                            "{0}: PRIVMSG({1}): {2}".format(server_info["serverName"], TARGET, MESSAGE), "CLOUDCHAT_INFO", datetime.datetime.utcnow()))
+                                db_pull.commit()
+                            elif WHOIS_MATCH != None:
+                                TYPE = PRIVMSG_MATCH.group(1)
+                                TARGET = PRIVMSG_MATCH.group(2)
+                                i.privmsg(TARGET)
+                                print( "{0}: WHOIS({1}): {2}".format(server_info["serverName"], TARGET, MESSAGE))
                                 res = cursor_pull.execute("""INSERT INTO `IRC_other_messages` (IRC_servers_serverID,
                                                             fromHostmask,
                                                             messageBody,
@@ -284,12 +298,15 @@ class IRCSide(threading.Thread):
             except Exception as exp:
 
                 print("EXCEPTION IN THREAD", exp)
-                #let's delete the message, because it probably broke our code
-                db_pull = self.getDB()
-                cursor_pull = db_pull.cursor()
-                res = cursor_pull.execute("""DELETE FROM `IO_Table` WHERE `messageID` = %s;""", (self.last_pull_msg_id)) # delete the message we just processed
-                db_pull.commit()
-                db_pull.close()
+                try:
+                    #let's delete the message, because it probably broke our code
+                    db_pull = self.getDB()
+                    cursor_pull = db_pull.cursor()
+                    res = cursor_pull.execute("""DELETE FROM `IO_Table` WHERE `messageID` = %s;""", (self.last_pull_msg_id)) # delete the message we just processed
+                    db_pull.commit()
+                    db_pull.close()
+                finally:
+                    pass
 
                 time.sleep(2)
 

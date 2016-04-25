@@ -95,7 +95,7 @@ mysql -u username -p -e "CREATE DATABASE `cloudchatdb` CHARACTER SET utf8 COLLAT
 #### Importování struktury z SQL souboru
 Nyní strukturu importujeme do databáez, kterou jsme právě vytvořili:
 ```
-cat struktura.sql > mysql -u username -p -D nazev_databaze
+ysql -u username -p -D nazev_databaze < vystup1_navrh/sql_tables_11apr2016.sql
 ```
 
 ### 4. Apache2 konfigurace
