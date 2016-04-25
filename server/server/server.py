@@ -130,7 +130,7 @@ class IRCSide(threading.Thread):
                                     if i.serverID == data["serverID"]:
                                         i.whois(TARGET)
 
-                                        print( "{0}: WHOIS({1}): {2}".format(server_info["serverName"], TARGET, MESSAGE))
+                                        print("{0}: WHOIS({1})".format(server_info["serverName"], TARGET))
                                         res = cursor_pull.execute("""INSERT INTO `IRC_other_messages` (IRC_servers_serverID,
                                                                 fromHostmask,
                                                                 messageBody,
@@ -414,7 +414,52 @@ class IRCSide(threading.Thread):
 
     def on_whois(self, connection, event):
         print("TEST")
-        self.on_your_host(connection, event)
+        """TEST
+        <irc.client.Event object at 0x7f6fef1a81d0>
+        ['polivka__', 'unko', 'i.love.debian.org', '*', 'unko']
+        serverID = 1
+        TEST
+        <irc.client.Event object at 0x7f6fef1924e0>
+        ['polivka__', '#meme #doprdele #test.cz']
+        serverID = 1
+        TEST
+        <irc.client.Event object at 0x7f6fefa01080>
+        ['polivka__', 'hybrid8.debian.local', 'ircd-hybrid 8.1-debian']
+        serverID = 1
+        TEST
+        <irc.client.Event object at 0x7f6fefa01080>
+        ['polivka__', '11364', '1461533324', 'seconds idle, signon time']"""
+
+        try:
+            if(event.type == "whoischannels"):
+                message = "Channels: {0}".format(event.arguments[1])
+            elif(event.type == "whoisserver"):
+                message = "Connected to: {0}".format(event.arguments[1])
+            elif(event.type == "whoisidle"):
+                message = "Idle: {0} [Sign on: {1}]".format(event.arguments[1], event.arguments[2])
+            else:
+                message = str(event.arguments)
+        except:
+            message = str(event.arguments)
+
+        res = self.cursor.execute("""SELECT * FROM `IRC_servers` WHERE `Registred_users_userID` = %s AND `serverID` = %s;""", (self.userID, connection.serverID))
+        if res != 0:
+            result = self.cursor.fetchall()
+            serverID_res = int(result[0][0])
+            print("serverID = {}".format(serverID_res))
+
+            if serverID_res == int(connection.serverID): # pokud se získané ID z databáze rovná tomu, které v sobě
+                # uchovává connection, redundantní check, ale just4safety
+                res = self.cursor.execute("""INSERT INTO `IRC_other_messages` (IRC_servers_serverID,
+                fromHostmask,
+                messageBody,
+                commandType,
+                timeReceived)
+                values (%s, %s, %s, %s, %s)""", (serverID_res, event.source, message, event.type.upper(),
+                                                 datetime.datetime.utcnow()))
+
+
+                self.db.commit()
 
     def on_mode(self, connection, event):
         print("ARGUMENTS ON MODE:", event.arguments)
