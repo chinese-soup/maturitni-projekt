@@ -92,7 +92,7 @@ class IRCSide(threading.Thread):
                             # REGEXP MATCHES FOR COMMANDS #
                             RAW_MATCH = re.match("^/raw (.*)$", message.lower()) # RAW MATCH
                             PRIVMSG_MATCH = re.match("^\/(privmsg|msg)\s(.*)\s(.*)$", message.lower())
-                            WHOIS_MATCH = re.match("^\/(WHOIS)\s(.*)$", message.lower())
+                            WHOIS_MATCH = re.match("^\/(whois)\s(.*)$", message.lower())
 
                             if RAW_MATCH != None:
                                 for i in self.server_list_server_objects: # loop through all the server instances this user has
@@ -111,29 +111,34 @@ class IRCSide(threading.Thread):
                                 TYPE = PRIVMSG_MATCH.group(1)
                                 TARGET = PRIVMSG_MATCH.group(2)
                                 MESSAGE = PRIVMSG_MATCH.group(3)
-                                i.privmsg(TARGET, MESSAGE)
-                                print( "{0}: PRIVMSG({1}): {2}".format(server_info["serverName"], TARGET, MESSAGE))
-                                res = cursor_pull.execute("""INSERT INTO `IRC_other_messages` (IRC_servers_serverID,
-                                                            fromHostmask,
-                                                            messageBody,
-                                                            commandType,
-                                                            timeReceived)
-                                                            values (%s, %s, %s, %s, %s)""", (i.serverID, server_info["serverName"],
-                                                            "{0}: PRIVMSG({1}): {2}".format(server_info["serverName"], TARGET, MESSAGE), "CLOUDCHAT_INFO", datetime.datetime.utcnow()))
-                                db_pull.commit()
+                                for i in self.server_list_server_objects: # loop through all the server instances this user has
+                                    if i.serverID == data["serverID"]:
+                                        i.privmsg(TARGET, MESSAGE)
+                                        print( "{0}: PRIVMSG({1}): {2}".format(server_info["serverName"], TARGET, MESSAGE))
+                                        res = cursor_pull.execute("""INSERT INTO `IRC_other_messages` (IRC_servers_serverID,
+                                                                    fromHostmask,
+                                                                    messageBody,
+                                                                    commandType,
+                                                                    timeReceived)
+                                                                    values (%s, %s, %s, %s, %s)""", (i.serverID, server_info["serverName"],
+                                                                    "{0}: PRIVMSG({1}): {2}".format(server_info["serverName"], TARGET, MESSAGE), "CLOUDCHAT_INFO", datetime.datetime.utcnow()))
+                                        db_pull.commit()
                             elif WHOIS_MATCH != None:
-                                TYPE = PRIVMSG_MATCH.group(1)
-                                TARGET = PRIVMSG_MATCH.group(2)
-                                i.privmsg(TARGET)
-                                print( "{0}: WHOIS({1}): {2}".format(server_info["serverName"], TARGET, MESSAGE))
-                                res = cursor_pull.execute("""INSERT INTO `IRC_other_messages` (IRC_servers_serverID,
-                                                            fromHostmask,
-                                                            messageBody,
-                                                            commandType,
-                                                            timeReceived)
-                                                            values (%s, %s, %s, %s, %s)""", (i.serverID, server_info["serverName"],
-                                                            "{0}: PRIVMSG({1}): {2}".format(server_info["serverName"], TARGET, MESSAGE), "CLOUDCHAT_INFO", datetime.datetime.utcnow()))
-                                db_pull.commit()
+                                TYPE = WHOIS_MATCH.group(1)
+                                TARGET = WHOIS_MATCH.group(2)
+                                for i in self.server_list_server_objects: # loop through all the server instances this user has
+                                    if i.serverID == data["serverID"]:
+                                        i.whois(TARGET)
+
+                                        print( "{0}: WHOIS({1}): {2}".format(server_info["serverName"], TARGET, MESSAGE))
+                                        res = cursor_pull.execute("""INSERT INTO `IRC_other_messages` (IRC_servers_serverID,
+                                                                fromHostmask,
+                                                                messageBody,
+                                                                commandType,
+                                                                timeReceived)
+                                                                values (%s, %s, %s, %s, %s)""", (i.serverID, server_info["serverName"],
+                                                                "{0}: WHOIS({1})".format(server_info["serverName"], TARGET), "CLOUDCHAT_INFO", datetime.datetime.utcnow()))
+                                        db_pull.commit()
 
 
                         elif message[0] != "/":
@@ -302,7 +307,7 @@ class IRCSide(threading.Thread):
                     #let's delete the message, because it probably broke our code
                     db_pull = self.getDB()
                     cursor_pull = db_pull.cursor()
-                    res = cursor_pull.execute("""DELETE FROM `IO_Table` WHERE `messageID` = %s;""", (self.last_pull_msg_id)) # delete the message we just processed
+                    res = cursor_pull.execute("""DELETE FROM `IO_Table` WHERE `messageID` = %s;""", (self.last_pull_msg_id,)) # delete the message we just processed
                     db_pull.commit()
                     db_pull.close()
                 finally:
@@ -381,6 +386,14 @@ class IRCSide(threading.Thread):
 
         self.client.add_global_handler("namreply", self.on_names_reply)
 
+        self.client.add_global_handler("whoisaccount", self.on_whois)
+        self.client.add_global_handler("whoisuser", self.on_whois)
+        self.client.add_global_handler("whoisserver", self.on_whois)
+        self.client.add_global_handler("whoisoperator", self.on_whois)
+        self.client.add_global_handler("whoischanop", self.on_whois)
+        self.client.add_global_handler("whoisidle", self.on_whois)
+        self.client.add_global_handler("whoischannels", self.on_whois)
+
         self.client.add_global_handler("notopic", self.on_topic_info)
         self.client.add_global_handler("currenttopic", self.on_topic_info)
         self.client.add_global_handler("topicinfo", self.on_topic_info)
@@ -398,6 +411,10 @@ class IRCSide(threading.Thread):
         self.client.add_global_handler("quit", self.on_pubmsg)
         self.client.add_global_handler("nick", self.on_nick)
         self.client.add_global_handler("action", self.on_pubmsg)
+
+    def on_whois(self, connection, event):
+        print("TEST")
+        self.on_your_host(connection, event)
 
     def on_mode(self, connection, event):
         print("ARGUMENTS ON MODE:", event.arguments)
@@ -732,7 +749,7 @@ numeric = {
     "303": "ison",
     "305": "unaway",
     "306": "nowaway",
-    "311": "whoisuser",
+    "311": "whoisuser", # whoisuser whoisserver whoisoperator whoischanop whoisidle whoischannels
     "312": "whoisserver",
     "313": "whoisoperator",
     "314": "whowasuser",
