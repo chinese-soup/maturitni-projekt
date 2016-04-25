@@ -209,7 +209,7 @@ function ping()
     //console.log("ping()");
     getNewMessages();
     getNewServerMessages();
-
+    setTimeout(ping, 1500);
 }
 
 
@@ -262,7 +262,7 @@ function getNewServerMessages()
 
 
 
-function getNewMessages(callback)
+function getNewMessages()
 {
     for(var i=0; i < channel_ids.length; i++)
     {
@@ -289,12 +289,12 @@ function getNewMessages(callback)
                    if(data["reason"] == "listing_new_messages")
                    {
                         var messages = data["message"];
-                        if(currently_visible_message_window != channelID && currently_visible_message_window != -1)
+                        /*if(currently_visible_message_window != channelID && currently_visible_message_window != -1)
                         {
                             $("#channel_{0}".format(channelID)).find(".channel_item_active_msg_count").show(); // show new message count in the channel list
                             var current_count = parseInt($("#channel_{0}".format(channelID)).find(".channel_item_active_msg_count").text()); // get the current_count
                             $("#channel_{0}".format(channelID)).find(".channel_item_active_msg_count").text("{0}".format(current_count + messages.length)); // set the new message count in the channel list
-                        }
+                        }*/
 
                         for (var i=0; i < messages.length; i++)
                         {
@@ -361,7 +361,6 @@ function getNewMessages(callback)
 
 
                         }
-
                    }
 
                 }
