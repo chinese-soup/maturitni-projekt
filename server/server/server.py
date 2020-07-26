@@ -326,7 +326,7 @@ class IRCSide(threading.Thread):
 
     def start_pull_thread(self):
         """
-        Starts the slave thread for pulling/inserting/changing new client IO from the database.
+        Starts the subordinate thread for pulling/inserting/changing new client IO from the database.
         """
         threading.Thread(target=self._pull_thread).start()
 
